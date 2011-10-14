@@ -1,0 +1,16 @@
+Metadata-Version: 1.0
+Name: aggdraw
+Version: 1.2a3-20060212
+Summary: High quality drawing interface for PIL.
+Home-page: http://www.effbot.org/zone/aggdraw.htm
+Author: Fredrik Lundh
+Author-email: fredrik@pythonware.com
+License: Python (MIT style)
+Download-URL: http://www.effbot.org/downloads#aggdraw
+Description: The aggdraw module implements the basic WCK 2D Drawing Interface on
+        top of the AGG library. This library provides high-quality drawing,
+        with anti-aliasing and alpha compositing, while being fully compatible
+        with the WCK renderer.
+Platform: Python 2.1 and later.
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Multimedia :: Graphics
