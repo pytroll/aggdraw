@@ -520,7 +520,7 @@ namespace agg
                 int8u* ptr = m_buf_ptr;
                 if(alignment > 1)
                 {
-                    unsigned align = (alignment - unsigned(ptr) % alignment) % alignment;
+                    unsigned align = (alignment - (unsigned long)(ptr) % alignment) % alignment;
                     size += align;
                     ptr += align;
                     if(size <= m_rest)
