@@ -37,7 +37,12 @@
  * Copyright (c) 2003-2006 by Secret Labs AB
  */
 
-#define VERSION "1.2a3"
+/*
+ * Add-ons by Simon Kolotov,
+ * 2014-07-22     exported line properties LineCap and LineJoin
+ */
+
+#define VERSION "1.2a3-s"
 
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN
@@ -76,8 +81,9 @@
 #include "agg_renderer_scanline.h"
 #include "agg_rendering_buffer.h"
 #include "agg_scanline_p.h"
+#include "agg_vcgen_stroke.h"
 #include "platform/agg_platform_support.h" // agg::pix_format_*
-
+#include <string>
 /* -------------------------------------------------------------------- */
 /* AGG Drawing Surface */
 
@@ -105,6 +111,8 @@ typedef struct {
     int buffer_size;
     PyObject* image;
     PyObject* background;
+    agg::vcgen_stroke::line_join_e lineJoinType;
+    agg::vcgen_stroke::line_cap_e lineCapType;
 #if defined(WIN32)
     HDC dc;
     HBITMAP bitmap;
@@ -338,6 +346,8 @@ public:
             /* FIXME: add path for dashed lines */
             agg::conv_stroke<agg::path_storage> stroke(*p);
             stroke.width(pen->width);
+            stroke.line_join(self->lineJoinType);
+            stroke.line_cap(self->lineCapType);
             rasterizer.reset();
             rasterizer.add_path(stroke);
             renderer.color(pen->color);
@@ -593,7 +603,13 @@ draw_new(PyObject* self_, PyObject* args)
         Py_DECREF(buffer);
     }
 
+    self->lineJoinType = agg::vcgen_stroke::miter_join;
+    self->lineCapType = agg::vcgen_stroke::butt_cap;
+
+    
+
     draw_setup(self);
+    
 
 #if defined(WIN32)
     self->dc = NULL;
@@ -1107,6 +1123,58 @@ draw_setantialias(DrawObject* self, PyObject* args)
 }
 
 static PyObject*
+draw_setlinejoin(DrawObject* self, PyObject* args)
+{
+    char* s;
+    if (!PyArg_ParseTuple(args, "s:setlinejoin", &s))
+        return NULL;
+
+    std::string lineJoinType(s);
+
+    if (lineJoinType == "miter")
+        self->lineJoinType = agg::vcgen_stroke::line_join_e(0);
+    else if (lineJoinType == "miter_reversed")
+        self->lineJoinType = agg::vcgen_stroke::line_join_e(1);
+    else if (lineJoinType == "round")
+        self->lineJoinType = agg::vcgen_stroke::line_join_e(2);
+    else if (lineJoinType == "bevel")
+        self->lineJoinType = agg::vcgen_stroke::line_join_e(3);
+    else
+        {
+          PyErr_SetString(PyExc_RuntimeError, "Illegal Line-Join Type!\nUse 'miter', 'miter_reversed', 'round', or 'bevel'");
+          return NULL;
+        }
+      
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject*
+draw_setlinecap(DrawObject* self, PyObject* args)
+{
+    char* s;
+    if (!PyArg_ParseTuple(args, "s:setlinecap", &s))
+        return NULL;
+
+    std::string lineCapType(s);
+
+    if (lineCapType == "butt")
+        self->lineCapType = agg::vcgen_stroke::line_cap_e(0);
+    else if (lineCapType == "square")
+        self->lineCapType = agg::vcgen_stroke::line_cap_e(1);
+    else if (lineCapType == "round")
+        self->lineCapType = agg::vcgen_stroke::line_cap_e(2);
+    else
+        {
+          PyErr_SetString(PyExc_RuntimeError, "Illegal Line-Join Type!\nUse 'butt', 'square', or 'round'");
+          return NULL;
+        }
+      
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject*
 draw_settransform(DrawObject* self, PyObject* args)
 {
     double a=1, b=0, c=0, d=0, e=1, f=0;
@@ -1267,6 +1335,10 @@ static PyMethodDef draw_methods[] = {
 
     {"settransform", (PyCFunction) draw_settransform, METH_VARARGS},
     {"setantialias", (PyCFunction) draw_setantialias, METH_VARARGS},
+
+    {"setlinejoin", (PyCFunction) draw_setlinejoin, METH_VARARGS, "Set line-join type.\nAcceptable types are 'miter', 'miter_reversed', 'round', or 'bevel'"},
+    {"setlinecap", (PyCFunction) draw_setlinecap, METH_VARARGS, "Set line-cap type.\nAcceptable types are 'butt', 'square', or 'round'"},
+    
 
     {"flush", (PyCFunction) draw_flush, METH_VARARGS},
 
