@@ -2,7 +2,7 @@
 # -*- coding: iso-8859-1 -*-
 # sanity check
 
-import Image
+from PIL import Image
 
 from aggdraw import *
 
