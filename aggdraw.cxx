@@ -1013,6 +1013,27 @@ draw_rectangle(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+static PyObject* 
+draw_path(DrawObject* self, PyObject* args){
+    PathObject* path;
+    PyObject*   brush = NULL;
+    PyObject*   pen   = NULL;
+
+    if (!PyArg_ParseTuple(args, "O!|OO:path", &PathType, &path, &brush, &pen)){
+        return NULL;
+    }
+
+    //agg::trans_affine_translation transform(xy[i].X,xy[i].Y);
+    //agg::conv_transform<agg::path_storage, agg::trans_affine>
+    //  tp(*symbol->path, transform);
+    //agg::path_storage p;
+    //p.add_path(tp, 0, false);
+    self->draw->draw(*path->path, pen, brush);
+  
+    Py_INCREF(Py_None);
+    return Py_None;
+};
+
 static PyObject*
 draw_symbol(DrawObject* self, PyObject* args)
 {
@@ -1257,7 +1278,7 @@ static PyMethodDef draw_methods[] = {
     {"textsize", (PyCFunction) draw_textsize, METH_VARARGS},
 #endif
 
-    {"path", (PyCFunction) draw_symbol, METH_VARARGS},
+    {"path", (PyCFunction) draw_path, METH_VARARGS},
     {"symbol", (PyCFunction) draw_symbol, METH_VARARGS},
 
     {"arc", (PyCFunction) draw_arc, METH_VARARGS},
@@ -1706,6 +1727,15 @@ symbol_new(PyObject* self_, PyObject* args)
     return (PyObject*) self;
 }
 
+void expandPaths(PathObject *self)
+{
+    agg::path_storage* path = self->path;
+    agg::conv_curve<agg::path_storage> curve(*path);
+    self->path = new agg::path_storage();
+    self->path->add_path(curve, 0, false);
+    delete path;
+}
+
 static PyObject*
 path_moveto(PathObject* self, PyObject* args)
 {
@@ -1769,6 +1799,8 @@ path_curveto(PathObject* self, PyObject* args)
 
     self->path->curve4(x1, y1, x2, y2, x, y);
 
+    expandPaths(self);
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -1796,7 +1828,13 @@ path_close(PathObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, ":close"))
         return NULL;
 
-    self->path->close_polygon();
+    self->path->close_polygon(0);
+    /* expand curves */
+    agg::path_storage* path = self->path;
+    agg::conv_curve<agg::path_storage> curve(*path);
+    self->path = new agg::path_storage();
+    self->path->add_path(curve, 0, false);
+    delete path;
 
     Py_INCREF(Py_None);
     return Py_None;
