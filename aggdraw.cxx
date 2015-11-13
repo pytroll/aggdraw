@@ -569,7 +569,7 @@ draw_new(PyObject* self_, PyObject* args)
 
     self->image = image;
     if (image) {
-        PyObject* buffer = PyObject_CallMethod(image, "tostring", NULL);
+        PyObject* buffer = PyObject_CallMethod(image, "tobytes", NULL);
         if (!buffer)
             return NULL; /* FIXME: release resources */
         if (!PyString_Check(buffer)) {
@@ -1236,7 +1236,7 @@ draw_flush(DrawObject* self, PyObject* args)
     if (!buffer)
         return NULL;
 
-    result = PyObject_CallMethod(self->image, "fromstring", "N", buffer);
+    result = PyObject_CallMethod(self->image, "frombytes", "N", buffer);
     if (!result)
         return NULL;
 
