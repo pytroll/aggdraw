@@ -28,6 +28,15 @@ def testdraw():
 
     """
 
+def testflush():
+    """
+
+    >>> im = Image.new("RGB", (600, 800))
+    >>> draw = Draw(im)
+    >>> draw.flush().mode
+    'RGB'
+    """
+
 def testpen():
     """
 

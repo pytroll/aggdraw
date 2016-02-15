@@ -1236,7 +1236,7 @@ draw_flush(DrawObject* self, PyObject* args)
     if (!buffer)
         return NULL;
 
-    result = PyObject_CallMethod(self->image, "fromstring", "N", buffer);
+    result = PyObject_CallMethod(self->image, "frombytes", "N", buffer);
     if (!result)
         return NULL;
 
