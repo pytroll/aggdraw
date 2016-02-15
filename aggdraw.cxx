@@ -569,13 +569,13 @@ draw_new(PyObject* self_, PyObject* args)
 
     self->image = image;
     if (image) {
-        PyObject* buffer = PyObject_CallMethod(image, "tostring", NULL);
+        PyObject* buffer = PyObject_CallMethod(image, "tobytes", NULL);
         if (!buffer)
             return NULL; /* FIXME: release resources */
         if (!PyString_Check(buffer)) {
             PyErr_SetString(
                 PyExc_TypeError,
-                "bad 'tostring' return value (expected string)"
+                "bad 'tobytes' return value (expected string)"
                 );
             Py_DECREF(buffer);
             return NULL;
