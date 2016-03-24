@@ -12,7 +12,10 @@
 #   $ python setup.py install
 #
 
-from distutils.core import setup, Extension
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
 import os, sys
 
 VERSION = "1.2a3-20060212"
