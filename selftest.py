@@ -152,6 +152,6 @@ if __name__ == "__main__":
     import doctest, selftest
     status = doctest.testmod(selftest)
     if status[0]:
-        print "*** %s tests of %d failed." % status
+        print("*** %s tests of %d failed." % status)
     else:
-        print "%s tests passed." % status[1]
+        print("%s tests passed." % status[1])
