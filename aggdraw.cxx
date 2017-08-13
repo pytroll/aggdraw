@@ -39,6 +39,8 @@
  * 2015-07-15 ej   fixed broken paths
  * 2017-01-03 ej   added support for python 3
  * 2017-01-03 ej   tostring() -> tobytes(), fromstring() -> frombytes() 
+ * 2017-08-18 dh   fixed mode to be python str instead of bytes
+ * 2017-08-18 dh   fixed a couple compiler warnings (specifically clang)
  */
 
 #define VERSION "1.2.1"
@@ -133,7 +135,7 @@ static void draw_dealloc(DrawObject* self);
 #ifdef IS_PY3K
 static PyObject* draw_getattro(DrawObject* self, PyObject* nameobj);
 static PyTypeObject DrawType = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     "Draw", sizeof(DrawObject), 0,
     /* methods */
     (destructor) draw_dealloc, /* tp_dealloc */
@@ -154,8 +156,8 @@ static PyTypeObject DrawType = {
 
 static PyObject* draw_getattr(DrawObject* self, char* name);
 static PyTypeObject DrawType = {
-    PyObject_HEAD_INIT(NULL)
-    0, "Draw", sizeof(DrawObject), 0,
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "Draw", sizeof(DrawObject), 0,
     /* methods */
     (destructor) draw_dealloc, /* tp_dealloc */
     (printfunc)0, /* tp_print */
@@ -174,7 +176,7 @@ static void pen_dealloc(PenObject* self);
 
 #ifdef IS_PY3K
 static PyTypeObject PenType = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     "Pen", sizeof(PenObject), 0,
     /* methods */
     (destructor) pen_dealloc, /* tp_dealloc */
@@ -185,8 +187,8 @@ static PyTypeObject PenType = {
 
 #else
 static PyTypeObject PenType = {
-    PyObject_HEAD_INIT(NULL)
-    0, "Pen", sizeof(PenObject), 0,
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "Pen", sizeof(PenObject), 0,
     /* methods */
     (destructor) pen_dealloc, /* tp_dealloc */
     0, /* tp_print */
@@ -206,7 +208,7 @@ static void brush_dealloc(BrushObject* self);
 
 #ifdef IS_PY3K
 static PyTypeObject BrushType = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     "Brush", sizeof(BrushObject), 0,
     /* methods */
     (destructor) brush_dealloc, /* tp_dealloc */
@@ -217,8 +219,8 @@ static PyTypeObject BrushType = {
 
 #else
 static PyTypeObject BrushType = {
-    PyObject_HEAD_INIT(NULL)
-    0, "Brush", sizeof(BrushObject), 0,
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "Brush", sizeof(BrushObject), 0,
     /* methods */
     (destructor) brush_dealloc, /* tp_dealloc */
     0, /* tp_print */
@@ -244,7 +246,7 @@ static void font_dealloc(FontObject* self);
 #ifdef IS_PY3K
 static PyObject* font_getattro(FontObject* self, PyObject* nameobj);
 static PyTypeObject FontType = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     "Font", sizeof(FontObject), 0,
     /* methods */
     (destructor) font_dealloc, /* tp_dealloc */
@@ -264,8 +266,8 @@ static PyTypeObject FontType = {
 #else
 static PyObject* font_getattr(FontObject* self, char* name);
 static PyTypeObject FontType = {
-    PyObject_HEAD_INIT(NULL)
-    0, "Font", sizeof(FontObject), 0,
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "Font", sizeof(FontObject), 0,
     /* methods */
     (destructor) font_dealloc, /* tp_dealloc */
     0, /* tp_print */
@@ -285,7 +287,7 @@ static void path_dealloc(PathObject* self);
 #ifdef IS_PY3K
 static PyObject* path_getattro(PathObject* self, PyObject* nameobj);
 static PyTypeObject PathType = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     "Path", sizeof(PathObject), 0,
     /* methods */
     (destructor) path_dealloc, /* tp_dealloc */
@@ -353,7 +355,7 @@ text_getchar(PyObject* string, int index, unsigned long* char_out)
 class draw_adaptor_base 
 {
 public:
-    char* mode;
+    const char* mode;
     virtual ~draw_adaptor_base() {};
     virtual void setantialias(bool flag) = 0;
     virtual void draw(agg::path_storage &path, PyObject* obj1,
@@ -372,7 +374,7 @@ template<class PixFmt> class draw_adaptor : public draw_adaptor_base {
     agg::scanline_p8 scanline;
 
 public:
-    draw_adaptor(DrawObject* self_, char* mode_) 
+    draw_adaptor(DrawObject* self_, const char* mode_) 
     {
         self = self_;
         mode = mode_;
@@ -1324,13 +1326,13 @@ draw_clear(DrawObject* self, PyObject* args)
 static PyObject*
 draw_expose(DrawObject* self, PyObject* args, PyObject* kw)
 {
-    static char* kwlist[] = {
+    static const char* const kwlist[] = {
         "", "hwnd", "hdc", NULL
     };
     PyObject* sentinel = NULL;
     int wnd = 0, dc = 0;
     if (!PyArg_ParseTupleAndKeywords(
-        args, kw, "|Oii:expose", kwlist, &sentinel, &wnd, &dc
+        args, kw, "|Oii:expose", const_cast<char **>(kwlist), &sentinel, &wnd, &dc
         ))
         return NULL;
 
@@ -1498,8 +1500,8 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
     PyObject* color;
     float width = 1.0;
     int opacity = 255;
-    static char* kwlist[] = { "color", "width", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|fi:Pen", kwlist,
+    static const char* const kwlist[] = { "color", "width", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|fi:Pen", const_cast<char **>(kwlist),
                                      &color, &width, &opacity))
         return NULL;
 
@@ -1529,8 +1531,8 @@ brush_new(PyObject* self_, PyObject* args, PyObject* kw)
 
     PyObject* color;
     int opacity = 255;
-    static char* kwlist[] = { "color", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|i:Brush", kwlist,
+    static const char* const kwlist[] = { "color", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|i:Brush", const_cast<char **>(kwlist),
                                      &color, &opacity))
         return NULL;
 
@@ -1560,8 +1562,8 @@ font_new(PyObject* self_, PyObject* args, PyObject* kw)
     char* filename;
     float size = 12;
     int opacity = 255;
-    static char* kwlist[] = { "color", "file", "size", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "Os|fi:Font", kwlist,
+    static const char* const kwlist[] = { "color", "file", "size", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "Os|fi:Font", const_cast<char **>(kwlist),
                                      &color, &filename, &size, &opacity))
         return NULL;
 
