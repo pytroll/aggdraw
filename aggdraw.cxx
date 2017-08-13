@@ -588,10 +588,16 @@ draw_new(PyObject* self_, PyObject* args)
         PyObject* mode_obj = PyObject_GetAttrString(image, "mode");
         if (!mode_obj)
             return NULL;
-        if (PyBytes_Check(mode_obj)) {
-            strncpy(buffer, PyBytes_AS_STRING(mode_obj), sizeof buffer);
-            buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
-            mode = buffer;
+        if (PyUnicode_Check(mode_obj)) {
+            PyObject* ascii_mode = PyUnicode_AsASCIIString(mode_obj);
+            if (ascii_mode == NULL) {
+                mode = NULL;
+            } else {
+                strncpy(buffer, PyBytes_AsString(ascii_mode), sizeof buffer);
+                buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
+                mode = buffer;
+                Py_XDECREF(ascii_mode);
+            }
         } else
             mode = NULL;
         Py_DECREF(mode_obj);
@@ -1453,7 +1459,7 @@ draw_getattro(DrawObject* self, PyObject* nameobj)
         goto generic;
 
     if (PyUnicode_CompareWithASCIIString(nameobj, "mode") == 0)
-        return PyBytes_FromString(self->draw->mode);
+        return PyUnicode_FromString(self->draw->mode);
     if (PyUnicode_CompareWithASCIIString(nameobj, "size") == 0)
         return Py_BuildValue(
             "(ii)", self->buffer->width(), self->buffer->height()
