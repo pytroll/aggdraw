@@ -575,7 +575,7 @@ draw_new(PyObject* self_, PyObject* args)
         if (!PyString_Check(buffer)) {
             PyErr_SetString(
                 PyExc_TypeError,
-                "bad 'tostring' return value (expected string)"
+                "bad 'tobytes' return value (expected string)"
                 );
             Py_DECREF(buffer);
             return NULL;
