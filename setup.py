@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #
-# $Id: /work/modules/aggdraw/setup.py 1180 2006-02-12T14:24:26.234348Z Fredrik  $
 # Setup script for aggdraw
 #
 # Usage:
@@ -11,11 +10,11 @@
 #   To build and install:
 #   $ python setup.py install
 #
-
+from __future__ import print_function
 from distutils.core import setup, Extension
 import os, sys
 
-VERSION = "1.2a3-20060212"
+VERSION = "1.2.1"
 
 SUMMARY="High quality drawing interface for PIL."
 
@@ -32,7 +31,7 @@ with the WCK renderer.
 FREETYPE_ROOT = "/usr/"
 
 if not os.path.isdir(FREETYPE_ROOT):
-    print "===", "freetype not available (edit setup.py to enable)"
+    print("=== freetype not available (edit setup.py to enable)")
     FREETYPE_ROOT = None
 
 sources = [
@@ -95,7 +94,7 @@ setup(
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     long_description=DESCRIPTION.strip(),
-    platforms="Python 2.1 and later.",
+    platforms="Python 2.7 and later.",
     url="http://www.effbot.org/zone/aggdraw.htm",
     ext_modules = [
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
