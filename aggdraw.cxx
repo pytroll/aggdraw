@@ -588,7 +588,11 @@ draw_new(PyObject* self_, PyObject* args)
         PyObject* mode_obj = PyObject_GetAttrString(image, "mode");
         if (!mode_obj)
             return NULL;
-        if (PyUnicode_Check(mode_obj)) {
+        if (PyBytes_Check(mode_obj)) {
+            strncpy(buffer, PyBytes_AS_STRING(mode_obj), sizeof buffer);
+            buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
+            mode = buffer;
+        } else if (PyUnicode_Check(mode_obj)) {
             PyObject* ascii_mode = PyUnicode_AsASCIIString(mode_obj);
             if (ascii_mode == NULL) {
                 mode = NULL;
