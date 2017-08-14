@@ -1,0 +1,4 @@
+# https://github.com/blog/2392-introducing-code-owners
+
+# These owners will be the default owners for everything in the repo.
+* @mraspaud @davidh-ssec
