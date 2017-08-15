@@ -55,6 +55,7 @@ before_install:
         else
             brew install python3;
         fi
+    fi
 install:
   - if [[ "$USE_FREETYPE" == "true" ]]; then
         if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
