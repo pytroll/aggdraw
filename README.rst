@@ -2,7 +2,8 @@
 The aggdraw module
 ==================
 
-[![Build Status](https://travis-ci.org/pytroll/aggdraw.svg?branch=master)](https://travis-ci.org/pytroll/aggdraw)
+.. image:: https://travis-ci.org/pytroll/aggdraw.svg?branch=master
+    :target: https://travis-ci.org/pytroll/aggdraw
 
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
 Anti-Grain Geometry library (from http://antigrain.com).
