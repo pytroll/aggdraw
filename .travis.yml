@@ -52,10 +52,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update;
         if [[ "$USE_PYTHON" == "3" ]]; then
-            brew uninstall --force python;
             brew install python3;
+            brew unlink python && brew link --overwrite python 3;
         fi
-        export PATH=/usr/local/bin:$PATH;
     fi
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -68,8 +67,9 @@ install:
             which python3;
             which pip3;
             which pip;
-            python -V;
-            pip3 install pillow;
+            ls -l /usr/local/bin/python;
+            /usr/local/bin/python -V;
+            /usr/local/bin/pip3 install pillow;
         else
             pip install pillow;
         fi
@@ -83,7 +83,13 @@ install:
         fi
     fi
 script:
- - which python
- - python -V
- - python setup.py build_ext -i
- - python selftest.py
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        /usr/local/bin/python -V;
+        /usr/local/bin/python setup.py build_ext -i;
+        /usr/local/bin/python selftest.py;
+    else
+        which python;
+        python -V;
+        python setup.py build_ext -i;
+        python selftest.py;
+    fi
