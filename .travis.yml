@@ -62,8 +62,8 @@ install:
     else
         brew install libtiff libjpeg webp little-cms2;
         if [[ "$USE_PYTHON" == "3" ]]; then
+            brew link --overwrite python3;
             pip3 install pillow;
-            alias python='python3';
         else
             pip install pillow;
         fi
