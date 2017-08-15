@@ -48,7 +48,7 @@ matrix:
       language: generic
       env: USE_FREETYPE=true USE_PYTHON=3
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" ]] == "osx" ]]; then
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update;
         if [[ "$USE_PYTHON" == "2" ]]; then
             brew install python;
