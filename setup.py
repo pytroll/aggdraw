@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #
-# $Id: /work/modules/aggdraw/setup.py 1180 2006-02-12T14:24:26.234348Z Fredrik  $
 # Setup script for aggdraw
 #
 # Usage:
@@ -11,11 +10,13 @@
 #   To build and install:
 #   $ python setup.py install
 #
-
+from __future__ import print_function
 from distutils.core import setup, Extension
-import os, sys
+import os
+import sys
+import subprocess
 
-VERSION = "1.2a3-20060212"
+VERSION = "1.2.1"
 
 SUMMARY="High quality drawing interface for PIL."
 
@@ -28,11 +29,13 @@ with the WCK renderer.
 
 """
 
-# pointer to freetype build directory (tweak as necessary)
-FREETYPE_ROOT = "/usr/"
-
-if not os.path.isdir(FREETYPE_ROOT):
-    print "===", "freetype not available (edit setup.py to enable)"
+try:
+    # pointer to freetype build directory (tweak as necessary)
+    FREETYPE_ROOT = subprocess.check_output(
+        ['freetype-config', '--prefix']).strip().decode()
+    print("=== freetype found: '{}'".format(FREETYPE_ROOT))
+except (OSError, subprocess.CalledProcessError):
+    print("=== freetype not available")
     FREETYPE_ROOT = None
 
 sources = [
@@ -70,18 +73,7 @@ if FREETYPE_ROOT:
 if sys.platform == "win32":
     libraries.extend(["kernel32", "user32", "gdi32"])
 
-try:
-    # add necessary to distutils (for backwards compatibility)
-    from distutils.dist import DistributionMetadata
-    DistributionMetadata.classifiers = None
-    DistributionMetadata.download_url = None
-    DistributionMetadata.platforms = None
-except:
-    pass
-
-
 setup(
-
     name="aggdraw",
     version=VERSION,
     author="Fredrik Lundh",
@@ -95,7 +87,7 @@ setup(
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     long_description=DESCRIPTION.strip(),
-    platforms="Python 2.1 and later.",
+    platforms="Python 2.7 and later.",
     url="http://www.effbot.org/zone/aggdraw.htm",
     ext_modules = [
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
@@ -104,5 +96,4 @@ setup(
                   library_dirs=library_dirs, libraries=libraries
                   )
         ]
-
     )

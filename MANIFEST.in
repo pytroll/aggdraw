@@ -1,0 +1,3 @@
+include aggdraw.cxx
+recursive-include agg2 *.cpp
+recursive-include agg2 *.h
