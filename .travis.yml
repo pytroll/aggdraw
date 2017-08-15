@@ -55,6 +55,7 @@ before_install:
             brew uninstall --force python;
             brew install python3;
         fi
+        export PATH=/usr/local/bin:$PATH;
     fi
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
