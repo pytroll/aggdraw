@@ -2,6 +2,8 @@
 The aggdraw module
 ==================
 
+[![Build Status](https://travis-ci.org/pytroll/aggdraw.svg?branch=master)](https://travis-ci.org/pytroll/aggdraw)
+
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
 Anti-Grain Geometry library (from http://antigrain.com).
 
@@ -31,12 +33,10 @@ Build instructions (all platforms)
 
 2. Configure.
 
-   To enable freetype, you need to build the library somewhere, and
-   then change the FREETYPE_ROOT variable in aggdraw's setup.py file
-   so it points to the build location.
-
-   If you don't want or need freetype support, you can leave the
-   variable as is, or set it to None.
+   To enable freetype, you need to build the library somewhere and
+   make sure the `freetype-config` command is available on your PATH. The
+   setup.py file will call `freetype-config --prefix` to locate
+   all of the necessary libraries and headers.
 
 3. Build.
 
@@ -44,7 +44,7 @@ Build instructions (all platforms)
    standard setup.py commands.   I recommend the following steps:
 
         $ python setup.py build_ext -i
-	$ python selftest.py
+        $ python selftest.py
 
    (if you're lazy, you can skip the above and just install the
    library; setup.py will make sure the right stuff is built before
