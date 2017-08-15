@@ -63,6 +63,7 @@ install:
         brew install libtiff libjpeg webp little-cms2;
         if [[ "$USE_PYTHON" == "3" ]]; then
             pip3 install pillow;
+            alias python='python3';
         else
             pip install pillow;
         fi
@@ -76,5 +77,6 @@ install:
         fi
     fi
 script:
+ - python -V
  - python setup.py build_ext -i
  - python selftest.py

@@ -96,5 +96,5 @@ setup(
                   library_dirs=library_dirs, libraries=libraries
                   )
         ],
-    tests_require=['pillow'],
+    # tests_require=['pillow'],
     )
