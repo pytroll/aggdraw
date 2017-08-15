@@ -89,11 +89,12 @@ setup(
     long_description=DESCRIPTION.strip(),
     platforms="Python 2.7 and later.",
     url="http://www.effbot.org/zone/aggdraw.htm",
-    ext_modules = [
+    ext_modules=[
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
                   library_dirs=library_dirs, libraries=libraries
                   )
-        ]
+        ],
+    # tests_require=['pillow'],
     )

@@ -1,0 +1,89 @@
+language: python
+matrix:
+  include:
+    # Use the built in venv for linux builds
+    - os: linux
+      sudo: required
+      python: 2.7
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 2.7
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.4
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.4
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.5
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.5
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.6
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.6
+      env: USE_FREETYPE=true
+    # Use generic language for osx
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=false USE_PYTHON=2
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=true USE_PYTHON=2
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=false USE_PYTHON=3
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=true USE_PYTHON=3
+before_install:
+  # python 2 is installed for osx already
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew update;
+        if [[ "$USE_PYTHON" == "3" ]]; then
+            brew install python3;
+            brew unlink python && brew link --overwrite python3;
+        fi
+    fi
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        sudo apt-get update -qq;
+        pip install pillow;
+    else
+        brew install libtiff libjpeg webp little-cms2;
+        if [[ "$USE_PYTHON" == "3" ]]; then
+            pip3 install pillow;
+        else
+            pip install pillow;
+        fi
+    fi
+
+  - if [[ "$USE_FREETYPE" == "true" ]]; then
+        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+            sudo apt-get install -qq libfreetype6-dev;
+        else
+            brew install freetype;
+        fi
+    fi
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$USE_PYTHON" == "3" ]]; then
+        /usr/local/bin/python3 -V;
+        /usr/local/bin/python3 setup.py build_ext -i;
+        /usr/local/bin/python3 selftest.py;
+    else
+        which python;
+        python -V;
+        python setup.py build_ext -i;
+        python selftest.py;
+    fi
