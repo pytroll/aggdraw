@@ -53,7 +53,7 @@ before_install:
         brew update;
         if [[ "$USE_PYTHON" == "3" ]]; then
             brew install python3;
-            brew unlink python && brew link --overwrite python 3;
+            brew unlink python && brew link --overwrite python3;
         fi
     fi
 install:
