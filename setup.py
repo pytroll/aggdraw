@@ -12,7 +12,9 @@
 #
 from __future__ import print_function
 from distutils.core import setup, Extension
-import os, sys
+import os
+import sys
+import subprocess
 
 VERSION = "1.2.1"
 
@@ -27,11 +29,13 @@ with the WCK renderer.
 
 """
 
-# pointer to freetype build directory (tweak as necessary)
-FREETYPE_ROOT = os.environ.get('FREETYPE_ROOT', '/usr')
-
-if not os.path.isdir(FREETYPE_ROOT):
-    print("=== freetype not available (edit setup.py to enable)")
+try:
+    # pointer to freetype build directory (tweak as necessary)
+    FREETYPE_ROOT = subprocess.check_output(
+        ['freetype-config', '--prefix']).strip().decode()
+    print("=== freetype found: '{}'".format(FREETYPE_ROOT))
+except (OSError, subprocess.CalledProcessError):
+    print("=== freetype not available")
     FREETYPE_ROOT = None
 
 sources = [
@@ -69,18 +73,7 @@ if FREETYPE_ROOT:
 if sys.platform == "win32":
     libraries.extend(["kernel32", "user32", "gdi32"])
 
-try:
-    # add necessary to distutils (for backwards compatibility)
-    from distutils.dist import DistributionMetadata
-    DistributionMetadata.classifiers = None
-    DistributionMetadata.download_url = None
-    DistributionMetadata.platforms = None
-except:
-    pass
-
-
 setup(
-
     name="aggdraw",
     version=VERSION,
     author="Fredrik Lundh",
@@ -103,5 +96,4 @@ setup(
                   library_dirs=library_dirs, libraries=libraries
                   )
         ]
-
     )
