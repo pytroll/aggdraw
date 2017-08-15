@@ -62,7 +62,10 @@ install:
     else
         brew install libtiff libjpeg webp little-cms2;
         if [[ "$USE_PYTHON" == "3" ]]; then
-            brew link --overwrite python3;
+            brew unlink python3 && brew link --overwrite python3;
+            which python;
+            which pip3;
+            which pip;
             pip3 install pillow;
         else
             pip install pillow;
@@ -77,6 +80,7 @@ install:
         fi
     fi
 script:
+ - which python
  - python -V
  - python setup.py build_ext -i
  - python selftest.py
