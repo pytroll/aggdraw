@@ -63,13 +63,7 @@ install:
     else
         brew install libtiff libjpeg webp little-cms2;
         if [[ "$USE_PYTHON" == "3" ]]; then
-            which python;
-            which python3;
-            which pip3;
-            which pip;
-            ls -l /usr/local/bin/python;
-            /usr/local/bin/python -V;
-            /usr/local/bin/pip3 install pillow;
+            pip3 install pillow;
         else
             pip install pillow;
         fi
@@ -83,10 +77,10 @@ install:
         fi
     fi
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        /usr/local/bin/python -V;
-        /usr/local/bin/python setup.py build_ext -i;
-        /usr/local/bin/python selftest.py;
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$USE_PYTHON" == "3" ]]; then
+        /usr/local/bin/python3 -V;
+        /usr/local/bin/python3 setup.py build_ext -i;
+        /usr/local/bin/python3 selftest.py;
     else
         which python;
         python -V;
