@@ -10,11 +10,15 @@
 #   To build and install:
 #   $ python setup.py install
 #
-from __future__ import print_function
-from distutils.core import setup, Extension
 import os
 import sys
 import subprocess
+from __future__ import print_function
+
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
 
 VERSION = "1.2.1"
 
