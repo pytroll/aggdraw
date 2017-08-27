@@ -10,10 +10,10 @@
 #   To build and install:
 #   $ python setup.py install
 #
+from __future__ import print_function
 import os
 import sys
 import subprocess
-from __future__ import print_function
 
 try:
     from setuptools import setup, Extension
