@@ -63,9 +63,9 @@ install:
     else
         brew install libtiff libjpeg webp little-cms2;
         if [[ "$USE_PYTHON" == "3" ]]; then
-            pip3 install pillow;
+            pip3 install pillow numpy;
         else
-            pip install pillow;
+            pip install pillow numpy;
         fi
     fi
 
