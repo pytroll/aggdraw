@@ -4,6 +4,7 @@
 
 from PIL import Image
 
+import numpy as np
 from aggdraw import *
 
 def testdraw():
@@ -89,6 +90,19 @@ def testgraphics():
     >>> draw.polygon((190+25, 220, 190, 270, 190+50, 270), brush)
     >>> draw.polygon((190+25, 290, 190, 340, 190+50, 340), brush, pen)
     >>> draw.polygon((190+25, 360, 190, 410, 190+50, 410), pen, brush)
+
+    """
+
+def testgraphics2():
+    """See issue #14
+
+    >>> symbol = Symbol("M400 200 L400 400")
+    >>> pen = Pen("red")
+    >>> image = Image.fromarray(np.zeros((800, 600, 3)), mode="RGB")
+    >>> canvas = Draw(image)
+    >>> canvas.symbol((0, 0), symbol, pen)
+    >>> image_pointer = canvas.flush()
+    >>> assert np.asarray(image).sum() == 50800
 
     """
 

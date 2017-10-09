@@ -889,12 +889,23 @@ getcolor(PyObject* color, int opacity)
         return agg::rgba8(ink, ink, ink, opacity);
     }
 #endif
-    if (PyBytes_Check(color)) {
-        /* hex colors */
-        char* ink = PyBytes_AS_STRING(color);
-        if (ink[0] == '#' && strlen(ink) == 7) {
-            int i = strtol(ink+1, NULL, 16); /* FIXME: rough parsing */
-            return agg::rgba8((i>>16)&255,(i>>8)&255,i&255,opacity);
+    char buffer[10];
+    char* ink;
+    if (PyUnicode_Check(color)) {
+        PyObject* ascii_color = PyUnicode_AsASCIIString(color);
+        if (ascii_color == NULL) {
+            ink = NULL;
+        } else {
+            strncpy(buffer, PyBytes_AsString(ascii_color), sizeof buffer);
+            buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
+            ink = buffer;
+            Py_XDECREF(ascii_color);
+
+            /* hex colors */
+            if (ink[0] == '#' && strlen(ink) == 7) {
+                int i = strtol(ink+1, NULL, 16); /* FIXME: rough parsing */
+                return agg::rgba8((i>>16)&255,(i>>8)&255,i&255,opacity);
+            }
         }
     }
     int red, green, blue, alpha = opacity;
@@ -914,8 +925,7 @@ getcolor(PyObject* color, int opacity)
         PyErr_Clear();
     }
     /* check for well-known color names (HTML) */
-    if (PyBytes_Check(color)) {
-        char* ink = PyBytes_AS_STRING(color);
+    if (PyUnicode_Check(color)) {
         if (!strcmp(ink, "aqua"))
             return agg::rgba8(0x00,0xFF,0xFF,opacity);
         if (!strcmp(ink, "black"))
