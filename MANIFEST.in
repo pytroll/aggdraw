@@ -1,3 +1,4 @@
 include aggdraw.cxx
+include LICENSE.txt
 recursive-include agg2 *.cpp
 recursive-include agg2 *.h

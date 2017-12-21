@@ -42,7 +42,7 @@ Build instructions (all platforms)
 3. Build.
 
    The library uses a standard setup.py file, and you can use all
-   standard setup.py commands.   I recommend the following steps:
+   standard setup.py commands.   I recommend the following steps::
 
         $ python setup.py build_ext -i
         $ python selftest.py
@@ -53,7 +53,7 @@ Build instructions (all platforms)
 
 4. Install.
 
-   If the selftest succeeds, you can install the library:
+   If the selftest succeeds, you can install the library::
 
         $ python setup.py install
 
@@ -75,6 +75,7 @@ warranty, and with no claim as to its suitability for any purpose.
 
 The aggdraw interface, and associated modules and documentation are:
 
+Copyright (c) 2011-2017 by AGGDraw Developers
 Copyright (c) 2003-2006 by Secret Labs AB
 Copyright (c) 2003-2006 by Fredrik Lundh
 

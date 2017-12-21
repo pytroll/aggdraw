@@ -1,6 +1,5 @@
 /*
  * AGG Draw Library
- * $Id: /work/modules/aggdraw/aggdraw.cxx 1184 2006-02-12T14:43:44.069233Z Fredrik  $
  *
  * WCK-style drawing using the AGG library.
  *
@@ -41,9 +40,12 @@
  * 2017-01-03 ej   tostring() -> tobytes(), fromstring() -> frombytes() 
  * 2017-08-18 dh   fixed mode to be python str instead of bytes
  * 2017-08-18 dh   fixed a couple compiler warnings (specifically clang)
+ *
+ * Copyright (c) 2011-2017 by AggDraw Developers
+ *
  */
 
-#define VERSION "1.2.1"
+#define VERSION "1.3"
 
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN
