@@ -54,7 +54,7 @@ before_install:
         if [[ "$USE_PYTHON" == "3" ]]; then
             brew install python3;
             brew unlink python && brew link --overwrite python3;
-        fi
+        fi;
     fi
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -65,7 +65,7 @@ install:
         if [[ "$USE_PYTHON" == "3" ]]; then
             pip3 install pillow numpy;
         else
-            pip install pillow numpy;
+            pip2 install pillow numpy;
         fi
     fi
 
@@ -77,13 +77,19 @@ install:
         fi
     fi
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$USE_PYTHON" == "3" ]]; then
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      if [[ "$USE_PYTHON" == "3" ]]; then
         /usr/local/bin/python3 -V;
         /usr/local/bin/python3 setup.py build_ext -i;
         /usr/local/bin/python3 selftest.py;
+      else
+        /usr/local/bin/python2 -V;
+        /usr/local/bin/python2 setup.py build_ext -i;
+        /usr/local/bin/python2 selftest.py;
+      fi;
     else
         which python;
         python -V;
         python setup.py build_ext -i;
         python selftest.py;
-    fi
+    fi;
