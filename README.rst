@@ -10,6 +10,9 @@ Anti-Grain Geometry library (from http://antigrain.com).
 
 The necessary AGG sources are included in the aggdraw source kit.
 
+For posterity, reference `the old documentation
+<http://www.effbot.org/zone/aggdraw.htm>`_.
+
 Enjoy /F
 
 fredrik@pythonware.com
@@ -28,9 +31,9 @@ Build instructions (all platforms)
    The following additional libraries can be used:
 
    OpenType/TrueType    freetype2 (2.1.10 or later is recommended)
-   support              
+   support
                         http://www.freetype.org
-                        http://freetype.sourceforge.net  
+                        http://freetype.sourceforge.net
 
 2. Configure.
 
@@ -63,11 +66,11 @@ Build instructions (all platforms)
 License
 --------------------------------------------------------------------
 
-Anti-Grain Geometry - Version 2.0 
-Copyright (c) 2002 Maxim Shemanarev (McSeem) 
+Anti-Grain Geometry - Version 2.0
+Copyright (c) 2002 Maxim Shemanarev (McSeem)
 
-Permission to copy, use, modify, sell and distribute this software 
-is granted provided this copyright notice appears in all copies. 
+Permission to copy, use, modify, sell and distribute this software
+is granted provided this copyright notice appears in all copies.
 This software is provided "as is" without express or implied
 warranty, and with no claim as to its suitability for any purpose.
 

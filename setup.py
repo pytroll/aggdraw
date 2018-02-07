@@ -92,7 +92,7 @@ setup(
     license="Python (MIT style)",
     long_description=DESCRIPTION.strip(),
     platforms="Python 2.7 and later.",
-    url="http://www.effbot.org/zone/aggdraw.htm",
+    url="https://github.com/pytroll/aggdraw",
     ext_modules=[
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
                   define_macros=defines,
