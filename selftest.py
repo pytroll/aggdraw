@@ -107,7 +107,6 @@ def test_graphics2():
     >>> canvas = Draw(image)
     >>> canvas.symbol((0, 0), symbol, pen)
     >>> image_pointer = canvas.flush()
-    >>> print(np.asarray(image).sum())
     >>> assert np.asarray(image).sum() == 50800
 
     """
@@ -177,4 +176,4 @@ if __name__ == "__main__":
         print("*** %s tests of %d failed." % status)
     else:
         print("%s tests passed." % status[1])
-    sys.exit(status[0])
+    sys.exit(int(status[0]))
