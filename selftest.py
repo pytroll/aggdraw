@@ -2,12 +2,12 @@
 # -*- coding: iso-8859-1 -*-
 # sanity check
 
-from PIL import Image
-
 import numpy as np
-from aggdraw import *
+from PIL import Image
+from aggdraw import Draw, Symbol, Brush, Pen, Path
 
-def testdraw():
+
+def test_draw():
     """
 
     >>> draw = Draw("RGB")
@@ -27,9 +27,10 @@ def testdraw():
     >>> draw.mode, draw.size
     ('RGB', (600, 800))
 
+
     """
 
-def testflush():
+def test_flush():
     """
 
     >>> im = Image.new("RGB", (600, 800))
@@ -38,7 +39,8 @@ def testflush():
     'RGB'
     """
 
-def testpen():
+
+def test_pen():
     """
 
     >>> pen = Pen("black")
@@ -53,7 +55,8 @@ def testpen():
 
     """
 
-def testbrush():
+
+def test_brush():
     """
 
     >>> brush = Brush("black")
@@ -66,7 +69,8 @@ def testbrush():
 
     """
 
-def testgraphics():
+
+def test_graphics():
     """
 
     >>> draw = Draw("RGB", (500, 500))
@@ -93,7 +97,8 @@ def testgraphics():
 
     """
 
-def testgraphics2():
+
+def test_graphics2():
     """See issue #14
 
     >>> symbol = Symbol("M400 200 L400 400")
@@ -102,11 +107,13 @@ def testgraphics2():
     >>> canvas = Draw(image)
     >>> canvas.symbol((0, 0), symbol, pen)
     >>> image_pointer = canvas.flush()
+    >>> print(np.asarray(image).sum())
     >>> assert np.asarray(image).sum() == 50800
 
     """
 
-def testpath():
+
+def test_path():
     """
 
     >>> p = Path()
@@ -131,7 +138,8 @@ def testpath():
 
     """
 
-def testsymbol():
+
+def test_symbol():
     """
 
     >>> s = Symbol("M0,0L0,0L0,0L0,0Z")
@@ -146,7 +154,8 @@ def testsymbol():
 
     """
 
-def testtransform():
+
+def test_transform():
     """
 
     >>> draw = Draw("RGB", (500, 500))
@@ -160,12 +169,12 @@ def testtransform():
     """
 
 
-
 if __name__ == "__main__":
     # use doctest to make sure the test program behaves as documented!
-    import doctest, selftest
+    import sys, doctest, selftest
     status = doctest.testmod(selftest)
     if status[0]:
         print("*** %s tests of %d failed." % status)
     else:
         print("%s tests passed." % status[1])
+    sys.exit(status[0])
