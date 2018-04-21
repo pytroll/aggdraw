@@ -98,4 +98,7 @@ deploy:
   on:
     tags: true
     repo: pytroll/aggdraw
-    distributions: sdist bdist_wheel
+    python: 3.6
+    os: linux
+    condition: "$USE_FREETYPE == true"
+    distributions: sdist
