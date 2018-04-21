@@ -902,14 +902,16 @@ getcolor(PyObject* color, int opacity)
             buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
             ink = buffer;
             Py_XDECREF(ascii_color);
-
-            /* hex colors */
-            if (ink[0] == '#' && strlen(ink) == 7) {
-                int i = strtol(ink+1, NULL, 16); /* FIXME: rough parsing */
-                return agg::rgba8((i>>16)&255,(i>>8)&255,i&255,opacity);
-            }
         }
+    } else if (PyBytes_Check(color)) {
+        ink = PyBytes_AsString(color);
     }
+    /* hex colors */
+    if (ink && ink[0] == '#' && strlen(ink) == 7) {
+        int i = strtol(ink+1, NULL, 16); /* FIXME: rough parsing */
+        return agg::rgba8((i>>16)&255,(i>>8)&255,i&255,opacity);
+    }
+
     int red, green, blue, alpha = opacity;
     if (PyArg_ParseTuple(color, "iii|i", &red, &green, &blue, &alpha))
         return agg::rgba8(red, green, blue, alpha);
@@ -927,7 +929,7 @@ getcolor(PyObject* color, int opacity)
         PyErr_Clear();
     }
     /* check for well-known color names (HTML) */
-    if (PyUnicode_Check(color)) {
+    if (PyUnicode_Check(color) || PyBytes_Check(color)) {
         if (!strcmp(ink, "aqua"))
             return agg::rgba8(0x00,0xFF,0xFF,opacity);
         if (!strcmp(ink, "black"))
@@ -2197,29 +2199,29 @@ aggdraw_init(void)
     PathType.tp_methods = path_methods;
     
     PyObject *module = PyModule_Create(&moduledef);
+    PyObject *version = PyUnicode_FromString(VERSION);
+    PyObject_SetAttrString(module, "VERSION", version);
+    PyObject_SetAttrString(module, "__version__", version);
+    Py_DECREF(version);
 #else
     DrawType.ob_type = PathType.ob_type = &PyType_Type;
     PenType.ob_type = BrushType.ob_type = FontType.ob_type = &PyType_Type;
 
     PyObject *module = Py_InitModule3("aggdraw", aggdraw_functions,
                                       "Python interface to the Anti-Grain Graphics Drawing library");
+    PyObject *version = PyBytes_FromString(VERSION);
+    PyObject_SetAttrString(module, "VERSION", version);
+    PyObject_SetAttrString(module, "__version__", version);
+    Py_DECREF(version);
 #endif
     if (module == NULL)
         return NULL;
 
     PyObject* g = PyDict_New();
-
     PyDict_SetItemString(g, "__builtins__", PyEval_GetBuiltins());
-
-    /*
     PyRun_String(
-
-        "import aggdraw\n"
-        "aggdraw.VERSION = '" VERSION "'\n"
-        "aggdraw.__version__ = '" VERSION "'\n"
-
         "try:\n"
-        "    import ImageColor\n"
+        "    from PIL import ImageColor\n"
         "except ImportError:\n"
         "    ImageColor = None\n"
 
@@ -2231,7 +2233,6 @@ aggdraw_init(void)
         );
 
     aggdraw_getcolor_obj = PyDict_GetItemString(g, "getcolor");
-    */
     return module;
 }
 

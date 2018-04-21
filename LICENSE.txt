@@ -1,6 +1,6 @@
 The aggdraw interface, and associated modules and documentation are:
 
-Copyright (c) 2011-2017 by AggDraw Developers
+Copyright (c) 2011-2018 by AggDraw Developers
 Copyright (c) 2003-2006 by Secret Labs AB
 Copyright (c) 2003-2006 by Fredrik Lundh
 
