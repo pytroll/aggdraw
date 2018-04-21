@@ -4,7 +4,19 @@
 
 import numpy as np
 from PIL import Image
+import aggdraw
 from aggdraw import Draw, Symbol, Brush, Pen, Path
+
+
+def test_module_init():
+    """
+
+    >>> assert hasattr(aggdraw, 'VERSION')
+    >>> assert isinstance(aggdraw.VERSION, str)
+    >>> assert hasattr(aggdraw, '__version__')
+    >>> assert isinstance(aggdraw.__version__, str)
+
+    """
 
 
 def test_draw():
