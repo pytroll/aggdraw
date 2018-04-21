@@ -40,12 +40,13 @@
  * 2017-01-03 ej   tostring() -> tobytes(), fromstring() -> frombytes() 
  * 2017-08-18 dh   fixed mode to be python str instead of bytes
  * 2017-08-18 dh   fixed a couple compiler warnings (specifically clang)
+ * 2018-04-21 dh   fixed python 2 compatibility in getcolor
  *
  * Copyright (c) 2011-2017 by AggDraw Developers
  *
  */
 
-#define VERSION "1.3"
+#define VERSION "1.3.1"
 
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN

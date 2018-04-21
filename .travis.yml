@@ -1,52 +1,50 @@
 language: python
 matrix:
   include:
-    # Use the built in venv for linux builds
-    - os: linux
-      sudo: required
-      python: 2.7
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 2.7
-      env: USE_FREETYPE=true
-    - os: linux
-      sudo: required
-      python: 3.4
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.4
-      env: USE_FREETYPE=true
-    - os: linux
-      sudo: required
-      python: 3.5
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.5
-      env: USE_FREETYPE=true
-    - os: linux
-      sudo: required
-      python: 3.6
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.6
-      env: USE_FREETYPE=true
-    # Use generic language for osx
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=false USE_PYTHON=2
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=true USE_PYTHON=2
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=false USE_PYTHON=3
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=true USE_PYTHON=3
+  - os: linux
+    sudo: required
+    python: 2.7
+    env: USE_FREETYPE=false
+  - os: linux
+    sudo: required
+    python: 2.7
+    env: USE_FREETYPE=true
+  - os: linux
+    sudo: required
+    python: 3.4
+    env: USE_FREETYPE=false
+  - os: linux
+    sudo: required
+    python: 3.4
+    env: USE_FREETYPE=true
+  - os: linux
+    sudo: required
+    python: 3.5
+    env: USE_FREETYPE=false
+  - os: linux
+    sudo: required
+    python: 3.5
+    env: USE_FREETYPE=true
+  - os: linux
+    sudo: required
+    python: 3.6
+    env: USE_FREETYPE=false
+  - os: linux
+    sudo: required
+    python: 3.6
+    env: USE_FREETYPE=true
+  - os: osx
+    language: generic
+    env: USE_FREETYPE=false USE_PYTHON=2
+  - os: osx
+    language: generic
+    env: USE_FREETYPE=true USE_PYTHON=2
+  - os: osx
+    language: generic
+    env: USE_FREETYPE=false USE_PYTHON=3
+  - os: osx
+    language: generic
+    env: USE_FREETYPE=true USE_PYTHON=3
 before_install:
   # python 2 is installed for osx already
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -92,3 +90,12 @@ script:
         python setup.py build_ext -i;
         python selftest.py;
     fi;
+deploy:
+  provider: pypi
+  user: dhoese
+  password:
+    secure: CYnfdweDHxSlPfks5YDZp9w4i5q4m/iUbIRrt37oHWhWVpnHa19yhk4BOBig5dAVJ5L/nYI/qz5bdE7NNubaXNnJTszhgK6RNRKg0LD80zliJxtCBXPnj8fvCgRKeQieiOurjyy4t0lEfeIVhEaEut9o3CuJXpONh9Zf8oL698Y=
+  on:
+    tags: true
+    repo: pytroll/aggdraw
+    distributions: sdist bdist_wheel
