@@ -20,7 +20,7 @@ try:
 except ImportError:
     from distutils.core import setup, Extension
 
-VERSION = "1.3.1"
+VERSION = "1.3.2dev0"
 
 SUMMARY = "High quality drawing interface for PIL."
 
@@ -56,7 +56,7 @@ sources = [
     "agg2/src/agg_vcgen_stroke.cpp",
     ]
 
-defines = []
+defines = [('VERSION', VERSION)]
 
 include_dirs = ["agg2/include"]
 library_dirs = []
@@ -100,5 +100,6 @@ setup(
                   library_dirs=library_dirs, libraries=libraries
                   )
         ],
-    # tests_require=['pillow'],
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+    tests_require=['pillow'],
     )

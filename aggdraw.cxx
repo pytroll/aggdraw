@@ -46,8 +46,6 @@
  *
  */
 
-#define VERSION "1.3.1"
-
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN
 #include <windows.h>
