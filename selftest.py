@@ -124,6 +124,16 @@ def test_graphics2():
     """
 
 
+def test_graphics3():
+    """See issue #22
+
+    >>> main = Image.new('RGB', (480, 1024), 'white')
+    >>> d = aggdraw.Draw(main)
+    >>> p = aggdraw.Pen((90,) * 3, 0.5)
+
+    """
+
+
 def test_path():
     """
 

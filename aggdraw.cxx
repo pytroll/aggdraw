@@ -891,7 +891,7 @@ getcolor(PyObject* color, int opacity)
     }
 #endif
     char buffer[10];
-    char* ink;
+    char* ink = NULL;
     if (PyUnicode_Check(color)) {
         PyObject* ascii_color = PyUnicode_AsASCIIString(color);
         if (ascii_color == NULL) {
