@@ -46,6 +46,9 @@
  *
  */
 
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN
 #include <windows.h>
@@ -2198,7 +2201,7 @@ aggdraw_init(void)
     PathType.tp_methods = path_methods;
     
     PyObject *module = PyModule_Create(&moduledef);
-    PyObject *version = PyUnicode_FromString(VERSION);
+    PyObject *version = PyUnicode_FromString(QUOTE(VERSION));
     PyObject_SetAttrString(module, "VERSION", version);
     PyObject_SetAttrString(module, "__version__", version);
     Py_DECREF(version);
@@ -2208,7 +2211,7 @@ aggdraw_init(void)
 
     PyObject *module = Py_InitModule3("aggdraw", aggdraw_functions,
                                       "Python interface to the Anti-Grain Graphics Drawing library");
-    PyObject *version = PyBytes_FromString(VERSION);
+    PyObject *version = PyBytes_FromString(QUOTE(VERSION));
     PyObject_SetAttrString(module, "VERSION", version);
     PyObject_SetAttrString(module, "__version__", version);
     Py_DECREF(version);
