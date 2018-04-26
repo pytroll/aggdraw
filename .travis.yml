@@ -1,95 +1,70 @@
 language: python
+env:
+    global:
+        # Set defaults to avoid repeating in most cases
+        - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
+        - NUMPY_VERSION=stable
+        - MAIN_CMD='python setup.py'
+        - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
+        - SETUP_XVFB=False
+        - EVENT_TYPE='push pull_request'
+        - SETUP_CMD='test'
+        - CONDA_CHANNELS='conda-forge'
 matrix:
-  include:
-  - os: linux
-    sudo: required
-    python: 2.7
-    env: USE_FREETYPE=false
-  - os: linux
-    sudo: required
-    python: 2.7
-    env: USE_FREETYPE=true
-  - os: linux
-    sudo: required
-    python: 3.4
-    env: USE_FREETYPE=false
-  - os: linux
-    sudo: required
-    python: 3.4
-    env: USE_FREETYPE=true
-  - os: linux
-    sudo: required
-    python: 3.5
-    env: USE_FREETYPE=false
-  - os: linux
-    sudo: required
-    python: 3.5
-    env: USE_FREETYPE=true
-  - os: linux
-    sudo: required
-    python: 3.6
-    env: USE_FREETYPE=false
-  - os: linux
-    sudo: required
-    python: 3.6
-    env: USE_FREETYPE=true
-  - os: osx
-    language: generic
-    env: USE_FREETYPE=false USE_PYTHON=2
-  - os: osx
-    language: generic
-    env: USE_FREETYPE=true USE_PYTHON=2
-  - os: osx
-    language: generic
-    env: USE_FREETYPE=false USE_PYTHON=3
-  - os: osx
-    language: generic
-    env: USE_FREETYPE=true USE_PYTHON=3
-before_install:
-  # python 2 is installed for osx already
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew update;
-        if [[ "$USE_PYTHON" == "3" ]]; then
-            brew upgrade python;
-        fi;
-    fi
+    include:
+    - os: linux
+      sudo: required
+      python: 2.7
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 2.7
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.4
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.4
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.5
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.5
+      env: USE_FREETYPE=true
+    - os: linux
+      sudo: required
+      python: 3.6
+      env: USE_FREETYPE=false
+    - os: linux
+      sudo: required
+      python: 3.6
+      env: USE_FREETYPE=true
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=false USE_PYTHON=2
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=true USE_PYTHON=2
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=false USE_PYTHON=3
+    - os: osx
+      language: generic
+      env: USE_FREETYPE=true USE_PYTHON=3
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        sudo apt-get update -qq;
-        pip install pillow;
-    else
-        brew install libtiff libjpeg webp little-cms2;
-        if [[ "$USE_PYTHON" == "3" ]]; then
-            pip3 install pillow numpy;
-        else
-            pip2 install pillow numpy;
-        fi
-    fi
-
-  - if [[ "$USE_FREETYPE" == "true" ]]; then
-        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-            sudo apt-get install -qq libfreetype6-dev;
-        else
-            brew install freetype;
-        fi
-    fi
+    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
+    - if [[ "USE_FREETYPE" == "true" ]]; then
+          CONDA_DEPENDENCIES="$CONDA_DEPENDENCIES freetye"
+      fi
+    - source ci-helpers/travis/setup_conda.sh
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      if [[ "$USE_PYTHON" == "3" ]]; then
-        /usr/local/bin/python3 -V;
-        /usr/local/bin/python3 setup.py build_ext -i;
-        /usr/local/bin/python3 selftest.py;
-      else
-        /usr/local/bin/python2 -V;
-        /usr/local/bin/python2 setup.py build_ext -i;
-        /usr/local/bin/python2 selftest.py;
-      fi;
-    else
-        which python;
-        python -V;
-        python setup.py build_ext -i;
-        python selftest.py;
-    fi;
+    - pip install -e .
+    - python selftest.py
 deploy:
   provider: pypi
   user: dhoese
