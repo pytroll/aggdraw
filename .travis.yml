@@ -15,52 +15,23 @@ matrix:
     - os: linux
       sudo: required
       python: 2.7
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 2.7
-      env: USE_FREETYPE=true
     - os: linux
       sudo: required
       python: 3.4
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.4
-      env: USE_FREETYPE=true
     - os: linux
       sudo: required
       python: 3.5
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.5
-      env: USE_FREETYPE=true
     - os: linux
       sudo: required
       python: 3.6
-      env: USE_FREETYPE=false
-    - os: linux
-      sudo: required
-      python: 3.6
-      env: USE_FREETYPE=true
     - os: osx
       language: generic
-      env: USE_FREETYPE=false USE_PYTHON=2
+      env: PYTHON_VERSION=2.7
     - os: osx
       language: generic
-      env: USE_FREETYPE=true USE_PYTHON=2
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=false USE_PYTHON=3
-    - os: osx
-      language: generic
-      env: USE_FREETYPE=true USE_PYTHON=3
+      env: PYTHON_VERSION=3.6
 install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git
-    - if [[ "USE_FREETYPE" == "true" ]]; then
-          CONDA_DEPENDENCIES="$CONDA_DEPENDENCIES freetype";
-      fi
     - source ci-helpers/travis/setup_conda.sh
 script:
     - pip install -e .
