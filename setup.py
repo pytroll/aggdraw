@@ -20,7 +20,7 @@ try:
 except ImportError:
     from distutils.core import setup, Extension
 
-VERSION = "1.3.3.dev0"
+VERSION = "1.3.3"
 
 SUMMARY = "High quality drawing interface for PIL."
 
