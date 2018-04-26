@@ -57,7 +57,7 @@ sources = [
     ]
 
 # define VERSION macro in C++ code, need to quote it
-defines = [('VERSION', "\"{}\"".format(VERSION))]
+defines = [('VERSION', '"{}"'.format(VERSION))]
 
 include_dirs = ["agg2/include"]
 library_dirs = []
