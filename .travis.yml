@@ -45,6 +45,4 @@ deploy:
     tags: true
     repo: pytroll/aggdraw
     python: 3.6
-    os: linux
-    condition: "$USE_FREETYPE == true"
     distributions: sdist
