@@ -59,7 +59,7 @@ matrix:
 install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git
     - if [[ "USE_FREETYPE" == "true" ]]; then
-          CONDA_DEPENDENCIES="$CONDA_DEPENDENCIES freetye"
+          CONDA_DEPENDENCIES="$CONDA_DEPENDENCIES freetype";
       fi
     - source ci-helpers/travis/setup_conda.sh
 script:
