@@ -36,7 +36,7 @@ with the WCK renderer.
 try:
     # pointer to freetype build directory (tweak as necessary)
     FREETYPE_ROOT = subprocess.check_output(
-        ['freetype-config', '--prefix']).strip().decode()
+        ['freetype-config', '--prefix']).strip().replace('"', '').decode()
     print("=== freetype found: '{}'".format(FREETYPE_ROOT))
 except (OSError, subprocess.CalledProcessError):
     print("=== freetype not available")
