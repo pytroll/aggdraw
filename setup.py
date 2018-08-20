@@ -33,14 +33,37 @@ with the WCK renderer.
 
 """
 
+
+def _get_windows_freetype():
+    print("Using ctypes to find freetype library...")
+    from ctypes.util import find_library
+    ft_lib_path = find_library('freetype')
+    if ft_lib_path is None:
+        return None
+
+    ft_lib_path = os.path.dirname(ft_lib_path)
+    lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
+    ft_header_path = os.path.join(lib_path, 'include', 'freetype')
+    if not os.path.isdir(ft_header_path):
+        return None
+
+    return lib_path
+
+
 try:
     # pointer to freetype build directory (tweak as necessary)
     FREETYPE_ROOT = subprocess.check_output(
         ['freetype-config', '--prefix']).strip().replace(b'"', b'').decode()
-    print("=== freetype found: '{}'".format(FREETYPE_ROOT))
 except (OSError, subprocess.CalledProcessError):
-    print("=== freetype not available")
     FREETYPE_ROOT = None
+
+if FREETYPE_ROOT is None and sys.platform == 'win32':
+    FREETYPE_ROOT = _get_windows_freetype()
+
+if FREETYPE_ROOT is None:
+    print("=== freetype not available")
+else:
+    print("=== freetype found: '{}'".format(FREETYPE_ROOT))
 
 sources = [
     # source code currently used by aggdraw
