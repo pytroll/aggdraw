@@ -34,19 +34,14 @@ with the WCK renderer.
 """
 
 
-def _get_windows_freetype():
+def _get_freetype_with_ctypes():
     print("Using ctypes to find freetype library...")
     from ctypes.util import find_library
     ft_lib_path = find_library('freetype')
     if ft_lib_path is None:
         return None
-
     ft_lib_path = os.path.dirname(ft_lib_path)
     lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
-    ft_header_path = os.path.join(lib_path, 'include', 'freetype')
-    if not os.path.isdir(ft_header_path):
-        return None
-
     return lib_path
 
 
@@ -55,10 +50,7 @@ try:
     FREETYPE_ROOT = subprocess.check_output(
         ['freetype-config', '--prefix']).strip().replace(b'"', b'').decode()
 except (OSError, subprocess.CalledProcessError):
-    FREETYPE_ROOT = None
-
-if FREETYPE_ROOT is None and sys.platform == 'win32':
-    FREETYPE_ROOT = _get_windows_freetype()
+    FREETYPE_ROOT = _get_freetype_with_ctypes()
 
 if FREETYPE_ROOT is None:
     print("=== freetype not available")
@@ -94,6 +86,7 @@ if FREETYPE_ROOT:
         ])
     include_dirs.append("agg2/font_freetype")
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include"))
+    include_dirs.append(os.path.join(FREETYPE_ROOT, "include/freetype"))
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include/freetype2"))
     library_dirs.append(os.path.join(FREETYPE_ROOT, "lib"))
     libraries.append("freetype")
