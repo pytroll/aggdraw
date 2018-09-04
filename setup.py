@@ -20,7 +20,7 @@ try:
 except ImportError:
     from distutils.core import setup, Extension
 
-VERSION = "1.3.6a0.dev0"
+VERSION = "1.3.6"
 
 SUMMARY = "High quality drawing interface for PIL."
 
@@ -43,6 +43,7 @@ def _get_freetype_config():
             b'"', b'').decode()
     except (OSError, subprocess.CalledProcessError):
         return None
+
 
 def _get_freetype_with_ctypes():
     print("Using ctypes to find freetype library...")
