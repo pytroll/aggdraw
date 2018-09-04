@@ -34,6 +34,16 @@ with the WCK renderer.
 """
 
 
+def _get_freetype_config():
+    print("Trying freetype-config to find freetype library...")
+    try:
+        # pointer to freetype build directory (tweak as necessary)
+        return subprocess.check_output(
+            ['freetype-config', '--prefix']).strip().replace(
+            b'"', b'').decode()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
 def _get_freetype_with_ctypes():
     print("Using ctypes to find freetype library...")
     from ctypes.util import find_library
@@ -41,16 +51,34 @@ def _get_freetype_with_ctypes():
     if ft_lib_path is None:
         return None
     ft_lib_path = os.path.dirname(ft_lib_path)
+    if not sys.platform.startswith('linux') and \
+            not os.path.isfile(ft_lib_path):
+        return None
+    elif not os.path.isfile(ft_lib_path):
+        # try prefix since find_library doesn't give a full path on linux
+        for bdir in (sys.prefix, '/usr', '/usr/local'):
+            lib_path = os.path.join(bdir, 'lib', ft_lib_path)
+            if os.path.isfile(lib_path):
+                return bdir
+
     lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
     return lib_path
 
 
-try:
-    # pointer to freetype build directory (tweak as necessary)
-    FREETYPE_ROOT = subprocess.check_output(
-        ['freetype-config', '--prefix']).strip().replace(b'"', b'').decode()
-except (OSError, subprocess.CalledProcessError):
-    FREETYPE_ROOT = _get_freetype_with_ctypes()
+def _get_freetype_with_pkgconfig():
+    print("Trying 'pkgconfig' to find freetype library...")
+    try:
+        import pkgconfig
+        return pkgconfig.variables('freetype2')['prefix']
+    except (ImportError, KeyError, ValueError):
+        return None
+
+
+FREETYPE_ROOT = os.getenv('AGGDRAW_FREETYPE_ROOT')
+for func in (_get_freetype_config, _get_freetype_with_ctypes,
+             _get_freetype_with_pkgconfig):
+    if FREETYPE_ROOT is None:
+        FREETYPE_ROOT = func()
 
 if FREETYPE_ROOT is None:
     print("=== freetype not available")
