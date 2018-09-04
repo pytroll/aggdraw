@@ -50,7 +50,7 @@ def _get_freetype_with_ctypes():
     ft_lib_path = find_library('freetype')
     if ft_lib_path is None:
         return None
-    ft_lib_path = os.path.dirname(ft_lib_path)
+
     if not sys.platform.startswith('linux') and \
             not os.path.isfile(ft_lib_path):
         return None
@@ -60,7 +60,7 @@ def _get_freetype_with_ctypes():
             lib_path = os.path.join(bdir, 'lib', ft_lib_path)
             if os.path.isfile(lib_path):
                 return bdir
-
+    ft_lib_path = os.path.dirname(ft_lib_path)
     lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
     return lib_path
 
