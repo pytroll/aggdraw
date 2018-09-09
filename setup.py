@@ -61,6 +61,9 @@ def _get_freetype_with_ctypes():
             lib_path = os.path.join(bdir, 'lib', ft_lib_path)
             if os.path.isfile(lib_path):
                 return bdir
+        else:
+            # freetype is somewhere on the system, but we don't know where
+            return None
     ft_lib_path = os.path.dirname(ft_lib_path)
     lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
     return lib_path
