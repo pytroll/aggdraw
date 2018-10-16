@@ -1,42 +1,15 @@
 language: python
-env:
-    global:
-        # Set defaults to avoid repeating in most cases
-        - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
-        - NUMPY_VERSION=stable
-        - MAIN_CMD='python setup.py'
-        - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
-        - SETUP_XVFB=False
-        - EVENT_TYPE='push pull_request'
-        - SETUP_CMD='test'
-        - CONDA_CHANNELS='conda-forge'
+
 matrix:
-    include:
-    - os: linux
-      sudo: required
-      python: 2.7
-    - os: linux
-      sudo: required
-      python: 3.6
+  include:
+    - sudo: required
+      services:
+        - docker
+      env: PIP=pip
     - os: osx
       language: generic
-      env: PYTHON_VERSION=2.7
-    - os: osx
-      language: generic
-      env: PYTHON_VERSION=3.6
-install:
-    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda.sh
+      env: PIP=pip2
+
 script:
-    - pip install -e .
-    - python selftest.py
-deploy:
-  provider: pypi
-  user: dhoese
-  password:
-    secure: CYnfdweDHxSlPfks5YDZp9w4i5q4m/iUbIRrt37oHWhWVpnHa19yhk4BOBig5dAVJ5L/nYI/qz5bdE7NNubaXNnJTszhgK6RNRKg0LD80zliJxtCBXPnj8fvCgRKeQieiOurjyy4t0lEfeIVhEaEut9o3CuJXpONh9Zf8oL698Y=
-  on:
-    tags: true
-    repo: pytroll/aggdraw
-    python: 3.6
-    distributions: sdist
+  - $PIP install cibuildwheel==0.10.0
+  - cibuildwheel --output-dir wheelhouse
