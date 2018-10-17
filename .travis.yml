@@ -18,12 +18,14 @@ env:
 matrix:
   include:
 
-    - python: 2.7
-      os: linux
-      env: BUILDMODE=ASTROPY
-    - python: 3.7
-      os: linux
-      env: BUILDMODE=ASTROPY
+    - os: linux
+      env:
+        - BUILDMODE=ASTROPY
+        - PYTHON_VERSION=2.7
+    - os: linux
+      env:
+        - BUILDMODE=ASTROPY
+        - PYTHON_VERSION=3.7
     - os: osx
       language: generic
       env:
@@ -44,7 +46,7 @@ matrix:
       env: BUILDMODE=CIBUILDWHEEL
 
 install:
-  - source ci/travis-intall.sh
+  - source ci/travis-install.sh
 
 script:
   - source ci/travis-build.sh
