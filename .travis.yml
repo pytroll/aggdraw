@@ -1,15 +1,47 @@
 language: python
 
+env:
+  global:
+    # For astropy ci-helpers
+    - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
+    - NUMPY_VERSION=stable
+    - MAIN_CMD='python setup.py'
+    - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
+    - SETUP_XVFB=False
+    - EVENT_TYPE='push pull_request'
+    - SETUP_CMD='test'
+    - CONDA_CHANNELS='conda-forge'   
+    # For cibuildwheel
+    - CIBW_TEST_REQUIRES='numpy pillow'
+    - CIBW_TEST_COMMAND='python selftest.py'
+
+
 matrix:
   include:
+
+    - python: 2.7
+      os: linux
+      env: BUILDMODE=ASTROPY
+     - python: 3.7
+      os: linux
+      env: BUILDMODE=ASTROPY
+    - os: osx
+      language: generic
+      env: BUILDMODE=ASTROPY PYTHON_VERSION=2.7
+    - os: osx
+      language: generic
+      env: BUILDMODE=ASTROPY PYTHON_VERSION=3.7
+
     - sudo: required
       services:
         - docker
-      env: PIP=pip
+      env: BUILDMODE=CIBUILDWHEEL
     - os: osx
       language: generic
-      env: PIP=pip2
+      env: BUILDMODE=CIBUILDWHEEL
+
+install:
+  - source ci/travis-intall.sh
 
 script:
-  - $PIP install cibuildwheel==0.10.0
-  - cibuildwheel --output-dir wheelhouse
+  - source ci/travis-build.sh
