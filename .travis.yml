@@ -15,22 +15,25 @@ env:
     - CIBW_TEST_REQUIRES='numpy pillow'
     - CIBW_TEST_COMMAND='python selftest.py'
 
-
 matrix:
   include:
 
     - python: 2.7
       os: linux
       env: BUILDMODE=ASTROPY
-     - python: 3.7
+    - python: 3.7
       os: linux
       env: BUILDMODE=ASTROPY
     - os: osx
       language: generic
-      env: BUILDMODE=ASTROPY PYTHON_VERSION=2.7
+      env:
+        - BUILDMODE=ASTROPY
+        - PYTHON_VERSION=2.7
     - os: osx
       language: generic
-      env: BUILDMODE=ASTROPY PYTHON_VERSION=3.7
+      env:
+        - BUILDMODE=ASTROPY
+        - PYTHON_VERSION=3.7
 
     - sudo: required
       services:
