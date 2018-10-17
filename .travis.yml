@@ -13,7 +13,7 @@ env:
     - CONDA_CHANNELS='conda-forge'   
     # For cibuildwheel
     - CIBW_TEST_REQUIRES='numpy pillow'
-    - CIBW_TEST_COMMAND='python selftest.py'
+    - CIBW_TEST_COMMAND='python ../selftest.py'
 
 matrix:
   include:
