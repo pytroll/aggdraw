@@ -11,37 +11,39 @@ environment:
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
       NUMPY_VERSION: "stable"
+      BUILDMODE: "CI-HELPERS"
 
     - PYTHON: "C:\\Python27_64"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
       NUMPY_VERSION: "stable"
+      BUILDMODE: "CI-HELPERS"
 
     - PYTHON: "C:\\Python36_32"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "32"
       NUMPY_VERSION: "stable"
+      BUILDMODE: "CI-HELPERS"
 
     - PYTHON: "C:\\Python36_64"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"
       NUMPY_VERSION: "stable"
+      BUILDMODE: "CI-HELPERS"
+
+    - BUILDMODE: "CIBUILDWHEEL"
+      CIBW_TEST_REQUIRES: "numpy pillow"
+      CIBW_TEST_COMMAND: "python {project}\\selftest.py"
 
 install:
-    - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
-    - "powershell ci-helpers/appveyor/install-miniconda.ps1"
-    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-    - "activate test"
+    - CALL ci\appveyor-install.bat
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
-  - "%CMD_IN_ENV% pip install -e ."
-  - "%CMD_IN_ENV% python selftest.py"
+  - CALL ci\appveyor-build.bat
 
 after_test:
-  # If tests are successful, create a whl package for the project.
-  - "%CMD_IN_ENV% python setup.py bdist_wheel bdist_wininst"
   - ps: "ls dist"
 
 artifacts:
