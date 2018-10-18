@@ -7,6 +7,10 @@ environment:
     CONDA_CHANNELS: "conda-forge"
 
   matrix:
+    - CIBW_TEST_REQUIRES: "numpy pillow"
+      CIBW_TEST_COMMAND: "python {project}\\selftest.py"
+      CIBUILDWHEEL: 1
+
     - PYTHON: "C:\\Python27_32"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
@@ -31,10 +35,6 @@ environment:
       NUMPY_VERSION: "stable"
       CIBUILDWHEEL: 0
 
-    - CIBW_TEST_REQUIRES: "numpy pillow"
-      CIBW_TEST_COMMAND: "python {project}\\selftest.py"
-      CIBUILDWHEEL: 1
-
 install:
   - if [%CIBUILDWHEEL%]==[0] git clone --depth 1 git://github.com/astropy/ci-helpers.git
   - if [%CIBUILDWHEEL%]==[0] powershell ci-helpers/appveyor/install-miniconda.ps1
@@ -48,11 +48,11 @@ build_script:
   - if [%CIBUILDWHEEL%]==[1] cibuildwheel --output-dir dist
 
 test_script:
-  - if [%CIBUILDWHEEL%]==[0] [%CMD_IN_ENV%] pip install -e .
-  - if [%CIBUILDWHEEL%]==[0] [%CMD_IN_ENV%] python selftest.py
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python selftest.py
 
 after_test:
-  - if [%CIBUILDWHEEL%]==[0] [%CMD_IN_ENV%] python setup.py bdist_wheel bdist_wininst
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python setup.py bdist_wheel bdist_wininst
   - ps: "ls dist"
 
 artifacts:
