@@ -48,7 +48,7 @@ build_script:
   - if [%CIBUILDWHEEL%]==[1] pip install cibuildwheel==0.10.0
   - if [%CIBUILDWHEEL%]==[1] cibuildwheel --output-dir dist
   - >
-    if "%CIBUILDWHEEL%"" == "1"
+    if "%CIBUILDWHEEL%" == "1"
     (
       if "%APPVEYOR_REPO_TAG%" == "true"
       (
