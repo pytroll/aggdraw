@@ -13,6 +13,9 @@ elif [ "${BUILDMODE}" = "CIBUILDWHEEL" ]; then
     if [ $(uname) = "Darwin" ]; then
       export PIP=pip2
     fi
-    cibuildwheel --output-dir dist
-
+    cibuildwheel --output-dir wheelhouse
+    if [[ $TRAVIS_TAG ]]; then
+        python -m pip install twine
+        python -m twine upload wheelhouse/*.whl
+    fi
 fi

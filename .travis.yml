@@ -14,6 +14,7 @@ env:
     # For cibuildwheel
     - CIBW_TEST_REQUIRES='numpy pillow'
     - CIBW_TEST_COMMAND='python {project}/selftest.py'
+    - TWINE_USERNAME='dhoese'
 
 matrix:
   include:
