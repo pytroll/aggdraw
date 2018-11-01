@@ -53,6 +53,9 @@ build_script:
 
 
 test_script:
+  - ps: if($env:CIBUILDWHEEL -eq '0') {activate test}
+  - if [%CIBUILDWHEEL%]==[0] conda info --envs
+  - if [%CIBUILDWHEEL%]==[0] %PYTHON%\\Scripts\\activate test
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda info --envs
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python -c "import sys;print(sys.executable)"
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
