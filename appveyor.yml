@@ -47,15 +47,13 @@ build: false  # Not a C# project, build stuff at the test step instead.
 build_script:
   - if [%CIBUILDWHEEL%]==[1] pip install cibuildwheel==0.10.0
   - if [%CIBUILDWHEEL%]==[1] cibuildwheel --output-dir dist
-  - >
-    if "%CIBUILDWHEEL%" == "1"
-    (
-      if "%APPVEYOR_REPO_TAG%" == "true"
-      (
+  - ps: >-
+    if($env:CIBUILDWHEEL -eq '1') {
+      if($env:appveyor_repo_tag -eq "true") {
         python -m pip install twine
-        python -m twine upload dist/*.whl
-      )
-    )
+        python -m twine upload dist/*.whl       
+      }
+    }
 
 
 test_script:
