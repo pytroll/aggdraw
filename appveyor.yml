@@ -3,21 +3,21 @@ environment:
     PYTHON: "C:\\conda"
     MINICONDA_VERSION: "latest"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "sphinx numpy pillow coveralls coverage"
+    CONDA_DEPENDENCIES: "sphinx pillow coveralls coverage"
     CONDA_CHANNELS: "conda-forge"
     TWINE_USERNAME: "dhoese"
 
   matrix:
+
+    - CIBW_TEST_REQUIRES: "numpy pillow"
+      CIBW_TEST_COMMAND: "python {project}\\selftest.py"
+      CIBUILDWHEEL: 1
 
     - PYTHON: "C:\\Python27_32"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
       NUMPY_VERSION: "stable"
       CIBUILDWHEEL: 0
-
-    - CIBW_TEST_REQUIRES: "numpy pillow"
-      CIBW_TEST_COMMAND: "python {project}\\selftest.py"
-      CIBUILDWHEEL: 1
 
     - PYTHON: "C:\\Python27_64"
       PYTHON_VERSION: "2.7"
@@ -52,13 +52,9 @@ build_script:
 
 
 test_script:
-  - "if [%CIBUILDWHEEL%]==[0] %PYTHON%\\Scripts\\activate test"
-  - echo PATH %PATH%
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda info --envs
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python -c "import sys;print(sys.executable)"
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% %PYTHON%\\envs\\test\\python.exe -c "import sys;print(sys.executable)"
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% %PYTHON%\\envs\\test\\python.exe -m pip install -e .
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% %PYTHON%\\envs\\test\\python.exe selftest.py
+  - if [%CIBUILDWHEEL%]==[0] conda info --envs
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python selftest.py
 
 after_test:
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python setup.py bdist_wheel bdist_wininst
@@ -67,7 +63,3 @@ after_test:
 artifacts:
   # Archive the generated wheel package in the ci.appveyor.com build report.
   - path: dist\*
-
-#on_success:
-#  - TODO: upload the content of dist/*.whl to a public wheelhouse
-#
