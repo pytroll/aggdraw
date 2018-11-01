@@ -57,7 +57,7 @@ test_script:
   - echo PATH %PATH%
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda info --envs
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python -c "import sys;print(sys.executable)"
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% %PYTHON%%\\envs\\test\\python.exe -c "import sys;print(sys.executable)"
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% %PYTHON%\\envs\\test\\python.exe -c "import sys;print(sys.executable)"
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python selftest.py
 
