@@ -1,53 +1,47 @@
 language: python
-
 env:
   global:
-    # For astropy ci-helpers
-    - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
-    - NUMPY_VERSION=stable
-    - MAIN_CMD='python setup.py'
-    - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
-    - SETUP_XVFB=False
-    - EVENT_TYPE='push pull_request'
-    - SETUP_CMD='test'
-    - CONDA_CHANNELS='conda-forge'   
-    # For cibuildwheel
-    - CIBW_TEST_REQUIRES='numpy pillow'
-    - CIBW_TEST_COMMAND='python {project}/selftest.py'
-    - TWINE_USERNAME='dhoese'
-
+  - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
+  - NUMPY_VERSION=stable
+  - MAIN_CMD='python setup.py'
+  - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
+  - SETUP_XVFB=False
+  - EVENT_TYPE='push pull_request'
+  - SETUP_CMD='test'
+  - CONDA_CHANNELS='conda-forge'
+  - CIBW_TEST_REQUIRES='numpy pillow'
+  - CIBW_TEST_COMMAND='python {project}/selftest.py'
+  - TWINE_USERNAME='dhoese'
+  # TWINE_PASSWORD
+  - secure: Cmwxk41Nd+cu7l5Qhl7ZyCuwYg8WGCT53wqFBZMKIDZkNPVsnfaE8G9s1ZPTlpyoMEL5TioYTVjbjPXZD8M3z7OHHicXRP3mO53PrUDsETEl6/gR2h309ux/cWdOGgLd9s6CKT6wjtCT8Clft1cz61Y2ABOEtyTq3mrvPI0PyxE=
 matrix:
   include:
-
-    - os: linux
-      env:
-        - BUILDMODE=ASTROPY
-        - PYTHON_VERSION=2.7
-    - os: linux
-      env:
-        - BUILDMODE=ASTROPY
-        - PYTHON_VERSION=3.7
-    - os: osx
-      language: generic
-      env:
-        - BUILDMODE=ASTROPY
-        - PYTHON_VERSION=2.7
-    - os: osx
-      language: generic
-      env:
-        - BUILDMODE=ASTROPY
-        - PYTHON_VERSION=3.7
-
-    - sudo: required
-      services:
-        - docker
-      env: BUILDMODE=CIBUILDWHEEL
-    - os: osx
-      language: generic
-      env: BUILDMODE=CIBUILDWHEEL
-
+  - os: linux
+    env:
+    - BUILDMODE=ASTROPY
+    - PYTHON_VERSION=2.7
+  - os: linux
+    env:
+    - BUILDMODE=ASTROPY
+    - PYTHON_VERSION=3.7
+  - os: osx
+    language: generic
+    env:
+    - BUILDMODE=ASTROPY
+    - PYTHON_VERSION=2.7
+  - os: osx
+    language: generic
+    env:
+    - BUILDMODE=ASTROPY
+    - PYTHON_VERSION=3.7
+  - sudo: required
+    services:
+    - docker
+    env: BUILDMODE=CIBUILDWHEEL
+  - os: osx
+    language: generic
+    env: BUILDMODE=CIBUILDWHEEL
 install:
-  - source ci/travis-install.sh
-
+- source ci/travis-install.sh
 script:
-  - source ci/travis-build.sh
+- source ci/travis-build.sh
