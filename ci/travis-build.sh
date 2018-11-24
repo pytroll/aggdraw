@@ -16,10 +16,10 @@ elif [ "${BUILDMODE}" = "CIBUILDWHEEL" ]; then
     cibuildwheel --output-dir wheelhouse
     if [[ $TRAVIS_TAG ]]; then
         python -m pip install twine
-        python -m twine upload wheelhouse/*.whl
+        python -m twine upload --skip-existing wheelhouse/*.whl
         if [ $(uname) = "Darwin" ]; then # so we only do this once
             python setup.py sdist
-            python -m twine upload dist/*.tar.gz
+            python -m twine upload --skip-existing dist/*.tar.gz
         fi
     fi
 fi
