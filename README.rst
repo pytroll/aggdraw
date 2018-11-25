@@ -13,17 +13,10 @@ Anti-Grain Geometry library (from http://antigrain.com).
 
 The necessary AGG sources are included in the aggdraw source kit.
 
-For posterity, reference `the old documentation
-<http://www.effbot.org/zone/aggdraw.htm>`_.
+For posterity, reference `the old documentation <http://www.effbot.org/zone/aggdraw.htm>`_.
 
-Enjoy /F
-
-fredrik@pythonware.com
-http://www.pythonware.com
-
---------------------------------------------------------------------
 Build instructions (all platforms)
---------------------------------------------------------------------
+----------------------------------
 
 1. Check prerequisites.
 
@@ -33,10 +26,8 @@ Build instructions (all platforms)
 
    The following additional libraries can be used:
 
-   OpenType/TrueType    freetype2 (2.1.10 or later is recommended)
-   support
-                        http://www.freetype.org
-                        http://freetype.sourceforge.net
+   * OpenType/TrueType support - freetype2 (2.1.10 or later is recommended)
+     See http://www.freetype.org and http://freetype.sourceforge.net for details.
 
 2. Configure.
 
@@ -65,9 +56,8 @@ Build instructions (all platforms)
 
 5. Enjoy!
 
---------------------------------------------------------------------
-License
---------------------------------------------------------------------
+AGG2 License
+------------
 
 Anti-Grain Geometry - Version 2.0
 Copyright (c) 2002 Maxim Shemanarev (McSeem)
@@ -77,7 +67,8 @@ is granted provided this copyright notice appears in all copies.
 This software is provided "as is" without express or implied
 warranty, and with no claim as to its suitability for any purpose.
 
---------------------------------------------------------------------
+AggDraw License
+---------------
 
 The aggdraw interface, and associated modules and documentation are:
 
@@ -105,5 +96,3 @@ ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
---------------------------------------------------------------------
