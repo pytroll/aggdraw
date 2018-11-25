@@ -766,7 +766,7 @@ const char *dib_doc = "Creates a drawing interface object that can be copied to 
                       "Example\n"
                       "-------\n"
                       "\n"
-                      "    >>> d = aggdraw.Dib("RGB", (800, 600), "white")\n"
+                      "    >>> d = aggdraw.Dib(\"RGB\", (800, 600), \"white\")\n"
                       "    >>> # other operations\n"
                       "    >>> d.expose(hwnd=window)\n";
 static PyObject*
