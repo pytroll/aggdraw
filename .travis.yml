@@ -11,6 +11,7 @@ env:
   - CONDA_CHANNELS='conda-forge'
   - CIBW_TEST_REQUIRES='numpy pillow'
   - CIBW_TEST_COMMAND='python {project}/selftest.py'
+  - CIBW_BEFORE_BUILD_LINUX='yum install -y freetype-devel'
   - TWINE_USERNAME='dhoese'
   # TWINE_PASSWORD
   - secure: Cmwxk41Nd+cu7l5Qhl7ZyCuwYg8WGCT53wqFBZMKIDZkNPVsnfaE8G9s1ZPTlpyoMEL5TioYTVjbjPXZD8M3z7OHHicXRP3mO53PrUDsETEl6/gR2h309ux/cWdOGgLd9s6CKT6wjtCT8Clft1cz61Y2ABOEtyTq3mrvPI0PyxE=
