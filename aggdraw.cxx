@@ -577,6 +577,27 @@ static void draw_setup(DrawObject* self)
     }
 }
 
+const char *draw_doc = "Creates a drawing interface object.\n"
+                       "\n"
+                       "Parameters\n"
+                       "----------\n"
+                       "image_or_mode : PIL.Image.Image or str\n"
+                       "    A PIL Image or a mode string. The following modes\n"
+                       "    are supported: \"L\", \"RGB\", \"RGBA\", \"BGR\", \"BGRA\".\n"
+                       "size : tuple\n"
+                       "    If a mode string was given, this argument gives the image size\n"
+                       "    as a 2-element tuple.\n"
+                       "color\n"
+                       "    An optional background color specifier.\n"
+                       "    If a mode string was given, this is used to initialize the image memory.\n"
+                       "    If omitted, it defaults to white with full alpha.\n"
+                       "\n"
+                       "Examples\n"
+                       "--------\n"
+                       "\n"
+                       "    >>> d = aggdraw.Draw(im)\n"
+                       "    >>> d = aggdraw.Draw(\"RGB\", (800, 600), \"white\")\n";
+
 static PyObject*
 draw_new(PyObject* self_, PyObject* args)
 {
@@ -722,6 +743,32 @@ draw_new(PyObject* self_, PyObject* args)
 }
 
 #if defined(WIN32)
+
+const char *dib_doc = "Creates a drawing interface object that can be copied to a window.\n"
+                      "\n"
+                      "This class is only available on Windows platforms.\n"
+                      "This object has the same methods as :class:`Draw`,\n"
+                      "plus an expose method that copies the contents to a given window.\n"
+                      "\n"
+                      ".. versionadded:: 1.2\n"
+                      "\n"
+                      "Parameters\n"
+                      "----------\n"
+                      "mode : str\n"
+                      "    A mode string. Currently this must be \"RGB\".\n"
+                      "size : tuple\n"
+                      "    The image size as a 2-element tuple.\n"
+                      "color\n"
+                      "    An optional background color specifier.\n"
+                      "    If a mode string was given, this is used to initialize the image memory.\n"
+                      "    If omitted, it defaults to white with full alpha.\n"
+                      "\n"
+                      "Example\n"
+                      "-------\n"
+                      "\n"
+                      "    >>> d = aggdraw.Dib("RGB", (800, 600), "white")\n"
+                      "    >>> # other operations\n"
+                      "    >>> d.expose(hwnd=window)\n";
 static PyObject*
 draw_dib(PyObject* self_, PyObject* args)
 {
@@ -975,6 +1022,20 @@ getcolor(PyObject* color, int opacity)
 
 /* -------------------------------------------------------------------- */
 
+const char *draw_arc_doc = "Draw a arc.\n"
+                           "\n"
+                           "Parameters\n"
+                           "----------\n"
+                           "xy : iterable\n"
+                           "    A 4-element Python sequence (x, y, x, y), with the\n"
+                           "    upper left corner given first.\n"
+                           "start : float\n"
+                           "    Start angle in degrees.\n"
+                           "end : float\n"
+                           "    End angle in degrees.\n"
+                           "pen : Pen, optional\n"
+                           "    Optional pen object created by the `Pen` factory.\n";
+
 static PyObject*
 draw_arc(DrawObject* self, PyObject* args)
 {
@@ -999,6 +1060,26 @@ draw_arc(DrawObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *draw_chord_doc = "Draw a chord.\n"
+                             "\n"
+                             "If a brush is given, it is used to fill the chord.\n"
+                             "If a pen is given, it is used to draw an outline around the chord.\n"
+                             "Either one (or both) can be left out.\n"
+                             "\n"
+                             "Parameters\n"
+                             "----------\n"
+                             "xy : iterable\n"
+                             "    A 4-element Python sequence (x, y, x, y), with the\n"
+                             "    upper left corner given first.\n"
+                             "start : float\n"
+                             "    Start angle in degrees.\n"
+                             "end : float\n"
+                             "    End angle in degrees.\n"
+                             "pen : Pen, optional\n"
+                             "    Optional pen object created by the `Pen` factory.\n"
+                             "brush : Brush, optional\n"
+                             "    Optional brush object created by the `Brush` factory.\n";
 
 static PyObject*
 draw_chord(DrawObject* self, PyObject* args)
@@ -1027,6 +1108,23 @@ draw_chord(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_ellipse_doc = "Draw a ellipse.\n"
+                               "\n"
+                               "If a brush is given, it is used to fill the ellipse.\n"
+                               "If a pen is given, it is used to draw an outline around the ellipse.\n"
+                               "Either one (or both) can be left out.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "xy : iterable\n"
+                               "    A 4-element Python sequence (x, y, x, y), with the\n"
+                               "    upper left corner given first. To draw a circle, make sure the\n"
+                               "    coordinates form a square.\n"
+                               "pen : Pen, optional\n"
+                               "    Optional pen object created by the `Pen` factory.\n"
+                               "brush : Brush, optional\n"
+                               "    Optional brush object created by the `Brush` factory.\n";
+
 static PyObject*
 draw_ellipse(DrawObject* self, PyObject* args)
 {
@@ -1047,6 +1145,28 @@ draw_ellipse(DrawObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *draw_line_doc = "Draw a line.\n"
+                            "\n"
+                            "Parameters\n"
+                            "----------\n"
+                            "xy : iterable\n"
+                            "    An iterable (x, y, x, y, ...). If more\n"
+                            "    than two coordinate pairs are given, they are connected in order,\n"
+                            "    to form a polyline.\n"
+                            "pen : Pen\n"
+                            "    A pen object created by the Pen factory method.\n"
+                            "\n"
+                            "Examples\n"
+                            "--------\n"
+                            "\n"
+                            "    >>> # a cross\n"
+                            "    >>> pen = aggdraw.Pen(\"red\")\n"
+                            "    >>> draw.line((x0, y0, x1, y1), pen)\n"
+                            "    >>> draw.line((x0, y1, x1, y0), pen)\n"
+                            "\n"
+                            "    >>> # a character\n"
+                            "    >>> draw.line((0, 0, 20, 100, 30, 50, 40, 100, 60, 0), pen)\n";
 
 static PyObject*
 draw_line(DrawObject* self, PyObject* args)
@@ -1074,6 +1194,27 @@ draw_line(DrawObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+
+const char *draw_pieslice_doc = "Draw a pieslice.\n"
+                             "\n"
+                             "If a brush is given, it is used to fill the pieslice.\n"
+                             "If a pen is given, it is used to draw an outline around the pieslice.\n"
+                             "Either one (or both) can be left out.\n"
+                             "\n"
+                             "Parameters\n"
+                             "----------\n"
+                             "xy : iterable\n"
+                             "    A 4-element Python sequence (x, y, x, y), with the\n"
+                             "    upper left corner given first.\n"
+                             "start : float\n"
+                             "    Start angle in degrees.\n"
+                             "end : float\n"
+                             "    End angle in degrees.\n"
+                             "pen : Pen, optional\n"
+                             "    Optional pen object created by the `Pen` factory.\n"
+                             "brush : Brush, optional\n"
+                             "    Optional brush object created by the `Brush` factory.\n";
 
 static PyObject*
 draw_pieslice(DrawObject* self, PyObject* args)
@@ -1106,6 +1247,21 @@ draw_pieslice(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_polygon_doc = "Draw a polygon.\n"
+                               "\n"
+                               "If a brush is given, it is used to fill the polygon.\n"
+                               "If a pen is given, it is used to draw an outline around the polygon.\n"
+                               "Either one (or both) can be left out.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "xy : iterable\n"
+                               "    A Python sequence (x, y, x, y, …).\n"
+                               "pen : Pen\n"
+                               "    Optional pen object created by the `Pen` factory.\n"
+                               "brush : Brush\n"
+                               "    Optional brush object created by the `Brush` factory.\n";
+
 static PyObject*
 draw_polygon(DrawObject* self, PyObject* args)
 {
@@ -1135,6 +1291,21 @@ draw_polygon(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_rectangle_doc = "Draw a rectangle.\n"
+                                 "\n"
+                                 "If a brush is given, it is used to fill the rectangle.\n"
+                                 "If a pen is given, it is used to draw an outline around the rectangle.\n"
+                                 "Either one (or both) can be left out.\n"
+                                 "\n"
+                                 "Parameters\n"
+                                 "----------\n"
+                                 "xy : iterable\n"
+                                 "    A Python sequence (x, y, x, y, …).\n"
+                                 "pen : Pen\n"
+                                 "    Optional pen object created by the `Pen` factory.\n"
+                                 "brush : Brush\n"
+                                 "    Optional brush object created by the `Brush` factory.\n";
+
 static PyObject*
 draw_rectangle(DrawObject* self, PyObject* args)
 {
@@ -1158,6 +1329,23 @@ draw_rectangle(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_path_doc = "Draw a path at the given positions (experimental).\n"
+                            "\n"
+                            "If a brush is given, it is used to fill the path.\n"
+                            "If a pen is given, it is used to draw an outline around the path.\n"
+                            "Either one (or both) can be left out.\n"
+                            "\n"
+                            "Parameters\n"
+                            "----------\n"
+                            "xy : iterable\n"
+                            "    A Python sequence (x, y, x, y, …).\n"
+                            "path : Path\n"
+                            "    Path object created by the `Path` factory.\n"
+                            "pen : Pen\n"
+                            "    Optional pen object created by the `Pen` factory.\n"
+                            "brush : Brush\n"
+                            "    Optional brush object created by the `Brush` factory.\n";
+
 static PyObject* 
 draw_path(DrawObject* self, PyObject* args){
     PathObject* path;
@@ -1178,6 +1366,23 @@ draw_path(DrawObject* self, PyObject* args){
     Py_INCREF(Py_None);
     return Py_None;
 };
+
+const char *draw_symbol_doc = "Draw a symbol at the given positions (experimental).\n"
+                              "\n"
+                              "If a brush is given, it is used to fill the symbol.\n"
+                              "If a pen is given, it is used to draw an outline around the symbol.\n"
+                              "Either one (or both) can be left out.\n"
+                              "\n"
+                              "Parameters\n"
+                              "----------\n"
+                              "xy : iterable\n"
+                              "    A Python sequence (x, y, x, y, …).\n"
+                              "symbol : Symbol\n"
+                              "    Symbol object created by the `Symbol` factory.\n"
+                              "pen : Pen\n"
+                              "    Optional pen object created by the `Pen` factory.\n"
+                              "brush : Brush\n"
+                              "    Optional brush object created by the `Brush` factory.\n";
 
 static PyObject*
 draw_symbol(DrawObject* self, PyObject* args)
@@ -1211,6 +1416,18 @@ draw_symbol(DrawObject* self, PyObject* args)
 }
 
 #if defined(HAVE_FREETYPE2)
+
+const char *draw_text_doc = "Draws a text string at the given position, using the given font.\n"
+                            "\n"
+                            "Parameters\n"
+                            "----------\n"
+                            "xy : tuple\n"
+                            "    A two element tuple (x, y).\n"
+                            "text : str\n"
+                            "    String to draw.\n"
+                            "font : Font\n"
+                            "    A font object created by the Font factory.\n";
+
 static PyObject*
 draw_text(DrawObject* self, PyObject* args)
 {
@@ -1229,6 +1446,16 @@ draw_text(DrawObject* self, PyObject* args)
 #endif
 
 #if defined(HAVE_FREETYPE2)
+
+const char *draw_textsize_doc = "Draws a text string at the given position, using the given font.\n"
+                                "\n"
+                                "Parameters\n"
+                                "----------\n"
+                                "text : str\n"
+                                "    String to get the drawn size of.\n"
+                                "font : Font\n"
+                                "    A font object created by the Font factory.\n";
+
 static PyObject*
 draw_textsize(DrawObject* self, PyObject* args)
 {
@@ -1259,6 +1486,13 @@ draw_textsize(DrawObject* self, PyObject* args)
 }
 #endif
 
+const char *draw_setantialias_doc = "Control anti-aliasing (experimental).\n"
+                            "\n"
+                            "Parameters\n"
+                            "----------\n"
+                            "flag : bool\n"
+                            "    True to enable anti-aliasing, false to disable.\n";
+
 static PyObject*
 draw_setantialias(DrawObject* self, PyObject* args)
 {
@@ -1271,6 +1505,20 @@ draw_setantialias(DrawObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *draw_settransform_doc = "Replace the current drawing transform (experimental).\n"
+                            "\n"
+                            "Parameters\n"
+                            "----------\n"
+                            "transform\n"
+                            "    The new transform. In the current version, this must be either\n"
+                            "    a (dx, dy) translation tuple, or a PIL-style (a, b, c, d, e, f)\n"
+                            "    affine transform tuple. If the transform is omitted, it is reset.\n"
+                            "\n"
+                            "Examples\n"
+                            "--------\n"
+                            "\n"
+                            "    >>> draw.settransform((dx, dy))\n";
 
 static PyObject*
 draw_settransform(DrawObject* self, PyObject* args)
@@ -1296,6 +1544,13 @@ draw_settransform(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_frombytes_doc = "Copies data from a string buffer to the drawing area."
+                                 "\n"
+                                 "Parameters\n"
+                                 "----------\n"
+                                 "data : bytes\n"
+                                 "    A string containing packed image data, compatible with PIL’s tostring method.\n";
+
 static PyObject*
 draw_frombytes(DrawObject* self, PyObject* args)
 {
@@ -1314,6 +1569,12 @@ draw_frombytes(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_tobytes_doc = "Copies data from the drawing area to a string.\n"
+                               "\n"
+                               "Returns\n"
+                               "-------\n"
+                               "A string containing packed image data, compatible with PIL’s fromstring method.\n";
+
 static PyObject*
 draw_tobytes(DrawObject* self, PyObject* args)
 {
@@ -1324,6 +1585,14 @@ draw_tobytes(DrawObject* self, PyObject* args)
         (char*) self->buffer_data, self->buffer_size
         );
 }
+
+const char *draw_clear_doc = "Clear the image.\n"
+                             "\n"
+                             "Parameters\n"
+                             "----------\n"
+                             "color : tuple or str or int\n"
+                             "    Background color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
+                             "    a CSS-style color name, or a color integer (0xaarrggbb).\n";
 
 static PyObject*
 draw_clear(DrawObject* self, PyObject* args)
@@ -1337,6 +1606,17 @@ draw_clear(DrawObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *draw_expose_doc = "Copies the contents of the drawing object to the given window or device context.\n"
+                              "\n"
+                              "You must provide either a ``hwnd`` or a ``hdc`` keyword argument.\n"
+                              "\n"
+                              "Parameters\n"
+                              "----------\n"
+                              "hwnd : int\n"
+                              "    A HWND handle, cast to an integer.\n"
+                              "hdc : int\n"
+                              "    A HDC handle, cast to an integer.\n";
 
 #if defined(WIN32)
 static PyObject*
@@ -1385,6 +1665,10 @@ draw_expose(DrawObject* self, PyObject* args, PyObject* kw)
 }
 #endif
 
+const char *draw_flush_doc = "Updates the associated image.\n"
+                             "\n"
+                             "If the drawing area is attached to a PIL Image object, this method\n"
+                             "must be called to make sure that the image updated.\n";
 static PyObject*
 draw_flush(DrawObject* self, PyObject* args)
 {
@@ -1438,36 +1722,36 @@ draw_dealloc(DrawObject* self)
 
 static PyMethodDef draw_methods[] = {
 
-    {"line", (PyCFunction) draw_line, METH_VARARGS},
-    {"polygon", (PyCFunction) draw_polygon, METH_VARARGS},
-    {"rectangle", (PyCFunction) draw_rectangle, METH_VARARGS},
+    {"line", (PyCFunction) draw_line, METH_VARARGS, draw_line_doc},
+    {"polygon", (PyCFunction) draw_polygon, METH_VARARGS, draw_polygon_doc},
+    {"rectangle", (PyCFunction) draw_rectangle, METH_VARARGS, draw_rectangle_doc},
 
 #if defined(HAVE_FREETYPE2)
-    {"text", (PyCFunction) draw_text, METH_VARARGS},
-    {"textsize", (PyCFunction) draw_textsize, METH_VARARGS},
+    {"text", (PyCFunction) draw_text, METH_VARARGS, draw_text_doc},
+    {"textsize", (PyCFunction) draw_textsize, METH_VARARGS, draw_textsize_doc},
 #endif
 
-    {"path", (PyCFunction) draw_path, METH_VARARGS},
-    {"symbol", (PyCFunction) draw_symbol, METH_VARARGS},
+    {"path", (PyCFunction) draw_path, METH_VARARGS, draw_path_doc},
+    {"symbol", (PyCFunction) draw_symbol, METH_VARARGS, draw_symbol_doc},
 
-    {"arc", (PyCFunction) draw_arc, METH_VARARGS},
-    {"chord", (PyCFunction) draw_chord, METH_VARARGS},
-    {"ellipse", (PyCFunction) draw_ellipse, METH_VARARGS},
-    {"pieslice", (PyCFunction) draw_pieslice, METH_VARARGS},
+    {"arc", (PyCFunction) draw_arc, METH_VARARGS, draw_arc_doc},
+    {"chord", (PyCFunction) draw_chord, METH_VARARGS, draw_chord_doc},
+    {"ellipse", (PyCFunction) draw_ellipse, METH_VARARGS, draw_ellipse_doc},
+    {"pieslice", (PyCFunction) draw_pieslice, METH_VARARGS, draw_pieslice_doc},
 
-    {"settransform", (PyCFunction) draw_settransform, METH_VARARGS},
-    {"setantialias", (PyCFunction) draw_setantialias, METH_VARARGS},
+    {"settransform", (PyCFunction) draw_settransform, METH_VARARGS, draw_settransform_doc},
+    {"setantialias", (PyCFunction) draw_setantialias, METH_VARARGS, draw_setantialias_doc},
 
-    {"flush", (PyCFunction) draw_flush, METH_VARARGS},
+    {"flush", (PyCFunction) draw_flush, METH_VARARGS, draw_flush_doc},
 
 #if defined(WIN32)
-    {"expose", (PyCFunction) draw_expose, METH_VARARGS|METH_KEYWORDS},
+    {"expose", (PyCFunction) draw_expose, METH_VARARGS|METH_KEYWORDS, draw_expose_doc},
 #endif
 
-    {"clear", (PyCFunction) draw_clear, METH_VARARGS},
+    {"clear", (PyCFunction) draw_clear, METH_VARARGS, draw_clear_doc},
 
-    {"frombytes", (PyCFunction) draw_frombytes, METH_VARARGS},
-    {"tobytes", (PyCFunction) draw_tobytes, METH_VARARGS},
+    {"frombytes", (PyCFunction) draw_frombytes, METH_VARARGS, draw_frombytes_doc},
+    {"tobytes", (PyCFunction) draw_tobytes, METH_VARARGS, draw_tobytes_doc},
 
     {NULL, NULL}
 };
@@ -1508,6 +1792,18 @@ draw_getattr(DrawObject* self, char* name)
 
 /* -------------------------------------------------------------------- */
 
+const char *pen_doc = "Creates a Pen object.\n"
+                      "\n"
+                      "Parameters\n"
+                      "----------\n"
+                      "color : tuple or str or int\n"
+                      "    Pen color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
+                      "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
+                      "width : int, optional\n"
+                      "    Pen width. Default 1.\n"
+                      "opacity : int, optional\n"
+                      "    Pen opacity. Default 255.\n";
+
 static PyObject*
 pen_new(PyObject* self_, PyObject* args, PyObject* kw)
 {
@@ -1540,6 +1836,16 @@ pen_dealloc(PenObject* self)
 
 /* -------------------------------------------------------------------- */
 
+const char *brush_doc = "Creates a brush object.\n"
+                        "\n"
+                        "Parameters\n"
+                        "----------\n"
+                        "color : tuple or str or int\n"
+                        "    Brush color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
+                        "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
+                        "opacity : int, optional\n"
+                        "    Brush opacity. Default 255.\n";
+
 static PyObject*
 brush_new(PyObject* self_, PyObject* args, PyObject* kw)
 {
@@ -1570,6 +1876,20 @@ brush_dealloc(BrushObject* self)
 
 
 /* -------------------------------------------------------------------- */
+
+const char *font_doc = "Create a font object from a truetype font file for use with `text` and `textsize`.\n"
+                       "\n"
+                       "Parameters\n"
+                       "----------\n"
+                       "color : tuple or str or int\n"
+                       "    Font color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
+                       "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
+                       "file : str\n"
+                       "    Font source file.\n"
+                       "size : int, optional\n"
+                       "    Font size in pixels. Default 12.\n"
+                       "opacity : int, optional\n"
+                       "    Font opacity. Default 255.\n";
 
 static PyObject*
 font_new(PyObject* self_, PyObject* args, PyObject* kw)
@@ -1731,6 +2051,8 @@ font_dealloc(FontObject* self)
 
 /* -------------------------------------------------------------------- */
 
+const char *path_doc = "Path factory (experimental).\n";
+
 static PyObject*
 path_new(PyObject* self_, PyObject* args)
 {
@@ -1760,6 +2082,17 @@ path_new(PyObject* self_, PyObject* args)
 
     return (PyObject*) self;
 }
+
+const char *symbol_doc = "Create a Symbol object for use with :meth:`Draw.symbol`.\n"
+                         "\n"
+                         "Parameters\n"
+                         "----------\n"
+                         "path : str\n"
+                         "    An SVG-style path descriptor. The following operators\n"
+                         "    are supported: M (move), L (line), H (horizontal line), V (vertical line),\n"
+                         "    C (cubic bezier), S (smooth cubic bezier), Q (quadratic bezier),\n"
+                         "    T (smooth quadratic bezier), and Z (close path). Use lower-case\n"
+                         "    operators for relative coordinates, upper-case for absolute coordinates.\n";
 
 static PyObject*
 symbol_new(PyObject* self_, PyObject* args)
@@ -1955,6 +2288,13 @@ void expandPaths(PathObject *self)
     delete path;
 }
 
+const char *path_moveto_doc = "Move the path pointer to the given location.\n"
+                              "\n"
+                              "Parameters\n"
+                              "----------\n"
+                              "x\n"
+                              "y\n";
+
 static PyObject*
 path_moveto(PathObject* self, PyObject* args)
 {
@@ -1967,6 +2307,13 @@ path_moveto(PathObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *path_rmoveto_doc = "Move the path pointer to the given location, relative to the current position.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "x\n"
+                               "y\n";
 
 static PyObject*
 path_rmoveto(PathObject* self, PyObject* args)
@@ -1982,6 +2329,13 @@ path_rmoveto(PathObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *path_lineto_doc = "Adds a line segment to the path.\n"
+                              "\n"
+                              "Parameters\n"
+                              "----------\n"
+                              "x\n"
+                              "y\n";
+
 static PyObject*
 path_lineto(PathObject* self, PyObject* args)
 {
@@ -1994,6 +2348,15 @@ path_lineto(PathObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *path_rlineto_doc = "Adds a line segment to the path, using relative coordinates.\n"
+                               "\n"
+                               "Same as lineto, but the coordinates are relative to the current position.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "x\n"
+                               "y\n";
 
 static PyObject*
 path_rlineto(PathObject* self, PyObject* args)
@@ -2009,6 +2372,17 @@ path_rlineto(PathObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *path_curveto_doc = "Adds a line segment to the path.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "x1\n"
+                               "y1\n"
+                               "x2\n"
+                               "y2\n"
+                               "x\n"
+                               "y\n";
+
 static PyObject*
 path_curveto(PathObject* self, PyObject* args)
 {
@@ -2023,6 +2397,19 @@ path_curveto(PathObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *path_rcurveto_doc = "Adds a bezier curve segment to the path, using relative coordinates.\n"
+                                "\n"
+                                "Same as curveto, but the coordinates are relative to the current position.\n"
+                                "\n"
+                                "Parameters\n"
+                                "----------\n"
+                                "x1\n"
+                                "y1\n"
+                                "x2\n"
+                                "y2\n"
+                                "x\n"
+                                "y\n";
 
 static PyObject*
 path_rcurveto(PathObject* self, PyObject* args)
@@ -2040,6 +2427,8 @@ path_rcurveto(PathObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *path_close_doc = "Close the current path.";
 
 static PyObject*
 path_close(PathObject* self, PyObject* args)
@@ -2085,6 +2474,10 @@ path_polygon(PathObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *path_coords_doc = "Returns the coordinates for this path.\n"
+                              "\n"
+                              "Curves are flattened before being returned.\n";
+
 static PyObject*
 path_coords(PathObject* self, PyObject* args)
 {
@@ -2125,18 +2518,18 @@ path_dealloc(PathObject* self)
 
 static PyMethodDef path_methods[] = {
 
-    {"lineto", (PyCFunction) path_lineto, METH_VARARGS},
-    {"rlineto", (PyCFunction) path_rlineto, METH_VARARGS},
-    {"curveto", (PyCFunction) path_curveto, METH_VARARGS},
-    {"rcurveto", (PyCFunction) path_rcurveto, METH_VARARGS},
-    {"moveto", (PyCFunction) path_moveto, METH_VARARGS},
-    {"rmoveto", (PyCFunction) path_rmoveto, METH_VARARGS},
+    {"lineto", (PyCFunction) path_lineto, METH_VARARGS, path_lineto_doc},
+    {"rlineto", (PyCFunction) path_rlineto, METH_VARARGS, path_rlineto_doc},
+    {"curveto", (PyCFunction) path_curveto, METH_VARARGS, path_curveto_doc},
+    {"rcurveto", (PyCFunction) path_rcurveto, METH_VARARGS, path_rcurveto_doc},
+    {"moveto", (PyCFunction) path_moveto, METH_VARARGS, path_moveto_doc},
+    {"rmoveto", (PyCFunction) path_rmoveto, METH_VARARGS, path_rmoveto_doc},
 
-    {"close", (PyCFunction) path_close, METH_VARARGS},
+    {"close", (PyCFunction) path_close, METH_VARARGS, path_close_doc},
 
     {"polygon", (PyCFunction) path_polygon, METH_VARARGS},
 
-    {"coords", (PyCFunction) path_coords, METH_VARARGS},
+    {"coords", (PyCFunction) path_coords, METH_VARARGS, path_coords_doc},
 
     {NULL, NULL}
 };
@@ -2159,14 +2552,14 @@ path_getattr(PathObject* self, char* name)
 /* -------------------------------------------------------------------- */
 
 static PyMethodDef aggdraw_functions[] = {
-    {"Pen", (PyCFunction) pen_new, METH_VARARGS|METH_KEYWORDS},
-    {"Brush", (PyCFunction) brush_new, METH_VARARGS|METH_KEYWORDS},
-    {"Font", (PyCFunction) font_new, METH_VARARGS|METH_KEYWORDS},
-    {"Symbol", (PyCFunction) symbol_new, METH_VARARGS},
-    {"Path", (PyCFunction) path_new, METH_VARARGS},
-    {"Draw", (PyCFunction) draw_new, METH_VARARGS},
+    {"Pen", (PyCFunction) pen_new, METH_VARARGS|METH_KEYWORDS, pen_doc},
+    {"Brush", (PyCFunction) brush_new, METH_VARARGS|METH_KEYWORDS, brush_doc},
+    {"Font", (PyCFunction) font_new, METH_VARARGS|METH_KEYWORDS, font_doc},
+    {"Symbol", (PyCFunction) symbol_new, METH_VARARGS, symbol_doc},
+    {"Path", (PyCFunction) path_new, METH_VARARGS, path_doc},
+    {"Draw", (PyCFunction) draw_new, METH_VARARGS, draw_doc},
 #if defined(WIN32)
-    {"Dib", (PyCFunction) draw_dib, METH_VARARGS},
+    {"Dib", (PyCFunction) draw_dib, METH_VARARGS, dib_doc},
 #endif
     {NULL, NULL}
 };
