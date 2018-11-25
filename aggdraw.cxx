@@ -2564,11 +2564,35 @@ static PyMethodDef aggdraw_functions[] = {
     {NULL, NULL}
 };
 
+const char *mod_doc = "Python interface to the Anti-Grain Graphics Drawing library\n"
+                      "\n"
+                      "The aggdraw module implements the basic WCK 2D Drawing Interface on top\n"
+                      "of `the AGG library <http://www.antigrain.com/>`_. This library supports\n"
+                      "anti-aliasing and alpha compositing,\n"
+                      "but is otherwise fully compatible with the WCK renderer.\n"
+                      "\n"
+                      "Examples\n"
+                      "--------\n"
+                      "\n"
+                      "    >>> # draw cross on top of PIL image\n"
+                      "    >>> d = aggdraw.Draw(im)\n"
+                      "    >>> p = aggdraw.Pen(\"black\", 0.5)\n"
+                      "    >>> d.line((0, 0, 500, 500), p)\n"
+                      "    >>> d.line((0, 500, 500, 0), p)\n"
+                      "    >>> d.flush()\n"
+                      "\n"
+                      "    >>> # draw cross on internal image memory\n"
+                      "    >>> d = aggdraw.Draw(\"RGB\", (320, 200), \"white\")\n"
+                      "    >>> p = aggdraw.Pen(\"black\", 0.5)\n"
+                      "    >>> d.line((0, 0, 500, 500), p)\n"
+                      "    >>> d.line((0, 500, 500, 0), p)\n"
+                      "    >>> s = d.tostring()\n";
+
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "aggdraw",
-        "Python interface to the Anti-Grain Graphics Drawing library",
+        mod_doc,
         -1,
         aggdraw_functions,
         NULL,
@@ -2602,8 +2626,7 @@ aggdraw_init(void)
     DrawType.ob_type = PathType.ob_type = &PyType_Type;
     PenType.ob_type = BrushType.ob_type = FontType.ob_type = &PyType_Type;
 
-    PyObject *module = Py_InitModule3("aggdraw", aggdraw_functions,
-                                      "Python interface to the Anti-Grain Graphics Drawing library");
+    PyObject *module = Py_InitModule3("aggdraw", aggdraw_functions, mod_doc);
     PyObject *version = PyBytes_FromString(QUOTE(VERSION));
     PyObject_SetAttrString(module, "VERSION", version);
     PyObject_SetAttrString(module, "__version__", version);
