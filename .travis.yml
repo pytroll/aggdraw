@@ -10,7 +10,7 @@ env:
   - SETUP_CMD='test'
   - CONDA_CHANNELS='conda-forge'
   - CONDA_CHANNEL_PRIORITY='True'
-  - CIBW_TEST_REQUIRES='numpy pillow'
+  - CIBW_TEST_REQUIRES='numpy pillow pytest'
   - CIBW_TEST_COMMAND='python {project}/selftest.py'
   - CIBW_BEFORE_BUILD_LINUX='yum install -y freetype-devel'
   - TWINE_USERNAME='dhoese'
