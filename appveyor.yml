@@ -3,8 +3,9 @@ environment:
     PYTHON: "C:\\conda"
     MINICONDA_VERSION: "latest"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "sphinx pillow coveralls coverage"
+    CONDA_DEPENDENCIES: "sphinx pillow coveralls coverage pytest"
     CONDA_CHANNELS: "conda-forge"
+    CONDA_CHANNEL_PRIORITY: "True"
     TWINE_USERNAME: "dhoese"
     TWINE_PASSWORD:
       secure: zws6RrJGZ5XULrqXQDF/Cw==
