@@ -12,7 +12,7 @@ environment:
 
   matrix:
 
-    - CIBW_TEST_REQUIRES: "numpy pillow"
+    - CIBW_TEST_REQUIRES: "numpy pillow pytest"
       CIBW_TEST_COMMAND: "python {project}\\selftest.py"
       CIBUILDWHEEL: 1
 
