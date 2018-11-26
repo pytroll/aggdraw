@@ -4,12 +4,13 @@ env:
   - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
   - NUMPY_VERSION=stable
   - MAIN_CMD='python setup.py'
-  - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage'
+  - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage pytest'
   - SETUP_XVFB=False
   - EVENT_TYPE='push pull_request'
   - SETUP_CMD='test'
   - CONDA_CHANNELS='conda-forge'
-  - CIBW_TEST_REQUIRES='numpy pillow'
+  - CONDA_CHANNEL_PRIORITY='True'
+  - CIBW_TEST_REQUIRES='numpy pillow pytest'
   - CIBW_TEST_COMMAND='python {project}/selftest.py'
   - CIBW_BEFORE_BUILD_LINUX='yum install -y freetype-devel'
   - TWINE_USERNAME='dhoese'
