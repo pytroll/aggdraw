@@ -170,7 +170,7 @@
   modes.
 
 - Fixed big resource leak in the Draw(im) constructor.  The alternate
-  form (Draw(mode, size)) does not leak (reported by H�kan Karlsson).
+  form (Draw(mode, size)) does not leak (reported by Håkan Karlsson).
 
 - Added Path object.  Path objects can be used instead of coordinates
   with the 'line' and 'polygon' primitives.  Path objects can also be
@@ -181,3 +181,4 @@
 - Use ImageColor.getrgb to resolve colors, if available.
 
 (1.0 final released)
+
