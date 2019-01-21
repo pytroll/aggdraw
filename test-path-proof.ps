@@ -1,0 +1,39 @@
+%!
+% Using postscript to prove correctness of path of agg 2.4
+
+50 50 translate
+200 200 scale
+0.03 setlinewidth 
+
+% original 
+0 0 moveto
+1 1 lineto
+2 1 2 1 2 0 curveto
+0 0 0 setrgbcolor
+closepath
+0.06 setlinewidth 
+stroke
+
+% path from agg 2.2
+0.0 0.0 moveto
+1.0 1.0 lineto
+1.875 1.0 lineto
+2.0 0.875 lineto
+2.0 0.0 lineto
+closepath
+1 0 0 setrgbcolor
+0.04 setlinewidth 
+stroke
+
+% path from agg 2.4
+0.0 0.0 moveto
+1.0 1.0 lineto
+1.625 1.0 lineto
+2.0 0.625 lineto
+2.0 0.0 lineto
+closepath
+0 1 0 setrgbcolor
+0.02 setlinewidth 
+stroke
+
+showpage

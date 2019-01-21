@@ -93,21 +93,19 @@ else:
 sources = [
     # source code currently used by aggdraw
     # FIXME: link against AGG library instead?
-    "agg2/src/agg_arc.cpp",
-    "agg2/src/agg_bezier_arc.cpp",
-    "agg2/src/agg_curves.cpp",
-    "agg2/src/agg_path_storage.cpp",
-    "agg2/src/agg_rasterizer_scanline_aa.cpp",
-    "agg2/src/agg_trans_affine.cpp",
-    "agg2/src/agg_vcgen_contour.cpp",
+    "agg/src/agg_arc.cpp",
+    "agg/src/agg_bezier_arc.cpp",
+    "agg/src/agg_curves.cpp",
+    "agg/src/agg_trans_affine.cpp",
+    "agg/src/agg_vcgen_contour.cpp",
     # "agg2/src/agg_vcgen_dash.cpp",
-    "agg2/src/agg_vcgen_stroke.cpp",
+    "agg/src/agg_vcgen_stroke.cpp",
     ]
 
 # define VERSION macro in C++ code, need to quote it
 defines = [('VERSION', VERSION)]
 
-include_dirs = ["agg2/include"]
+include_dirs = ["agg/include"]
 library_dirs = []
 
 libraries = []
@@ -115,9 +113,9 @@ libraries = []
 if FREETYPE_ROOT:
     defines.append(("HAVE_FREETYPE2", None))
     sources.extend([
-        "agg2/font_freetype/agg_font_freetype.cpp",
+        "agg/font_freetype/agg_font_freetype.cpp",
         ])
-    include_dirs.append("agg2/font_freetype")
+    include_dirs.append("agg/font_freetype")
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include"))
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include/freetype"))
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include/freetype2"))
