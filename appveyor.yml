@@ -49,7 +49,7 @@ install:
 build: false  # Not a C# project, build stuff at the test step instead.
 
 build_script:
-  - if [%CIBUILDWHEEL%]==[1] pip install cibuildwheel==0.10.0
+  - if [%CIBUILDWHEEL%]==[1] pip install cibuildwheel
   - if [%CIBUILDWHEEL%]==[1] cibuildwheel --output-dir dist
   - if [%CIBUILDWHEEL%]==[1] powershell ci/appveyor-twine.ps1
 
