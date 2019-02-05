@@ -17,6 +17,7 @@
 //
 //----------------------------------------------------------------------------
 
+#define NOMINMAX
 #include <windows.h>
 #include <cstring>
 #include "platform/agg_platform_support.h"
