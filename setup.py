@@ -124,6 +124,7 @@ if FREETYPE_ROOT:
 
 if sys.platform == "win32":
     libraries.extend(["kernel32", "user32", "gdi32"])
+    defines.append(("NOMINMAX", None))
 
 setup(
     name="aggdraw",
