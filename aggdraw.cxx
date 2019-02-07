@@ -51,7 +51,6 @@
 
 #if defined(_MSC_VER)
 #define WINDOWS_LEAN_AND_MEAN
-#define NOMINMAX
 #include <windows.h>
 #endif
 

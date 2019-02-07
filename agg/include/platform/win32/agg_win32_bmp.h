@@ -20,7 +20,6 @@
 #define AGG_WIN32_BMP_INCLUDED
 
 
-#define NOMINMAX
 #include <windows.h>
 
 
