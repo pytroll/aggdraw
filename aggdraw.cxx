@@ -1329,7 +1329,7 @@ draw_rectangle(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
-const char *draw_path_doc = "Draw a path at the given positions (experimental).\n"
+const char *draw_path_doc = "Draw the given path.\n"
                             "\n"
                             "If a brush is given, it is used to fill the path.\n"
                             "If a pen is given, it is used to draw an outline around the path.\n"
@@ -1337,8 +1337,6 @@ const char *draw_path_doc = "Draw a path at the given positions (experimental).\
                             "\n"
                             "Parameters\n"
                             "----------\n"
-                            "xy : iterable\n"
-                            "    A Python sequence (x, y, x, y, …).\n"
                             "path : Path\n"
                             "    Path object created by the `Path` factory.\n"
                             "pen : Pen\n"
