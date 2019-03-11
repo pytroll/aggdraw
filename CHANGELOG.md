@@ -3,6 +3,7 @@
 ## Version 1.3.10
 
 - Fix Draw.path docstring mentioning unused x/y coordinates
+- Fix compilation on OSX 10.9+
 
 ## Version 1.3.9
 
