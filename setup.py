@@ -15,13 +15,16 @@ from __future__ import print_function
 import os
 import sys
 import subprocess
+import platform
+from distutils.sysconfig import get_config_var
+from distutils.version import LooseVersion
 
 try:
     from setuptools import setup, Extension
 except ImportError:
     from distutils.core import setup, Extension
 
-VERSION = "1.3.9"
+VERSION = "1.3.10"
 
 SUMMARY = "High quality drawing interface for PIL."
 
@@ -33,6 +36,22 @@ with anti-aliasing and alpha compositing, while being fully compatible
 with the WCK renderer.
 
 """
+
+
+def is_platform_mac():
+    return sys.platform == 'darwin'
+
+
+# For mac, ensure extensions are built for macos 10.9 when compiling on a
+# 10.9 system or above, overriding distuitls behaviour which is to target
+# the version that python was built for. This may be overridden by setting
+# MACOSX_DEPLOYMENT_TARGET before calling setup.py
+if is_platform_mac():
+    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        current_system = LooseVersion(platform.mac_ver()[0])
+        python_target = LooseVersion(get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+        if python_target < '10.9' and current_system >= '10.9':
+            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
 
 def _get_freetype_config():

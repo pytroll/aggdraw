@@ -1,37 +1,54 @@
-The Python Imaging Library: The aggdraw Module
+# The aggdraw Library
 
-*** Version 1.3.6 ***
+## Version 1.3.10
+
+- Fix Draw.path docstring mentioning unused x/y coordinates
+- Fix compilation on OSX 10.9+
+
+## Version 1.3.9
+
+- Add docstrings to public functions from original effbot documentation
+
+## Version 1.3.8
+
+- Force rebuild to get working linux wheels
+
+## Version 1.3.7
+
+- Add binary wheel building
+
+## Version 1.3.6
 
 - Fix Freetype linking on Linux with no freetype-config
 
-*** Version 1.3.5 ***
+## Version 1.3.5
 
 - Fix Freetype linking on Windows by using ctypes
 
-*** Changes from release 1.3.3 to 1.3.4 ***
+## Version 1.3.4
 
 - Fix Freetype linking on certain systems [#27]
 
-*** Changes from release 1.3.2 to 1.3.3 ***
+## Version 1.3.3
 
 - Fix Windows compatibility [#25]
 
-*** Changes from release 1.3.1 to 1.3.2 ***
+## Version 1.3.2
 
 - Fix segmentation fault with certain compilers [#22]
 
-*** Changes from release 1.3 to 1.3.1 ***
+## Version 1.3.1
 
 - Fix Python 2 compatibility when getting RGB from string colors [#21]
 - Re-add ability to get colors from PIL [#21]
 
-*** Changes from release 1.2 to 1.3 ***
+## Version 1.3.0
 
 - Python 3 support added
 - Use freetype-config to find root freetype directory
 - REVIVE THE PROJECT!
 
-*** Changes from release 1.1 to 1.2 ***
+## Changes from release 1.1 to 1.2
 
 (1.2a3 released)
 
@@ -70,7 +87,7 @@ The Python Imaging Library: The aggdraw Module
 
 - Fixed a couple of gcc compiler nits.
 
-*** Changes from release 1.0 to 1.1 ***
+## Changes from release 1.0 to 1.1
 
 (1.1 released)
 
@@ -106,7 +123,7 @@ The Python Imaging Library: The aggdraw Module
   modes.
 
 - Fixed big resource leak in the Draw(im) constructor.  The alternate
-  form (Draw(mode, size)) does not leak (reported by Håkan Karlsson).
+  form (Draw(mode, size)) does not leak (reported by H�kan Karlsson).
 
 - Added Path object.  Path objects can be used instead of coordinates
   with the 'line' and 'polygon' primitives.  Path objects can also be
@@ -117,4 +134,3 @@ The Python Imaging Library: The aggdraw Module
 - Use ImageColor.getrgb to resolve colors, if available.
 
 (1.0 final released)
-
