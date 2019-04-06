@@ -46,4 +46,4 @@ matrix:
 install:
 - source ci/travis-install.sh
 script:
-- source ci/travis-build.sh
+- ci/travis-build.sh
