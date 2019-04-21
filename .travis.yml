@@ -34,6 +34,7 @@ matrix:
     - BUILDMODE=ASTROPY
     - PYTHON_VERSION=3.7
   - sudo: required
+    language: python
     services:
     - docker
     env: BUILDMODE=CIBUILDWHEEL
