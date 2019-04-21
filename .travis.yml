@@ -1,7 +1,6 @@
-language: python
+language: generic
 env:
   global:
-  - PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
   - NUMPY_VERSION=stable
   - MAIN_CMD='python setup.py'
   - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage pytest'
@@ -27,12 +26,10 @@ matrix:
     - BUILDMODE=ASTROPY
     - PYTHON_VERSION=3.7
   - os: osx
-    language: generic
     env:
     - BUILDMODE=ASTROPY
     - PYTHON_VERSION=2.7
   - os: osx
-    language: generic
     env:
     - BUILDMODE=ASTROPY
     - PYTHON_VERSION=3.7
@@ -41,7 +38,6 @@ matrix:
     - docker
     env: BUILDMODE=CIBUILDWHEEL
   - os: osx
-    language: generic
     env: BUILDMODE=CIBUILDWHEEL
 install:
 - source ci/travis-install.sh
