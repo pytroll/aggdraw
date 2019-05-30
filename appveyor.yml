@@ -6,6 +6,8 @@ environment:
     CONDA_DEPENDENCIES: "sphinx pillow coveralls coverage"
     CONDA_CHANNELS: "conda-forge"
     TWINE_USERNAME: "dhoese"
+    TWINE_PASSWORD:
+      secure: zws6RrJGZ5XULrqXQDF/Cw==
 
   matrix:
 
