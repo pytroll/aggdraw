@@ -41,10 +41,6 @@ matrix:
   - os: osx
     language: generic
     env: BUILDMODE=CIBUILDWHEEL
-    addons:
-      homebrew:
-        packages:
-          - freetype
 install:
 - source ci/travis-install.sh
 script:
