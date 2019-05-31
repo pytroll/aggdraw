@@ -12,6 +12,5 @@ elif [ "${BUILDMODE}" = "CIBUILDWHEEL" ]; then
     export PIP=pip2
   fi
   $PIP install cibuildwheel==0.10.0
-  $PIP install -U git+https://github.com/natefoo/delocate.git@top-level-fix-squash
 
 fi
