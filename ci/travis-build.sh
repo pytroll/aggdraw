@@ -18,6 +18,7 @@ elif [ "${BUILDMODE}" = "CIBUILDWHEEL" ]; then
     if [ $(uname) = "Darwin" ]; then
         # Re-do delocate with patched version that actually works for aggdraw
         $PIP install -U git+https://github.com/natefoo/delocate.git@top-level-fix-squash
+        export PATH="$PATH:/Library/Frameworks/Python.framework/Versions/2.7/bin"
         WHEELS=wheelhouse/*.whl
         for w in $WHEELS
         do
