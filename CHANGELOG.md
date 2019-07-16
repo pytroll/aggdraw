@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.3.11
+
+- Force rebuild to fix freetype linking in OSX wheels
+
 ## Version 1.3.10
 
 - Fix Draw.path docstring mentioning unused x/y coordinates
