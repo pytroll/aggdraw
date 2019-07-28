@@ -8,6 +8,18 @@ The aggdraw module
 .. image:: https://ci.appveyor.com/api/projects/status/9g7qt1kitwxya7u4/branch/master?svg=true
     :target: https://ci.appveyor.com/project/pytroll/aggdraw/branch/master
 
+----------------------------------------------------------------------
+agg 2.4 notes
+----------------------------------------------------------------------
+aggdraw was ported to agg 2.4 and extended by
+
+Dov Grobgeld <dov.grobgeld@gmail.com>
+2016-05-30 Mon
+
+----------------------------------------------------------------------
+Original README
+----------------------------------------------------------------------
+
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
 Anti-Grain Geometry library (from http://antigrain.com).
 
