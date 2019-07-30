@@ -1199,7 +1199,7 @@ draw_line(DrawObject* self, PyObject* args)
         path.move_to(xy[0].X, xy[0].Y);
         for (int i = 1; i < count; i++)
             path.line_to(xy[i].X, xy[i].Y);
-        delete xy;
+        delete [] xy;
         self->draw->draw(path, pen);
     }
 
@@ -1295,7 +1295,7 @@ draw_polygon(DrawObject* self, PyObject* args)
         for (int i = 1; i < count; i++)
             path.line_to(xy[i].X, xy[i].Y);
         path.close_polygon();
-        delete xy;
+        delete [] xy;
         self->draw->draw(path, pen, brush);
     }
 
@@ -1419,7 +1419,7 @@ draw_symbol(DrawObject* self, PyObject* args)
         self->draw->draw(p, pen, brush);
     }
 
-    delete xy;
+    delete [] xy;
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -2100,7 +2100,7 @@ path_new(PyObject* self_, PyObject* args)
         self->path->move_to(xy[0].X, xy[0].Y);
         for (int i = 1; i < count; i++)
             self->path->line_to(xy[i].X, xy[i].Y);
-        delete xy;
+        delete [] xy;
     }
 
     return (PyObject*) self;
@@ -2473,7 +2473,7 @@ path_polygon(PathObject* self, PyObject* args)
     for (int i = 1; i < count; i++)
         path.line_to(xy[i].X, xy[i].Y);
     path.close_polygon();
-    delete xy;
+    delete [] xy;
 
     self->path->concat_path(path, 0);
 
