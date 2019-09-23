@@ -1831,7 +1831,7 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
     PyObject* color;
     float width = 1.0;
     agg::line_join_e line_join = agg::miter_join;
-    agg::line_cap_e line_cap = agg::round_cap;
+    agg::line_cap_e line_cap = agg::butt_cap;
     float miter_limit = 4.0; // Like default in agg_math_stroke.h
     int opacity = 255;
     static const char* const kwlist[] = { "color", "width", "opacity", "linejoin", "linecap", "miterlimit", NULL };
