@@ -41,10 +41,6 @@ environment:
       CIBUILDWHEEL: 0
 
 install:
-  #    - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
-  - "git clone --depth 1 -b all-the-fixes git://github.com/djhoese/ci-helpers.git"
-  - "powershell ci-helpers/appveyor/install-miniconda.ps1"
-  - "conda activate test"
 #  - if [%CIBUILDWHEEL%]==[0] git clone --depth 1 git://github.com/astropy/ci-helpers.git
   - if [%CIBUILDWHEEL%]==[0] git clone --depth 1 -b all-the-fixes git://github.com/djhoese/ci-helpers.git
   - if [%CIBUILDWHEEL%]==[0] powershell ci-helpers/appveyor/install-miniconda.ps1
