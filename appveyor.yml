@@ -54,8 +54,8 @@ build_script:
 
 
 test_script:
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda activate test
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda info --envs
+  - if [%CIBUILDWHEEL%]==[0] conda activate test
+  - if [%CIBUILDWHEEL%]==[0] conda info --envs
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
   - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python selftest.py
 
