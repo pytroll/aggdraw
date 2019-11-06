@@ -1813,11 +1813,14 @@ const char *pen_doc = "Creates a Pen object.\n"
                       "    Pen width. Default 1.\n"
                       "opacity : int, optional\n"
                       "    Pen opacity. Default 255.\n"
-                      "linejoin : in, optional\n"
-                      "    Type of line_join. Default 2 (round join)\n"
-                      "linecap  : int, optional\n"
-                      "    Type of linecap. Default 2 (round cap).\n"
-                      "miterlimit  : float, optional\n"
+                      "linejoin : int, optional\n"
+                      "    Type of line_join. Types are 0=miter_join\n"
+                      "    1=miter_join_revert; 2=round_join; 3=bevel_join;\n"
+                      "    4=miter_join_round. Default 0 (miter join).\n"
+                      "linecap : int, optional\n"
+                      "    Type of linecap. Types are 0=butt_cap;\n"
+                      "    1=square_cap; 2=round_cap. Default 1 (butt cap).\n"
+                      "miterlimit : float, optional\n"
                       "    Type of miterlimit. Default 4.0.\n";
 
 static PyObject*
@@ -1827,8 +1830,8 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
 
     PyObject* color;
     float width = 1.0;
-    agg::line_join_e line_join = agg::round_join;
-    agg::line_cap_e line_cap = agg::round_cap;
+    agg::line_join_e line_join = agg::miter_join;
+    agg::line_cap_e line_cap = agg::butt_cap;
     float miter_limit = 4.0; // Like default in agg_math_stroke.h
     int opacity = 255;
     static const char* const kwlist[] = { "color", "width", "opacity", "linejoin", "linecap", "miterlimit", NULL };

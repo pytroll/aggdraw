@@ -103,7 +103,7 @@ def test_graphics2():
     canvas.symbol((0, 0), symbol, pen)
     canvas.flush()
     # This is different from agg 2.4 but fully acceptable!
-    assert np.asarray(image).sum() == 51368
+    assert np.asarray(image).sum() == 51200
 
 
 def test_graphics3():
