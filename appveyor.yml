@@ -55,15 +55,5 @@ build_script:
 
 
 test_script:
-  - if [%CIBUILDWHEEL%]==[0] conda activate test
-  - if [%CIBUILDWHEEL%]==[0] conda info --envs
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% pip install -e .
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python selftest.py
-
-after_test:
-  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% python setup.py bdist_wheel bdist_wininst
-  - ps: "ls dist"
-
-artifacts:
-  # Archive the generated wheel package in the ci.appveyor.com build report.
-  - path: dist\*
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda run -n test pip install -e .
+  - if [%CIBUILDWHEEL%]==[0] %CMD_IN_ENV% conda run -n test python selftest.py
