@@ -24,7 +24,7 @@ matrix:
   - os: linux
     env:
     - BUILDMODE=ASTROPY
-    - PYTHON_VERSION=3.7
+    - PYTHON_VERSION=3.8
   - os: osx
     env:
     - BUILDMODE=ASTROPY
@@ -32,7 +32,7 @@ matrix:
   - os: osx
     env:
     - BUILDMODE=ASTROPY
-    - PYTHON_VERSION=3.7
+    - PYTHON_VERSION=3.8
   - sudo: required
     language: python
     services:
