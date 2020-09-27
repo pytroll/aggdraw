@@ -16,18 +16,6 @@ environment:
       CIBW_TEST_COMMAND: "python {project}\\selftest.py"
       CIBUILDWHEEL: 1
 
-    - PYTHON: "C:\\Python27_32"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "32"
-      NUMPY_VERSION: "stable"
-      CIBUILDWHEEL: 0
-
-    - PYTHON: "C:\\Python27_64"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "64"
-      NUMPY_VERSION: "stable"
-      CIBUILDWHEEL: 0
-
     - PYTHON: "C:\\Python36_32"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "32"

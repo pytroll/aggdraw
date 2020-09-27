@@ -12,6 +12,7 @@ env:
   - CIBW_TEST_REQUIRES='numpy pillow pytest'
   - CIBW_TEST_COMMAND='python {project}/selftest.py'
   - CIBW_BEFORE_BUILD_LINUX='yum install -y freetype-devel'
+  - CIBW_SKIP='cp34-* cp35-* cp39-* pp27-* pp36-*'
   - TWINE_USERNAME='dhoese'
   # TWINE_PASSWORD
   - secure: Cmwxk41Nd+cu7l5Qhl7ZyCuwYg8WGCT53wqFBZMKIDZkNPVsnfaE8G9s1ZPTlpyoMEL5TioYTVjbjPXZD8M3z7OHHicXRP3mO53PrUDsETEl6/gR2h309ux/cWdOGgLd9s6CKT6wjtCT8Clft1cz61Y2ABOEtyTq3mrvPI0PyxE=
