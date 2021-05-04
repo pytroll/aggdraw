@@ -2,11 +2,11 @@
 The aggdraw module
 ==================
 
-.. image:: https://travis-ci.org/pytroll/aggdraw.svg?branch=master
+.. image:: https://travis-ci.org/pytroll/aggdraw.svg?branch=main
     :target: https://travis-ci.org/pytroll/aggdraw
 
-.. image:: https://ci.appveyor.com/api/projects/status/9g7qt1kitwxya7u4/branch/master?svg=true
-    :target: https://ci.appveyor.com/project/pytroll/aggdraw/branch/master
+.. image:: https://ci.appveyor.com/api/projects/status/9g7qt1kitwxya7u4/branch/main?svg=true
+    :target: https://ci.appveyor.com/project/pytroll/aggdraw/branch/main
 
 ----------------------------------------------------------------------
 agg 2.4 notes
