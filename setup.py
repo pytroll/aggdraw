@@ -94,7 +94,10 @@ def _get_freetype_with_pkgconfig():
     try:
         import pkgconfig
         return pkgconfig.variables('freetype2')['prefix']
-    except (ImportError, KeyError, ValueError):
+    except ImportError:
+        print("pkgconfig not found.  This may cause freetype to be erroneously reported as missing.  You may want to install pkgconfig before continuing"
+        return None
+    except (KeyError, ValueError):
         return None
 
 
