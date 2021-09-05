@@ -83,6 +83,7 @@
 #include "agg_conv_stroke.h"
 #include "agg_conv_transform.h"
 #include "agg_ellipse.h"
+#include "agg_rounded_rect.h"
 #if defined(HAVE_FREETYPE2)
 #include "agg_font_freetype.h"
 #endif
@@ -1341,6 +1342,44 @@ draw_rectangle(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
+const char *draw_rounded_rectangle_doc = "Draw a rounded rectangle.\n"
+                               "\n"
+                               "If a brush is given, it is used to fill the ellipse.\n"
+                               "If a pen is given, it is used to draw an outline around the ellipse.\n"
+                               "Either one (or both) can be left out.\n"
+                               "\n"
+
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "xy : iterable\n"
+                               "    A Python sequence (x, y, x, y, …).\n"
+                               "pen : Pen\n"
+                               "    Optional pen object created by the `Pen` factory.\n"
+                               "brush : Brush\n"
+                               "    Optional brush object created by the `Brush` factory.\n";
+
+static PyObject*
+draw_rounded_rectangle(DrawObject* self, PyObject* args)
+{
+    float x0, y0, x1, y1, r;
+    PyObject* brush = NULL;
+    PyObject* pen = NULL;
+    if (!PyArg_ParseTuple(args, "(ffff)f|OO:rounded_rectangle",
+                          &x0, &y0, &x1, &y1, &r, &brush, &pen))
+        return NULL;
+
+    agg::path_storage path;
+    agg::rounded_rect rr(x0, y0, x1, y1, r);
+    rr.approximation_scale(1);
+    path.concat_path(rr);
+
+    self->draw->draw(path, pen, brush);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 const char *draw_path_doc = "Draw the given path.\n"
                             "\n"
                             "If a brush is given, it is used to fill the path.\n"
@@ -1735,6 +1774,7 @@ static PyMethodDef draw_methods[] = {
     {"line", (PyCFunction) draw_line, METH_VARARGS, draw_line_doc},
     {"polygon", (PyCFunction) draw_polygon, METH_VARARGS, draw_polygon_doc},
     {"rectangle", (PyCFunction) draw_rectangle, METH_VARARGS, draw_rectangle_doc},
+    {"rounded_rectangle", (PyCFunction) draw_rounded_rectangle, METH_VARARGS, draw_rounded_rectangle_doc},
 
 #if defined(HAVE_FREETYPE2)
     {"text", (PyCFunction) draw_text, METH_VARARGS, draw_text_doc},
