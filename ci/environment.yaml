@@ -1,0 +1,7 @@
+name: test-environment
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - pillow
+  - pytest
