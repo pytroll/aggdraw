@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.3.13
+
+- Rebuild for python 3.10 wheels and switch to GitHub Actions
+
 ## Version 1.3.12
 
 - Rebuild for python 3.8 wheels
