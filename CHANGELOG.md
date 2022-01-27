@@ -1,9 +1,5 @@
 # The aggdraw Library
 
-## Version 1.3.14
-
-- Fix PyPI upload not including wheels
-
 ## Version 1.3.13
 
 - Rebuild for python 3.10 wheels and switch to GitHub Actions
