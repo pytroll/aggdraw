@@ -2,19 +2,21 @@
 The aggdraw module
 ==================
 
-.. image:: https://travis-ci.org/pytroll/aggdraw.svg?branch=main
-    :target: https://travis-ci.org/pytroll/aggdraw
-
-.. image:: https://ci.appveyor.com/api/projects/status/9g7qt1kitwxya7u4/branch/main?svg=true
-    :target: https://ci.appveyor.com/project/pytroll/aggdraw/branch/main
+.. image:: https://github.com/pytroll/aggdraw/workflows/CI/badge.svg?branch=main
+    :target: https://github.com/pytroll/aggdraw/actions?query=workflow%3A%22CI%22
 
 ----------------------------------------------------------------------
 agg 2.4 notes
 ----------------------------------------------------------------------
+
 aggdraw was ported to agg 2.4 and extended by
 
 Dov Grobgeld <dov.grobgeld@gmail.com>
 2016-05-30 Mon
+
+This port is planned for released as 1.4.0, but currently produces different
+results from previous versions and the causes of these differences have not
+been tracked down.
 
 ----------------------------------------------------------------------
 Original README
