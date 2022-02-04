@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        BUILDMODE: [CIBUILDWHEEL, ASTROPY]
+        BUILDMODE: [CIBUILDWHEEL, UNITTEST]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
         uses: docker/setup-qemu-action@v1
 
       - name: Setup Conda Environment
-        if: ${{ matrix.BUILDMODE == 'ASTROPY' }}
+        if: ${{ matrix.BUILDMODE == 'UNITTEST' }}
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-variant: Mambaforge
@@ -32,7 +32,7 @@ jobs:
           activate-environment: test-environment
 
       - name: Run tests
-        if: ${{ matrix.BUILDMODE == 'ASTROPY' }}
+        if: ${{ matrix.BUILDMODE == 'UNITTEST' }}
         shell: bash -l {0}
         run: |
           pip install -e .
