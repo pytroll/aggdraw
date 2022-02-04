@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.3.14
+
+- Rebuild for missing Windows wheels
+
 ## Version 1.3.13
 
 - Rebuild for python 3.10 wheels and switch to GitHub Actions
