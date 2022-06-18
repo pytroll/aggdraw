@@ -58,6 +58,8 @@
 #define M_PI 3.1415926535897931
 #endif
 
+#define PY_SSIZE_T_CLEAN 1
+
 #include "Python.h"
 #if PY_MAJOR_VERSION >= 3
 #define IS_PY3K
@@ -1552,7 +1554,8 @@ const char *draw_frombytes_doc = "Copies data from a string buffer to the drawin
 static PyObject*
 draw_frombytes(DrawObject* self, PyObject* args)
 {
-    char* data = NULL; int data_size;
+    char* data = NULL;
+    Py_ssize_t data_size;
     if (!PyArg_ParseTuple(args, "s#:frombytes", &data, &data_size))
         return NULL;
 
