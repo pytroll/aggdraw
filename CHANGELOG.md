@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.3.15
+
+- Fix Python 3.10 compatibility
+
 ## Version 1.3.14
 
 - Rebuild for missing Windows wheels
