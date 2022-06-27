@@ -3,6 +3,7 @@
 ## Version 1.3.15
 
 - Fix Python 3.10 compatibility
+- Remove explicit support for Python <3.7
 
 ## Version 1.3.14
 
