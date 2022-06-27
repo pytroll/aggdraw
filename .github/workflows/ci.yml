@@ -45,6 +45,8 @@ jobs:
           CIBW_SKIP: pp* *-musllinux* cp36-*
           CIBW_TEST_REQUIRES: numpy pillow pytest
           CIBW_ARCHS_LINUX: auto aarch64
+          # disable finding unintended freetype installations
+          CIBW_ENVIRONMENT_WINDOWS: "AGGDRAW_FREETYPE_ROOT=''"
         run: |
           python -m pip install cibuildwheel
           cibuildwheel --output-dir wheelhouse
