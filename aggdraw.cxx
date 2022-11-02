@@ -170,7 +170,11 @@ static PyTypeObject DrawType = {
     "Draw", sizeof(DrawObject), 0,
     /* methods */
     (destructor) draw_dealloc, /* tp_dealloc */
+#if PY_VERSION_HEX < 0x030800b4
     (printfunc)0, /* tp_print */
+#else
+    (Py_ssize_t)0, /* tp_vectorcall_offset */
+#endif
     (getattrfunc)draw_getattr, /* tp_getattr */
     0, /* tp_setattr */
 };
@@ -263,7 +267,11 @@ static PyTypeObject FontType = {
     "Font", sizeof(FontObject), 0,
     /* methods */
     (destructor) font_dealloc, /* tp_dealloc */
+#if PY_VERSION_HEX < 0x030800b4
     (printfunc)0, /* tp_print */
+#else
+    (Py_ssize_t)0, /* tp_vectorcall_offset */
+#endif
     0, /* tp_getattr */
     0, /* tp_setattr */
     0, /* tp_reserved */
@@ -304,7 +312,11 @@ static PyTypeObject PathType = {
     "Path", sizeof(PathObject), 0,
     /* methods */
     (destructor) path_dealloc, /* tp_dealloc */
+#if PY_VERSION_HEX < 0x030800b4
     (printfunc)0, /* tp_print */
+#else
+    (Py_ssize_t)0, /* tp_vectorcall_offset */
+#endif
     0, /* tp_getattr */
     0, /* tp_setattr */
     0, /* tp_reserved */
