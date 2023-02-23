@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.3.16
+
+- Build changes to support for Python 3.12
+
 ## Version 1.3.15
 
 - Fix Python 3.10 compatibility
