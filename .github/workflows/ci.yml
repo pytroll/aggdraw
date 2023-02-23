@@ -42,7 +42,7 @@ jobs:
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
-          CIBW_SKIP: pp* *-musllinux* cp36-*
+          CIBW_SKIP: "cp36-* pp* *-win32 *-manylinux_i686 *-musllinux*"
           CIBW_TEST_REQUIRES: numpy pillow pytest
           CIBW_ARCHS_LINUX: auto aarch64
           # disable finding unintended freetype installations
