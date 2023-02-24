@@ -3,6 +3,7 @@
 ## Version 1.3.16
 
 - Build changes to support for Python 3.12
+- Drop 32-bit wheel builds
 
 ## Version 1.3.15
 
