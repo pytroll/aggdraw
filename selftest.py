@@ -162,6 +162,10 @@ def test_transform():
     draw.settransform((2.0, 0.5, 250, 0.5, 2.0, 250))
     draw.settransform()
 
+def test_font():
+    from aggdraw import Font
+    Font('black', 'OpenSans-Regular.ttf')
+
 
 if __name__ == "__main__":
     import sys

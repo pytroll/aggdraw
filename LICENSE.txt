@@ -40,3 +40,11 @@ Files: agg2/*
     is granted provided this copyright notice appears in all copies.
     This software is provided "as is" without express or implied
     warranty, and with no claim as to its suitability for any purpose.
+
+The OpenSans font used for testing has the following license:
+
+These fonts are licensed under the Apache License, Version 2.0.
+
+You can use them freely in your products & projects - print or digital, commercial or otherwise. However, you can't sell the fonts on their own.
+
+This isn't legal advice, please consider consulting a lawyer and see the full license for all details.
