@@ -335,11 +335,11 @@ text_getchar(PyObject* string, int index, unsigned long* char_out)
 {
 #if defined(HAVE_UNICODE)
     if (PyUnicode_Check(string)) {
-        Py_UNICODE* p = PyUnicode_AS_UNICODE(string);
-        int size = PyUnicode_GET_SIZE(string);
-        if (index >= size)
+        Py_ssize_t str_len = PyUnicode_GetLength(string);
+        if (index >= str_len)
             return 0;
-        *char_out = p[index];
+        Py_UCS4 this_char = PyUnicode_READ_CHAR(string, index);
+        *char_out = this_char;
         return 1;
     }
 #endif
