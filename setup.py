@@ -21,7 +21,7 @@ from sysconfig import get_config_var
 from packaging.version import Version
 from setuptools import setup, Extension
 
-VERSION = "1.3.16"
+VERSION = "1.3.17"
 
 SUMMARY = "High quality drawing interface for PIL."
 
