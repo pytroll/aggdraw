@@ -160,7 +160,6 @@ setup(
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     long_description=DESCRIPTION.strip(),
-    platforms="Python 2.7 and later.",
     url="https://github.com/pytroll/aggdraw",
     ext_modules=[
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
@@ -169,6 +168,6 @@ setup(
                   library_dirs=library_dirs, libraries=libraries
                   )
         ],
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     tests_require=['pillow', 'pytest'],
     )
