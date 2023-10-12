@@ -251,7 +251,7 @@ namespace agg
     //------------------------------------------------------------------------
     inline void trans_affine::transform(double* x, double* y) const
     {
-        register double tx = *x;
+        double tx = *x;
         *x = tx * m0 + *y * m2 + m4;
         *y = tx * m1 + *y * m3 + m5;
     }
@@ -259,9 +259,9 @@ namespace agg
     //------------------------------------------------------------------------
     inline void trans_affine::inverse_transform(double* x, double* y) const
     {
-        register double d = determinant();
-        register double a = (*x - m4) * d;
-        register double b = (*y - m5) * d;
+        double d = determinant();
+        double a = (*x - m4) * d;
+        double b = (*y - m5) * d;
         *x = a * m3 - b * m2;
         *y = b * m0 - a * m1;
     }

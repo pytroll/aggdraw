@@ -1,5 +1,13 @@
 # The aggdraw Library
 
+## Version 1.3.18
+
+- Remove "register" keyword from AGG C++ for compiler compatibility
+
+## Version 1.3.17
+
+- Fix Python 3.12 compatibility
+
 ## Version 1.3.16
 
 - Build changes to support for Python 3.12
