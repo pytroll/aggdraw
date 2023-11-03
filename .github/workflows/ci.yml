@@ -39,7 +39,7 @@ jobs:
           - os: windows-2019
             cibw_archs: "AMD64 ARM64"
           - os: macos-11
-            cibw_archs: "x86_64 arm64"
+            cibw_archs: "x86_64"  # arm64"  # No freetype on non-native platforms
           - os: "ubuntu-20.04"
             cibw_archs: "aarch64"
           - os: "ubuntu-20.04"
