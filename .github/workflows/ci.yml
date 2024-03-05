@@ -57,7 +57,7 @@ jobs:
           platforms: all
 
       # See discussion here: https://github.com/actions/runner-images/issues/9256
-      - name: Maker sure pipx is installed for the arm64 macOS runners.
+      - name: Make sure pipx is installed for the arm64 macOS runners.
         if: runner.os == 'macOS' && runner.arch == 'ARM64' 
         run: |
             brew install pipx
