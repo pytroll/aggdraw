@@ -39,7 +39,9 @@ jobs:
           - os: windows-2019
             cibw_archs: "AMD64 ARM64"
           - os: macos-11
-            cibw_archs: "x86_64"  # arm64"  # No freetype on non-native platforms
+            cibw_archs: "x86_64"
+          - os: macos-14          # The macos-14 runner is arm64, while up until macos-13 the runners are x86_64.
+            cibw_archs: "arm64"
           - os: "ubuntu-20.04"
             cibw_archs: "aarch64"
           - os: "ubuntu-20.04"
@@ -54,8 +56,15 @@ jobs:
         with:
           platforms: all
 
+      # See discussion here: https://github.com/actions/runner-images/issues/9256
+      - name: Make sure pipx is installed for the arm64 macOS runners.
+        if: runner.os == 'macOS' && runner.arch == 'ARM64' 
+        run: |
+            brew install pipx
+            pipx ensurepath
+
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
