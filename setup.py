@@ -169,5 +169,4 @@ setup(
                   )
         ],
     python_requires='>=3.9',
-    tests_require=['pillow', 'pytest'],
     )
