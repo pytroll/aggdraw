@@ -1549,7 +1549,7 @@ const char *draw_frombytes_doc = "Copies data from a string buffer to the drawin
                                  "Parameters\n"
                                  "----------\n"
                                  "data : bytes\n"
-                                 "    A string containing packed image data, compatible with PIL’s tostring method.\n";
+                                 "    A string containing packed image data, compatible with PIL’s tobytes method.\n";
 
 static PyObject*
 draw_frombytes(DrawObject* self, PyObject* args)
@@ -2587,7 +2587,7 @@ const char *mod_doc = "Python interface to the Anti-Grain Graphics Drawing libra
                       "    >>> p = aggdraw.Pen(\"black\", 0.5)\n"
                       "    >>> d.line((0, 0, 500, 500), p)\n"
                       "    >>> d.line((0, 500, 500, 0), p)\n"
-                      "    >>> s = d.tostring()\n";
+                      "    >>> s = d.tobytes()\n";
 
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
