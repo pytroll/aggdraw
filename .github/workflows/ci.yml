@@ -73,7 +73,7 @@ jobs:
           # disable finding unintended freetype installations
           CIBW_ENVIRONMENT_WINDOWS: "AGGDRAW_FREETYPE_ROOT=''"
           # agg is not compatible with GCC 14+
-          CIBW_ENVIRONMENT_MACOS: CFLAGS='-fpermissive'
+          CIBW_ENVIRONMENT_MACOS: CXXFLAGS='-fpermissive'
       - name: upload
         uses: actions/upload-artifact@v3
         with:
