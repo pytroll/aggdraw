@@ -146,6 +146,9 @@ if FREETYPE_ROOT:
 if sys.platform == "win32":
     libraries.extend(["kernel32", "user32", "gdi32"])
 
+# agg C++ is not compatible with gcc 14
+extra_compile_args = ["-fpermissive"]
+
 setup(
     name="aggdraw",
     version=VERSION,
@@ -165,7 +168,8 @@ setup(
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
-                  library_dirs=library_dirs, libraries=libraries
+                  library_dirs=library_dirs, libraries=libraries,
+                  extra_compile_args=extra_compile_args,
                   )
         ],
     python_requires='>=3.9',
