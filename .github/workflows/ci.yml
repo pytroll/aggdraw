@@ -38,8 +38,10 @@ jobs:
         include:
           - os: windows-2019
             cibw_archs: "AMD64 ARM64"
+          - os: macos-13
+            cibw_archs: "x86_64"
           - os: macos-14          # The macos-14 runner is arm64, while up until macos-13 the runners are x86_64.
-            cibw_archs: "x86_64 arm64"
+            cibw_archs: "arm64"
           - os: "ubuntu-20.04"
             cibw_archs: "aarch64"
           - os: "ubuntu-20.04"
