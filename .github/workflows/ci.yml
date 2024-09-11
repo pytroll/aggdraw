@@ -75,8 +75,8 @@ jobs:
           # disable finding unintended freetype installations
           CIBW_ENVIRONMENT_WINDOWS: "AGGDRAW_FREETYPE_ROOT=''"
           # we use libpng/libfreetype from homebrew which has a current limit of
-          # macos 12 (Monterey): https://formulae.brew.sh/formula/libomp
-          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=12
+          # macos 14
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=14
       - name: upload
         uses: actions/upload-artifact@v3
         with:
