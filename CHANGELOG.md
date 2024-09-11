@@ -1,5 +1,11 @@
 # The aggdraw Library
 
+## Version 1.3.19
+
+- Add Python 3.13 wheels
+- Remove Mac x86_64 wheels (pull requests welcome)
+- Fix typo in documentation for tobytes usage
+
 ## Version 1.3.18
 
 - Remove "register" keyword from AGG C++ for compiler compatibility

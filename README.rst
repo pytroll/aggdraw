@@ -102,5 +102,5 @@ with some modern compilers and coding styles. The aggdraw project has had to
 apply additional patches over time to fix compatibility or to retain backwards
 compatibility with previous versions of AGG to get the same end result. Some
 patches may be documented in README files, but all future patches should appear
-in the `patches/` directory in the root of this repository and were applied with
-commands such as `patch -p0 patches/tags_pointer_type_fix.patch`.
+in the ``patches/`` directory in the root of this repository and were applied with
+commands such as ``patch -p0 patches/tags_pointer_type_fix.patch``.
