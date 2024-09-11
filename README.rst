@@ -93,3 +93,14 @@ ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Additional Patches
+------------------
+
+The AGG C++ vendored source code in this repository is no longer compatible
+with some modern compilers and coding styles. The aggdraw project has had to
+apply additional patches over time to fix compatibility or to retain backwards
+compatibility with previous versions of AGG to get the same end result. Some
+patches may be documented in README files, but all future patches should appear
+in the `patches/` directory in the root of this repository and were applied with
+commands such as `patch -p0 patches/tags_pointer_type_fix.patch`.

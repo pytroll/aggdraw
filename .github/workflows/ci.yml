@@ -14,14 +14,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
-          use-mamba: true
           python-version: ${{ matrix.python-version }}
           environment-file: ci/environment.yaml
           activate-environment: test-environment
+          mamba-version: "*"
+          channels: conda-forge
 
       - name: Run tests
         shell: bash -l {0}
@@ -38,8 +38,6 @@ jobs:
         include:
           - os: windows-2019
             cibw_archs: "AMD64 ARM64"
-          - os: macos-11
-            cibw_archs: "x86_64"
           - os: macos-14          # The macos-14 runner is arm64, while up until macos-13 the runners are x86_64.
             cibw_archs: "arm64"
           - os: "ubuntu-20.04"
@@ -64,7 +62,7 @@ jobs:
             pipx ensurepath
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.20.0
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
@@ -74,6 +72,9 @@ jobs:
           CIBW_ARCHS: "${{ matrix.cibw_archs }}"
           # disable finding unintended freetype installations
           CIBW_ENVIRONMENT_WINDOWS: "AGGDRAW_FREETYPE_ROOT=''"
+          # we use libpng/libfreetype from homebrew which has a current limit of
+          # macos 14
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=14
       - name: upload
         uses: actions/upload-artifact@v3
         with:

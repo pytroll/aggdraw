@@ -165,9 +165,8 @@ setup(
         Extension("aggdraw", ["aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
-                  library_dirs=library_dirs, libraries=libraries
+                  library_dirs=library_dirs, libraries=libraries,
                   )
         ],
     python_requires='>=3.9',
-    tests_require=['pillow', 'pytest'],
     )
