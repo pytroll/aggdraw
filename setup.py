@@ -147,7 +147,7 @@ if sys.platform == "win32":
     libraries.extend(["kernel32", "user32", "gdi32"])
 
 # agg C++ is not compatible with gcc 14
-extra_compile_args = ["-fpermissive"]
+extra_compile_args = ["-fpermissive", "-Wno-pointer-sign"]
 
 setup(
     name="aggdraw",
