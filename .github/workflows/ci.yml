@@ -8,10 +8,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.14"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v3
@@ -20,8 +20,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: ci/environment.yaml
           activate-environment: test-environment
-          mamba-version: "*"
           channels: conda-forge
+          conda-remove-defaults: true
+          channel-priority: strict
 
       - name: Run tests
         shell: bash -l {0}
@@ -36,23 +37,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2019
-            cibw_archs: "AMD64 ARM64"
+          - os: windows-2022
+            cibw_archs: "AMD64"
+          - os: windows-11-arm
+            cibw_archs: "ARM64"
+          - os: macos-15-intel
+            cibw_archs: "x86_64"
           - os: macos-14          # The macos-14 runner is arm64, while up until macos-13 the runners are x86_64.
             cibw_archs: "arm64"
-          - os: "ubuntu-20.04"
+          - os: "ubuntu-24.04-arm"
             cibw_archs: "aarch64"
-          - os: "ubuntu-20.04"
+          - os: "ubuntu-22.04"
             cibw_archs: "x86_64"
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
+      - uses: actions/checkout@v5
 
       # See discussion here: https://github.com/actions/runner-images/issues/9256
       - name: Make sure pipx is installed for the arm64 macOS runners.
@@ -62,13 +61,13 @@ jobs:
             pipx ensurepath
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.20.0
+        uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
-          CIBW_SKIP: "cp36-* cp37-* cp38-* pp* *-win32 *-manylinux_i686 *-musllinux*"
+          CIBW_SKIP: "cp39-* cp310-* *-win32 *i686 *-musllinux*"
           CIBW_TEST_REQUIRES: numpy pillow pytest
-          CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
+          CIBW_TEST_SKIP: "*-win_arm64"
           CIBW_ARCHS: "${{ matrix.cibw_archs }}"
           # disable finding unintended freetype installations
           CIBW_ENVIRONMENT_WINDOWS: "AGGDRAW_FREETYPE_ROOT=''"
@@ -76,9 +75,9 @@ jobs:
           # macos 14
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=14
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
-          name: wheelhouse
+          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
           path: "./wheelhouse/*.whl"
 
   publish:
@@ -86,9 +85,11 @@ jobs:
     needs:
        - build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
 
       - name: sdist
         run: |
@@ -96,14 +97,16 @@ jobs:
           python -m build -s 
 
       - name: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
-          name: wheelhouse
+          pattern: wheels-*
+          merge-multiple: true
           path: dist
 
       - name: Publish package to PyPI
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
-        uses: pypa/gh-action-pypi-publish@v1.8.10
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
+          skip-existing: true
