@@ -96,7 +96,7 @@ jobs:
           python -m build -s 
 
       - name: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: wheelhouse
           path: dist
