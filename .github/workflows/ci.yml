@@ -11,7 +11,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v3
@@ -20,8 +20,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: ci/environment.yaml
           activate-environment: test-environment
-          mamba-version: "*"
           channels: conda-forge
+          conda-remove-defaults: true
+          channel-priority: strict
 
       - name: Run tests
         shell: bash -l {0}
@@ -46,7 +47,7 @@ jobs:
             cibw_archs: "x86_64"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -62,7 +63,7 @@ jobs:
             pipx ensurepath
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.20.0
+        uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
@@ -76,7 +77,7 @@ jobs:
           # macos 14
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=14
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: wheelhouse
           path: "./wheelhouse/*.whl"
@@ -86,9 +87,9 @@ jobs:
     needs:
        - build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
 
       - name: sdist
         run: |
@@ -96,14 +97,14 @@ jobs:
           python -m build -s 
 
       - name: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: wheelhouse
           path: dist
 
       - name: Publish package to PyPI
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
-        uses: pypa/gh-action-pypi-publish@v1.8.10
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
