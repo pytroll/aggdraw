@@ -115,6 +115,7 @@ sources = [
     "agg2/src/agg_arc.cpp",
     "agg2/src/agg_bezier_arc.cpp",
     "agg2/src/agg_curves.cpp",
+    "agg2/src/agg_rounded_rect.cpp",
     "agg2/src/agg_path_storage.cpp",
     "agg2/src/agg_rasterizer_scanline_aa.cpp",
     "agg2/src/agg_trans_affine.cpp",
