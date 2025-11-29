@@ -65,7 +65,7 @@ jobs:
         env:
           CIBW_TEST_COMMAND: python {project}/selftest.py
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
-          CIBW_SKIP: "cp39-* cp310-* pp* *-win32 *i686 *-musllinux*"
+          CIBW_SKIP: "cp39-* cp310-* *-win32 *i686 *-musllinux*"
           CIBW_TEST_REQUIRES: numpy pillow pytest
           CIBW_TEST_SKIP: "*-win_arm64"
           CIBW_ARCHS: "${{ matrix.cibw_archs }}"
@@ -88,6 +88,8 @@ jobs:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
 
       - name: sdist
         run: |
@@ -107,3 +109,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
+          skip-existing: true
