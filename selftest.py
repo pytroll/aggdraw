@@ -98,7 +98,7 @@ def test_graphics2():
     import numpy as np
     symbol = Symbol("M400 200 L400 400")
     pen = Pen("red")
-    image = Image.fromarray(np.zeros((800, 600, 3)), mode="RGB")
+    image = Image.fromarray(np.zeros((800, 600, 3), dtype=np.uint8), mode="RGB")
     canvas = Draw(image)
     canvas.symbol((0, 0), symbol, pen)
     canvas.flush()
