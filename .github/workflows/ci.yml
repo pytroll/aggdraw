@@ -76,7 +76,7 @@ jobs:
           # macos 14
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=14
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: wheelhouse
           path: "./wheelhouse/*.whl"
