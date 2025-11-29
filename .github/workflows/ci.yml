@@ -77,7 +77,7 @@ jobs:
       - name: upload
         uses: actions/upload-artifact@v5
         with:
-          name: wheelhouse
+          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
           path: "./wheelhouse/*.whl"
 
   publish:
@@ -97,7 +97,8 @@ jobs:
       - name: download
         uses: actions/download-artifact@v6
         with:
-          name: wheelhouse
+          pattern: wheels-*
+          merge-multiple: true
           path: dist
 
       - name: Publish package to PyPI
