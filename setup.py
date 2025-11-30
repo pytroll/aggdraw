@@ -156,6 +156,7 @@ setup(
         "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",
         "Topic :: Multimedia :: Graphics",
+        "Programming Language :: Python :: Free Threading :: 1 - Unstable",
         ],
     description=SUMMARY,
     download_url="http://www.effbot.org/downloads#aggdraw",

@@ -31,27 +31,37 @@ Build instructions (all platforms)
    To enable freetype, you need to build the library somewhere and
    make sure the `freetype-config` command is available on your PATH. The
    setup.py file will call `freetype-config --prefix` to locate
-   all of the necessary libraries and headers.
+   all of the necessary libraries and headers as part of installation.
 
-3. Build.
+3. Build and Install
 
-   The library uses a standard setup.py file, and you can use all
-   standard setup.py commands.   I recommend the following steps::
+   The library uses a standard setup.py file. Install the library
+   using ``pip`` from the root of the aggdraw repository::
 
-        $ python setup.py build_ext -i
+        $ python -m pip3 install .
+
+   Alternatively, it is possible to install the library in an "editable"
+   manner where the python environment will point to the local development
+   aggdraw directory.
+
+   ::
+
+        $ python -m pip3 install -e .
+
+   However, since aggdraw depends on compiling extension code, it must be
+   re-installed to re-build the extension.
+
+4. Once aggdraw is installed run the tests::
+
         $ python selftest.py
 
-   (if you're lazy, you can skip the above and just install the
-   library; setup.py will make sure the right stuff is built before
-   it's installed).
-
-4. Install.
-
-   If the selftest succeeds, you can install the library::
-
-        $ python setup.py install
-
 5. Enjoy!
+
+Free-threading support
+----------------------
+
+See the documentation site for current information for free-threading
+support: https://aggdraw.readthedocs.io/en/stable/
 
 AGG2 License
 ------------
