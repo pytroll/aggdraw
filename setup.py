@@ -24,15 +24,7 @@ from setuptools import setup, Extension
 VERSION = "1.4.0"
 
 SUMMARY = "High quality drawing interface for PIL."
-
-DESCRIPTION = """\
-
-The aggdraw module implements the basic WCK 2D Drawing Interface on
-top of the AGG library. This library provides high-quality drawing,
-with anti-aliasing and alpha compositing, while being fully compatible
-with the WCK renderer.
-
-"""
+README = open("README.rst", "r").read()
 
 
 def is_platform_mac():
@@ -159,9 +151,10 @@ setup(
         "Programming Language :: Python :: Free Threading :: 1 - Unstable",
         ],
     description=SUMMARY,
+    long_description=README,
+    long_description_content_type="text/x-rst",
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
-    long_description=DESCRIPTION.strip(),
     url="https://github.com/pytroll/aggdraw",
     ext_modules=[
         Extension("aggdraw", ["aggdraw.cxx"] + sources,

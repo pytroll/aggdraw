@@ -7,6 +7,10 @@ The aggdraw module
 
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
 Anti-Grain Geometry library (from http://antigrain.com).
+The aggdraw module implements the basic WCK 2D Drawing Interface on
+top of the AGG library. This library provides high-quality drawing,
+with anti-aliasing and alpha compositing, while being fully compatible
+with the WCK renderer.
 
 The necessary AGG sources are included in the aggdraw source kit.
 
