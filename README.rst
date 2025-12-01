@@ -2,7 +2,7 @@
 The aggdraw module
 ==================
 
-.. image:: https://github.com/pytroll/aggdraw/workflows/CI/badge.svg?branch=main
+.. image:: https://github.com/pytroll/aggdraw/actions/workflows/ci.yml/badge.svg?branch=main
     :target: https://github.com/pytroll/aggdraw/actions?query=workflow%3A%22CI%22
 
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
