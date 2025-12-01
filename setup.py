@@ -177,5 +177,5 @@ setup(
             "sphinx_rtd_theme",
         ],
     },
-    python_requires='>=3.9',
+    python_requires='>=3.11',
     )
