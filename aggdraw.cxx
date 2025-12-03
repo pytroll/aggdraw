@@ -1376,7 +1376,7 @@ draw_rounded_rectangle(DrawObject* self, PyObject* args)
     agg::path_storage path;
     agg::rounded_rect rr(x0, y0, x1, y1, r);
     rr.approximation_scale(1);
-    path.add_path(rr);
+    path.concat_path(rr);
 
     self->draw->draw(path, pen, brush);
 
