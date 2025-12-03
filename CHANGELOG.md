@@ -5,6 +5,7 @@
 - Add Python 3.14 wheels
 - Add initial free-threading (3.14t) compatibility and wheels
 - Drop Python 3.9 and 3.10 support
+- Add `Draw.rounded_rectangle` method
 
 ## Version 1.3.19
 
