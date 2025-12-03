@@ -1,5 +1,11 @@
 # The aggdraw Library
 
+## Version 1.4.0
+
+- Add Python 3.14 wheels
+- Add initial free-threading (3.14t) compatibility and wheels
+- Drop Python 3.9 and 3.10 support
+
 ## Version 1.3.19
 
 - Add Python 3.13 wheels
