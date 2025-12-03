@@ -5,6 +5,18 @@ The aggdraw module
 .. image:: https://github.com/pytroll/aggdraw/actions/workflows/ci.yml/badge.svg?branch=main
     :target: https://github.com/pytroll/aggdraw/actions?query=workflow%3A%22CI%22
 
+----------------------------------------------------------------------
+agg 2.4 notes
+----------------------------------------------------------------------
+aggdraw was ported to agg 2.4 and extended by
+
+Dov Grobgeld <dov.grobgeld@gmail.com>
+2016-05-30 Mon
+
+----------------------------------------------------------------------
+Original README
+----------------------------------------------------------------------
+
 A high-quality graphics engine for PIL, based on Maxim Shemanarev's
 Anti-Grain Geometry library (from http://antigrain.com).
 The aggdraw module implements the basic WCK 2D Drawing Interface on

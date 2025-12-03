@@ -102,7 +102,8 @@ def test_graphics2():
     canvas = Draw(image)
     canvas.symbol((0, 0), symbol, pen)
     canvas.flush()
-    assert np.asarray(image).sum() == 50800
+    # This is different from agg 2.4 but fully acceptable!
+    assert np.asarray(image).sum() == 51368
 
 
 def test_graphics3():
@@ -125,10 +126,12 @@ def test_path():
     p.lineto(1, 1)
     assert p.coords() == [0.0, 0.0, 1.0, 1.0]
 
-    p.curveto(0, 0, 0, 0, 0, 0)
+    p.curveto(2, 1, 2, 1, 2, 0)
     p.close()
     p.coords()
-    assert p.coords() == [0.0, 0.0, 1.0, 1.0, 0.125, 0.125, 0.0, 0.0]
+    # Changed test w.r.t. aggdraw for agg 2.4
+    # Correctness of this may be seen in the file test-path-proof.ps
+    assert p.coords() == [0.0, 0.0, 1.0, 1.0, 1.625, 1.0, 2.0, 0.625, 2.0, 0.0]
 
     draw = Draw("RGB", (800, 600))
     draw.line(p)

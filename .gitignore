@@ -167,3 +167,4 @@ ENV/
 .idea/
 # distutils MANIFEST
 MANIFEST
+.pytest_cache
