@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Version 1.4.1
+
+- Fix point arrays not being deleted as arrays
+
 ## Version 1.4.0
 
 - Add Python 3.14 wheels
