@@ -156,8 +156,9 @@ setup(
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     url="https://github.com/pytroll/aggdraw",
+    packages=["aggdraw"],
     ext_modules=[
-        Extension("aggdraw", ["aggdraw.cxx"] + sources,
+        Extension("aggdraw.aggdraw_cpp", ["aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
                   library_dirs=library_dirs, libraries=libraries,
@@ -170,5 +171,5 @@ setup(
             "sphinx_rtd_theme",
         ],
     },
-    python_requires='>=3.11',
+    python_requires='>=3.10',
     )
