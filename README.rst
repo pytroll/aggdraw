@@ -57,7 +57,7 @@ Build instructions (all platforms)
 
 4. Once aggdraw is installed run the tests::
 
-        $ python selftest.py
+        $ pytest -v
 
 5. Enjoy!
 

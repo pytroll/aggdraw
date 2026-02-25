@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# sanity check
-
 import pytest
 
 
@@ -158,8 +154,3 @@ def test_transform():
     draw.settransform((1, 0, 250, 0, 1, 250))
     draw.settransform((2.0, 0.5, 250, 0.5, 2.0, 250))
     draw.settransform()
-
-
-if __name__ == "__main__":
-    import sys
-    sys.exit(pytest.main(sys.argv))
