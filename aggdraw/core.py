@@ -1,4 +1,4 @@
-import aggdraw.aggdraw_cpp as _aggdraw
+import aggdraw._aggdraw as _aggdraw
 
 
 class Brush(object):
