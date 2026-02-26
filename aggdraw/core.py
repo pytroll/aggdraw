@@ -1,7 +1,7 @@
 import aggdraw._aggdraw as _aggdraw
 
 
-class Brush(object):
+class Brush():
     """Creates a brush object.
 
     The brush color can be an RGB tuple (e.g. `(255, 255, 255)`), a CSS-stype color
@@ -17,7 +17,7 @@ class Brush(object):
         self._brush = _aggdraw.Brush(color, opacity)
 
 
-class Pen(object):
+class Pen():
     """Creates a pen object.
 
     The pen color can be a color tuple (e.g. `(255, 255, 255)`), a CSS-stype color
@@ -34,7 +34,7 @@ class Pen(object):
         self._pen = _aggdraw.Pen(color, width, opacity)
 
 
-class Font(object):
+class Font():
     """Creates a font object.
 
     This creates a font object for use with :meth:`aggdraw.Draw.text` and
@@ -56,7 +56,7 @@ class Font(object):
         self._font = _aggdraw.Font(color, file, size, opacity)
 
 
-class Symbol(object):
+class Symbol():
     """Symbol factory.
 
     This creates a symbol object from an SVG-style path descriptor for use with
@@ -85,7 +85,7 @@ class Symbol(object):
         self._path = _aggdraw.Symbol(path, scale)
 
 
-class Path(object):
+class Path():
     """Path factory.
 
     This creates a path object for use with :meth:`aggdraw.Draw.path`.
@@ -149,7 +149,7 @@ class Path(object):
         self._path.rmoveto(x, y)
 
 
-class Draw(object):
+class Draw():
     """Creates a drawing interface object.
     
     The constructor can either take a PIL Image object, or mode and size specifiers.
