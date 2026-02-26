@@ -158,7 +158,7 @@ setup(
     url="https://github.com/pytroll/aggdraw",
     packages=["aggdraw"],
     ext_modules=[
-        Extension("aggdraw._aggdraw", ["aggdraw.cxx"] + sources,
+        Extension("aggdraw._aggdraw", ["aggdraw/_aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
                   library_dirs=library_dirs, libraries=libraries,
