@@ -20,7 +20,7 @@ import platform
 from sysconfig import get_config_var
 
 from packaging.version import Version
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 SUMMARY = "High quality drawing interface for PIL."
 README = open("README.rst", "r").read()
@@ -162,7 +162,7 @@ setup(
     download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     url="https://github.com/pytroll/aggdraw",
-    packages=["aggdraw"],
+    packages=find_packages(),
     ext_modules=[
         Extension("aggdraw._aggdraw", ["aggdraw/_aggdraw.cxx"] + sources,
                   define_macros=defines,
