@@ -13,6 +13,7 @@
 #
 from __future__ import print_function
 import os
+import re
 import sys
 import subprocess
 import platform
@@ -21,10 +22,15 @@ from sysconfig import get_config_var
 from packaging.version import Version
 from setuptools import setup, Extension
 
-VERSION = "1.4.1"
-
 SUMMARY = "High quality drawing interface for PIL."
 README = open("README.rst", "r").read()
+
+def get_version(path):
+    version_regex = re.compile('\nVERSION = "([\w\.]+)"')
+    with open(path, "r") as f:
+        return version_regex.findall(f.read())[0]
+
+VERSION = get_version(os.path.join("aggdraw", "__init__.py"))
 
 
 def is_platform_mac():
