@@ -63,7 +63,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3.1
         env:
-          CIBW_TEST_COMMAND: pytest {project}/tests
+          CIBW_TEST_COMMAND: pytest {project}/aggdraw/tests
           CIBW_BEFORE_BUILD_LINUX: yum install -y freetype-devel
           CIBW_SKIP: "cp39-* cp310-* *-win32 *i686 *-musllinux*"
           CIBW_TEST_REQUIRES: numpy pillow pytest
