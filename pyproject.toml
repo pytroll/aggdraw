@@ -1,3 +1,20 @@
 [build-system]
 requires = ["packaging", "setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+test-command = "pytest --pyargs aggdraw.tests"
+skip = "cp39-* cp310-* *-win32 *i686 *-musllinux*"
+test-requires = ["numpy", "pillow", "pytest"]
+test-skip = "*-win_arm64"
+
+[tool.cibuildwheel.linux]
+before-build = "yum install -y freetype-devel"
+
+[tool.cibuildwheel.windows]
+# disable finding unintended freetype installations
+environment = "AGGDRAW_FREETYPE_ROOT=''"
+
+[tool.cibuildwheel.macos]
+# we use libpng/libfreetype from homebrew which has a current limit of macos 14
+environment = "MACOSX_DEPLOYMENT_TARGET=14"
