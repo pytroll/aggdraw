@@ -4,7 +4,7 @@ import aggdraw._aggdraw as _aggdraw
 class Brush():
     """Creates a brush object.
 
-    The brush color can be an RGB tuple (e.g. `(255, 255, 255)`), a CSS-stype color
+    The brush color can be an RGB tuple (e.g. `(255, 255, 255)`), a CSS-style color
     name, or a color integer (0xAARRGGBB).
     
     Args:
@@ -20,7 +20,7 @@ class Brush():
 class Pen():
     """Creates a pen object.
 
-    The pen color can be a color tuple (e.g. `(255, 255, 255)`), a CSS-stype color
+    The pen color can be a color tuple (e.g. `(255, 255, 255)`), a CSS-style color
     name, or a color integer (0xAARRGGBB).
     
     Args:
@@ -40,12 +40,12 @@ class Font():
     This creates a font object for use with :meth:`aggdraw.Draw.text` and
     :meth:`aggdraw.Draw.textsize` from a TrueType font file.
 
-    The font color can be a color tuple (e.g. `(255, 255, 255)`), a CSS-stype color
+    The font color can be a color tuple (e.g. `(255, 255, 255)`), a CSS-style color
     name, or a color integer (0xAARRGGBB).
     
     Args:
         color: The font color.
-        file: Path to a valid TrueTyle font file.
+        file: Path to a valid TrueType font file.
         size (optional): The font size (in pixels). Defaults to 12.
         opacity (int, optional): The opacity of the font (from 0 to 255). Defaults
             to solid.
@@ -260,7 +260,7 @@ class Draw():
         return self._draw.flush()
 
     def frombytes(self, data):
-        """Copies data from a bytes buffer to the drawing area.
+        """Copies data from a bytes object to the drawing area.
 
         Args:
             data (bytes): Packed image data compatible with PIL's tobytes method.
@@ -463,11 +463,10 @@ class Draw():
         return self._draw.textsize(text, font._font)
 
     def tobytes(self):
-        """Copies data from the drawing area to a bytes buffer.
+        """Copies data from the drawing area to a bytes object.
 
         Returns:
             bytes: Packed image data compatible with PIL's frombytes method.
         
         """
-        # NOTE: Check how pillow docs refer to returned data
         return self._draw.tobytes()
