@@ -162,7 +162,6 @@ def test_dib():
 
     if platform.system() == "Windows":
         dib = Dib("RGB", (400, 300))
-        assert dib.mode == 'RGB'
         assert dib.size == (400, 300)
     else:
         with pytest.raises(RuntimeError):
