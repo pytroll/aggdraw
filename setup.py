@@ -159,7 +159,6 @@ setup(
     description=SUMMARY,
     long_description=README,
     long_description_content_type="text/x-rst",
-    download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     url="https://github.com/pytroll/aggdraw",
     packages=find_packages(),
