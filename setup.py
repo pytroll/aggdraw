@@ -26,7 +26,7 @@ SUMMARY = "High quality drawing interface for PIL."
 README = open("README.rst", "r").read()
 
 def get_version(path):
-    version_regex = re.compile('\nVERSION = "([\w\.]+)"')
+    version_regex = re.compile(r'\nVERSION = "([\w\.]+)"')
     with open(path, "r") as f:
         return version_regex.findall(f.read())[0]
 
