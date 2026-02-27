@@ -154,3 +154,16 @@ def test_transform():
     draw.settransform((1, 0, 250, 0, 1, 250))
     draw.settransform((2.0, 0.5, 250, 0.5, 2.0, 250))
     draw.settransform()
+
+
+def test_dib():
+    from aggdraw import Dib
+    import platform
+
+    if platform.system() == "Windows":
+        dib = Dib("RGB", (400, 300))
+        assert dib.mode == 'RGB'
+        assert dib.size == (400, 300)
+    else:
+        with pytest.raises(RuntimeError):
+            Dib("RGB", (400, 300))
