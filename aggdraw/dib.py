@@ -35,4 +35,5 @@ class Dib(Draw):
             hdc (int): An HDC handle cast to an integer.
 
         """
-        self._draw.expose(hwnd, hwc)
+        self._draw.expose(hwnd=hwnd, hdc=hdc)
+
