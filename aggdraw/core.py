@@ -432,7 +432,7 @@ class Draw():
         self._draw.symbol(xy, symbol._path, brush, pen)
 
     def text(self, xy, text, font):
-        """Determines the size of a text string.
+        """Draws a text string at a given position using a given font.
 
         Example::
            font = aggdraw.Font(black, times)
