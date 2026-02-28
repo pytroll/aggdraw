@@ -2634,7 +2634,7 @@ const char *mod_doc = "Python interface to the Anti-Grain Graphics Drawing libra
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
-        "aggdraw",
+        "_aggdraw",
         mod_doc,
         -1,
         aggdraw_functions,
@@ -2704,7 +2704,7 @@ aggdraw_init(void)
 
 #ifdef IS_PY3K
 PyMODINIT_FUNC
-PyInit_aggdraw(void)
+PyInit__aggdraw(void)
 {
     return aggdraw_init();
 }

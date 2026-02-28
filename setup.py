@@ -13,18 +13,24 @@
 #
 from __future__ import print_function
 import os
+import re
 import sys
 import subprocess
 import platform
 from sysconfig import get_config_var
 
 from packaging.version import Version
-from setuptools import setup, Extension
-
-VERSION = "1.4.1"
+from setuptools import setup, Extension, find_packages
 
 SUMMARY = "High quality drawing interface for PIL."
 README = open("README.rst", "r").read()
+
+def get_version(path):
+    version_regex = re.compile(r'\nVERSION = "([\w\.]+)"')
+    with open(path, "r") as f:
+        return version_regex.findall(f.read())[0]
+
+VERSION = get_version(os.path.join("aggdraw", "__init__.py"))
 
 
 def is_platform_mac():
@@ -153,11 +159,11 @@ setup(
     description=SUMMARY,
     long_description=README,
     long_description_content_type="text/x-rst",
-    download_url="http://www.effbot.org/downloads#aggdraw",
     license="Python (MIT style)",
     url="https://github.com/pytroll/aggdraw",
+    packages=find_packages(),
     ext_modules=[
-        Extension("aggdraw", ["aggdraw.cxx"] + sources,
+        Extension("aggdraw._aggdraw", ["aggdraw/_aggdraw.cxx"] + sources,
                   define_macros=defines,
                   include_dirs=include_dirs,
                   library_dirs=library_dirs, libraries=libraries,

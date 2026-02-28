@@ -14,7 +14,8 @@ with the WCK renderer.
 
 The necessary AGG sources are included in the aggdraw source kit.
 
-For posterity, reference `the old documentation <http://www.effbot.org/zone/aggdraw.htm>`_.
+For posterity, reference
+`the old documentation <https://web.archive.org/web/20190308154642/http://effbot.org/zone/aggdraw-index.htm>`_.
 
 Build instructions (all platforms)
 ----------------------------------
@@ -57,7 +58,7 @@ Build instructions (all platforms)
 
 4. Once aggdraw is installed run the tests::
 
-        $ python selftest.py
+        $ pytest -v
 
 5. Enjoy!
 
