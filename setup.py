@@ -142,9 +142,6 @@ if FREETYPE_ROOT:
     library_dirs.append(os.path.join(FREETYPE_ROOT, "lib"))
     libraries.append("freetype")
 
-if sys.platform == "win32":
-    libraries.extend(["kernel32", "user32", "gdi32"])
-
 setup(
     name="aggdraw",
     version=VERSION,
