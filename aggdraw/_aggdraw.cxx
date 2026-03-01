@@ -123,12 +123,6 @@ typedef struct {
     int buffer_size;
     PyObject* image;
     PyObject* background;
-#if defined(WIN32)
-    HDC dc;
-    HBITMAP bitmap;
-    HGDIOBJ old_bitmap;
-    BITMAPINFO info;
-#endif
 } DrawObject;
 
 #ifndef Py_TYPE
@@ -738,118 +732,8 @@ draw_new(PyObject* self_, PyObject* args)
 
     draw_setup(self);
 
-#if defined(WIN32)
-    self->dc = NULL;
-#endif
-
     return (PyObject*) self;
 }
-
-#if defined(WIN32)
-
-const char *dib_doc = "Creates a drawing interface object that can be copied to a window.\n"
-                      "\n"
-                      "This class is only available on Windows platforms.\n"
-                      "This object has the same methods as :class:`Draw`,\n"
-                      "plus an expose method that copies the contents to a given window.\n"
-                      "\n"
-                      ".. versionadded:: 1.2\n"
-                      "\n"
-                      "Parameters\n"
-                      "----------\n"
-                      "mode : str\n"
-                      "    A mode string. Currently this must be \"RGB\".\n"
-                      "size : tuple\n"
-                      "    The image size as a 2-element tuple.\n"
-                      "color\n"
-                      "    An optional background color specifier.\n"
-                      "    If a mode string was given, this is used to initialize the image memory.\n"
-                      "    If omitted, it defaults to white with full alpha.\n"
-                      "\n"
-                      "Example\n"
-                      "-------\n"
-                      "\n"
-                      "    >>> d = aggdraw.Dib(\"RGB\", (800, 600), \"white\")\n"
-                      "    >>> # other operations\n"
-                      "    >>> d.expose(hwnd=window)\n";
-static PyObject*
-draw_dib(PyObject* self_, PyObject* args)
-{
-    char* mode;
-    int xsize, ysize;
-    PyObject* background = NULL;
-
-    if (!PyArg_ParseTuple(args, "s(ii)|O:Dib", &mode, &xsize, &ysize, &background))
-        return NULL;
-
-    DrawObject* self = PyObject_NEW(DrawObject, &DrawType);
-    if (self == NULL)
-        return NULL;
-
-    if (strcmp(mode, "RGB")) {
-        PyErr_SetString(PyExc_ValueError, "bad mode");
-        PyObject_DEL(self);
-        return NULL;
-    }
-
-    int stride = xsize * 3;
-
-    self->mode = agg::pix_format_bgr24;
-
-    memset(&self->info, 0, sizeof(BITMAPINFOHEADER));
-    self->info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    self->info.bmiHeader.biWidth = xsize;
-    self->info.bmiHeader.biHeight = ysize;
-    self->info.bmiHeader.biPlanes = 1;
-    self->info.bmiHeader.biBitCount = strlen(mode)*8;
-    self->info.bmiHeader.biCompression = BI_RGB;
-
-    /* Create DIB */
-    self->dc = CreateCompatibleDC(NULL);
-    if (!self->dc) {
-        /* FIXME: cleanup */
-	PyErr_NoMemory();
-        return NULL;
-    }
-
-    void* bits;
-    
-    self->bitmap = CreateDIBSection(
-        self->dc, &self->info, DIB_RGB_COLORS, &bits, NULL, 0
-        );
-    if (!self->bitmap) {
-        /* FIXME: cleanup */
-	PyErr_NoMemory();
-        return NULL;
-    }
-
-    /* Bind the DIB to the device context */
-    self->old_bitmap = SelectObject(self->dc, self->bitmap);
-
-    self->buffer_size = ysize * stride;
-    self->buffer_data = (unsigned char*) bits;
-
-    Py_XINCREF(background);
-    self->background = background;
-
-    clear(self, background);
-
-    self->buffer = new agg::rendering_buffer(
-        self->buffer_data, xsize, ysize, -stride
-        );
-
-    self->xsize = xsize;
-    self->ysize = ysize;
-
-    self->transform = NULL;
-
-    self->image = NULL;
-
-    draw_setup(self);
-
-    return (PyObject*) self;
-}
-#endif
 
 struct PointF {
     float X;
@@ -1649,64 +1533,6 @@ draw_clear(DrawObject* self, PyObject* args)
     return Py_None;
 }
 
-const char *draw_expose_doc = "Copies the contents of the drawing object to the given window or device context.\n"
-                              "\n"
-                              "You must provide either a ``hwnd`` or a ``hdc`` keyword argument.\n"
-                              "\n"
-                              "Parameters\n"
-                              "----------\n"
-                              "hwnd : int\n"
-                              "    A HWND handle, cast to an integer.\n"
-                              "hdc : int\n"
-                              "    A HDC handle, cast to an integer.\n";
-
-#if defined(WIN32)
-static PyObject*
-draw_expose(DrawObject* self, PyObject* args, PyObject* kw)
-{
-    static const char* const kwlist[] = {
-        "", "hwnd", "hdc", NULL
-    };
-    PyObject* sentinel = NULL;
-    int wnd = 0, dc = 0;
-    if (!PyArg_ParseTupleAndKeywords(
-        args, kw, "|Oii:expose", const_cast<char **>(kwlist), &sentinel, &wnd, &dc
-        ))
-        return NULL;
-
-    if (sentinel || (wnd == 0 && dc == 0)) {
-        PyErr_SetString(
-            PyExc_TypeError, "expected 'hdc' or 'hwnd' keyword argument"
-            );
-        return NULL;
-    }
-
-    if (!self->dc) {
-        PyErr_SetString(PyExc_TypeError, "cannot expose this object");
-        return NULL;
-    }
-
-    HDC hdc;
-    if (wnd)
-        hdc = GetDC((HWND) wnd);
-    else
-        hdc = (HDC) dc;
-
-    if (!hdc) {
-        PyErr_SetString(PyExc_IOError, "cannot create device context");
-        return NULL;
-    }
-
-    BitBlt(hdc, 0, 0, self->xsize, self->ysize, self->dc, 0, 0, SRCCOPY);
-
-    if (wnd)
-        ReleaseDC((HWND) wnd, hdc);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-#endif
-
 const char *draw_flush_doc = "Updates the associated image.\n"
                              "\n"
                              "If the drawing area is attached to a PIL Image object, this method\n"
@@ -1741,17 +1567,6 @@ draw_flush(DrawObject* self, PyObject* args)
 static void
 draw_dealloc(DrawObject* self)
 {
-#if defined(WIN32)
-    if (self->dc) {
-        if (self->bitmap) {
-            SelectObject(self->dc, self->old_bitmap);
-            DeleteObject(self->bitmap);
-        }
-        if (self->dc)
-            DeleteDC(self->dc);
-    }
-#endif
-
     delete self->draw;
     delete self->buffer;
     delete [] self->buffer_data;
@@ -1786,10 +1601,6 @@ static PyMethodDef draw_methods[] = {
     {"setantialias", (PyCFunction) draw_setantialias, METH_VARARGS, draw_setantialias_doc},
 
     {"flush", (PyCFunction) draw_flush, METH_VARARGS, draw_flush_doc},
-
-#if defined(WIN32)
-    {"expose", (PyCFunction) draw_expose, METH_VARARGS|METH_KEYWORDS, draw_expose_doc},
-#endif
 
     {"clear", (PyCFunction) draw_clear, METH_VARARGS, draw_clear_doc},
 
@@ -2601,9 +2412,6 @@ static PyMethodDef aggdraw_functions[] = {
     {"Symbol", (PyCFunction) symbol_new, METH_VARARGS, symbol_doc},
     {"Path", (PyCFunction) path_new, METH_VARARGS, path_doc},
     {"Draw", (PyCFunction) draw_new, METH_VARARGS, draw_doc},
-#if defined(WIN32)
-    {"Dib", (PyCFunction) draw_dib, METH_VARARGS, dib_doc},
-#endif
     {NULL, NULL}
 };
 
