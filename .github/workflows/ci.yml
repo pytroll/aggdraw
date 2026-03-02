@@ -66,7 +66,7 @@ jobs:
           # see pyproject.toml for other options
           CIBW_ARCHS: "${{ matrix.cibw_archs }}"
       - name: upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
           path: "./wheelhouse/*.whl"
