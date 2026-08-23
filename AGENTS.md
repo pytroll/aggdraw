@@ -168,9 +168,11 @@ Note that `doc/source/conf.py` hardcodes `version`/`release` separately and is c
 
 ## House rules
 
-- **No linter, formatter, or pre-commit config exists in this repository.** Do not introduce
-  one, and do not reformat existing code, as a side effect of another change. Match the style
-  of the surrounding code.
+- **Linting and formatting are handled by pre-commit** (`.pre-commit-config.yaml`), which runs
+  `ruff-check --fix` and `ruff-format`. Ruff is configured in `pyproject.toml`. Run
+  `pre-commit install` once, or `pre-commit run --all-files` to check the whole tree. The
+  vendored `agg2/` sources are excluded and must stay that way. Do not reformat code unrelated
+  to your change as a side effect of another change.
 - Keep diffs minimal and focused. This codebase is old and lightly tested; large mechanical
   changes are hard to review.
 - Verify claims about behaviour by running code, not by reading the archived docs or trusting
