@@ -57,7 +57,7 @@ def _get_freetype_config():
     try:
         # pointer to freetype build directory (tweak as necessary)
         return subprocess.check_output(
-            ['freetype-config', '--prefix']).strip().replace(
+            ['freetype-config', '--prefix']).strip().replace(  # noqa: S607
             b'"', b'').decode()
     except (OSError, subprocess.CalledProcessError):
         return None
