@@ -23,7 +23,7 @@ environment = "MACOSX_DEPLOYMENT_TARGET=14"
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "W", "B", "UP"]
+select = ["E", "W", "B", "UP", "S"]
 ignore = ["E203"]
 
 [tool.ruff.lint.per-file-ignores]
