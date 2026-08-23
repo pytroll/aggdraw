@@ -1,0 +1,20 @@
+exclude: '^agg2/'
+fail_fast: false
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.16.1'
+    hooks:
+      - id: ruff-check
+        args: ["--fix"]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--unsafe]
+ci:
+  # To trigger manually, comment on a pull request with "pre-commit.ci autofix"
+  autofix_prs: false
+  autoupdate_schedule: "monthly"
