@@ -9,34 +9,37 @@ from aggdraw.tests._helpers import WHITE, to_image
 def test_draw():
     from aggdraw import Draw
     from PIL import Image
+
     with pytest.raises(AttributeError) as excinfo:
         Draw("RGB")
     assert "'str' object has no attribute 'mode'" in str(excinfo.value)
 
     draw = Draw("RGB", (800, 600))
-    assert draw.mode == 'RGB'
+    assert draw.mode == "RGB"
     assert draw.size == (800, 600)
 
     draw = Draw("RGB", (800, 600), "white")
-    assert draw.mode == 'RGB'
+    assert draw.mode == "RGB"
     assert draw.size == (800, 600)
 
     im = Image.new("RGB", (600, 800))
     draw = Draw(im)
-    assert draw.mode == 'RGB'
+    assert draw.mode == "RGB"
     assert draw.size == (600, 800)
 
 
 def test_flush():
     from aggdraw import Draw
     from PIL import Image
+
     im = Image.new("RGB", (600, 800))
     draw = Draw(im)
-    assert draw.flush().mode == 'RGB'
+    assert draw.flush().mode == "RGB"
 
 
 def test_transform():
     from aggdraw import Draw
+
     draw = Draw("RGB", (500, 500))
 
     draw.settransform()
@@ -48,6 +51,7 @@ def test_transform():
 
 def test_graphics():
     from aggdraw import Draw, Pen, Brush
+
     draw = Draw("RGB", (500, 500))
 
     pen = Pen("black")
@@ -65,10 +69,10 @@ def test_graphics():
     draw.ellipse((120, 290, 170, 340), brush, pen)
     draw.ellipse((120, 360, 170, 410), pen, brush)
 
-    draw.polygon((190+25, 150, 190, 200, 190+50, 200), pen)
-    draw.polygon((190+25, 220, 190, 270, 190+50, 270), brush)
-    draw.polygon((190+25, 290, 190, 340, 190+50, 340), brush, pen)
-    draw.polygon((190+25, 360, 190, 410, 190+50, 410), pen, brush)
+    draw.polygon((190 + 25, 150, 190, 200, 190 + 50, 200), pen)
+    draw.polygon((190 + 25, 220, 190, 270, 190 + 50, 270), brush)
+    draw.polygon((190 + 25, 290, 190, 340, 190 + 50, 340), brush, pen)
+    draw.polygon((190 + 25, 360, 190, 410, 190 + 50, 410), pen, brush)
 
 
 def test_polygon_closes_coords_but_not_path():
@@ -79,6 +83,7 @@ def test_polygon_closes_coords_but_not_path():
     left alone. Only the pen outline is affected: filling with a brush closes
     the shape either way.
     """
+
     def polygon(xy, **kwargs):
         draw = aggdraw.Draw("RGB", (100, 100), "white")
         draw.polygon(xy, **kwargs)

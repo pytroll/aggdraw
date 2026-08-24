@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Setup script for aggdraw
 #
@@ -11,7 +10,6 @@
 #   To build and install:
 #   $ python setup.py install
 #
-from __future__ import print_function
 import os
 import re
 import sys
@@ -23,18 +21,20 @@ from packaging.version import Version
 from setuptools import setup, Extension, find_packages
 
 SUMMARY = "High quality drawing interface for PIL."
-README = open("README.rst", "r").read()
+README = open("README.rst").read()
+
 
 def get_version(path):
     version_regex = re.compile(r'\nVERSION = "([\w\.]+)"')
-    with open(path, "r") as f:
+    with open(path) as f:
         return version_regex.findall(f.read())[0]
+
 
 VERSION = get_version(os.path.join("aggdraw", "__init__.py"))
 
 
 def is_platform_mac():
-    return sys.platform == 'darwin'
+    return sys.platform == "darwin"
 
 
 # For mac, ensure extensions are built for macos 10.9 when compiling on a
@@ -42,23 +42,19 @@ def is_platform_mac():
 # the version that python was built for. This may be overridden by setting
 # MACOSX_DEPLOYMENT_TARGET before calling setup.py
 if is_platform_mac():
-    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+    if "MACOSX_DEPLOYMENT_TARGET" not in os.environ:
         current_system = Version(platform.mac_ver()[0])
-        python_target = Version(get_config_var('MACOSX_DEPLOYMENT_TARGET'))
-        if (
-            python_target < Version('10.9') and
-            current_system >= Version('10.9')
-        ):
-            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+        python_target = Version(get_config_var("MACOSX_DEPLOYMENT_TARGET"))
+        if python_target < Version("10.9") and current_system >= Version("10.9"):
+            os.environ["MACOSX_DEPLOYMENT_TARGET"] = "10.9"
 
 
 def _get_freetype_config():
     print("Trying freetype-config to find freetype library...")
     try:
         # pointer to freetype build directory (tweak as necessary)
-        return subprocess.check_output(
-            ['freetype-config', '--prefix']).strip().replace(  # noqa: S607
-            b'"', b'').decode()
+        prefix = subprocess.check_output(["freetype-config", "--prefix"])  # noqa: S607
+        return prefix.strip().replace(b'"', b"").decode()
     except (OSError, subprocess.CalledProcessError):
         return None
 
@@ -66,24 +62,24 @@ def _get_freetype_config():
 def _get_freetype_with_ctypes():
     print("Using ctypes to find freetype library...")
     from ctypes.util import find_library
-    ft_lib_path = find_library('freetype')
+
+    ft_lib_path = find_library("freetype")
     if ft_lib_path is None:
         return None
 
-    if not sys.platform.startswith('linux') and \
-            not os.path.isfile(ft_lib_path):
+    if not sys.platform.startswith("linux") and not os.path.isfile(ft_lib_path):
         return None
     elif not os.path.isfile(ft_lib_path):
         # try prefix since find_library doesn't give a full path on linux
-        for bdir in (sys.prefix, '/usr', '/usr/local'):
-            lib_path = os.path.join(bdir, 'lib', ft_lib_path)
+        for bdir in (sys.prefix, "/usr", "/usr/local"):
+            lib_path = os.path.join(bdir, "lib", ft_lib_path)
             if os.path.isfile(lib_path):
                 return bdir
         else:
             # freetype is somewhere on the system, but we don't know where
             return None
     ft_lib_path = os.path.dirname(ft_lib_path)
-    lib_path = os.path.realpath(os.path.join(ft_lib_path, '..'))
+    lib_path = os.path.realpath(os.path.join(ft_lib_path, ".."))
     return lib_path
 
 
@@ -91,21 +87,21 @@ def _get_freetype_with_pkgconfig():
     print("Trying 'pkgconfig' to find freetype library...")
     try:
         import pkgconfig
-        return pkgconfig.variables('freetype2')['prefix']
+
+        return pkgconfig.variables("freetype2")["prefix"]
     except (ImportError, KeyError, ValueError):
         return None
 
 
-FREETYPE_ROOT = os.getenv('AGGDRAW_FREETYPE_ROOT')
-for func in (_get_freetype_config, _get_freetype_with_ctypes,
-             _get_freetype_with_pkgconfig):
+FREETYPE_ROOT = os.getenv("AGGDRAW_FREETYPE_ROOT")
+for func in (_get_freetype_config, _get_freetype_with_ctypes, _get_freetype_with_pkgconfig):
     if FREETYPE_ROOT is None:
         FREETYPE_ROOT = func()
 
 if FREETYPE_ROOT is None:
     print("=== freetype not available")
 else:
-    print("=== freetype found: '{}'".format(FREETYPE_ROOT))
+    print(f"=== freetype found: '{FREETYPE_ROOT}'")
 
 sources = [
     # source code currently used by aggdraw
@@ -120,10 +116,10 @@ sources = [
     "agg2/src/agg_vcgen_contour.cpp",
     # "agg2/src/agg_vcgen_dash.cpp",
     "agg2/src/agg_vcgen_stroke.cpp",
-    ]
+]
 
 # define VERSION macro in C++ code, need to quote it
-defines = [('VERSION', VERSION)]
+defines = [("VERSION", VERSION)]
 
 include_dirs = ["agg2/include"]
 library_dirs = []
@@ -132,9 +128,11 @@ libraries = []
 
 if FREETYPE_ROOT:
     defines.append(("HAVE_FREETYPE2", None))
-    sources.extend([
-        "agg2/font_freetype/agg_font_freetype.cpp",
-        ])
+    sources.extend(
+        [
+            "agg2/font_freetype/agg_font_freetype.cpp",
+        ]
+    )
     include_dirs.append("agg2/font_freetype")
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include"))
     include_dirs.append(os.path.join(FREETYPE_ROOT, "include/freetype"))
@@ -152,7 +150,7 @@ setup(
         # "Development Status :: 5 - Production/Stable",
         "Topic :: Multimedia :: Graphics",
         "Programming Language :: Python :: Free Threading :: 1 - Unstable",
-        ],
+    ],
     description=SUMMARY,
     long_description=README,
     long_description_content_type="text/x-rst",
@@ -160,12 +158,15 @@ setup(
     url="https://github.com/pytroll/aggdraw",
     packages=find_packages(),
     ext_modules=[
-        Extension("aggdraw._aggdraw", ["aggdraw/_aggdraw.cxx"] + sources,
-                  define_macros=defines,
-                  include_dirs=include_dirs,
-                  library_dirs=library_dirs, libraries=libraries,
-                  )
-        ],
+        Extension(
+            "aggdraw._aggdraw",
+            ["aggdraw/_aggdraw.cxx"] + sources,
+            define_macros=defines,
+            include_dirs=include_dirs,
+            library_dirs=library_dirs,
+            libraries=libraries,
+        )
+    ],
     extras_require={
         "tests": ["pytest", "numpy", "pillow"],
         "docs": [
@@ -173,5 +174,5 @@ setup(
             "sphinx_rtd_theme",
         ],
     },
-    python_requires='>=3.11',
-    )
+    python_requires=">=3.11",
+)

@@ -131,7 +131,7 @@
   allows the drawing context to be copied to the display.
 
 	dib = Dib("RGB", size, background)
-	
+
 	... draw ...
 
 	dib.expose(hwnd=wnd)

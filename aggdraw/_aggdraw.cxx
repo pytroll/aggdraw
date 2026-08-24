@@ -34,10 +34,10 @@
  * 2006-02-12 fl   fixed crashes in type(obj) and path constructor
  *
  * Copyright (c) 2003-2006 by Secret Labs AB
- * 
+ *
  * 2015-07-15 ej   fixed broken paths
  * 2017-01-03 ej   added support for python 3
- * 2017-01-03 ej   tostring() -> tobytes(), fromstring() -> frombytes() 
+ * 2017-01-03 ej   tostring() -> tobytes(), fromstring() -> frombytes()
  * 2017-08-18 dh   fixed mode to be python str instead of bytes
  * 2017-08-18 dh   fixed a couple compiler warnings (specifically clang)
  * 2018-04-21 dh   fixed python 2 compatibility in getcolor
@@ -353,7 +353,7 @@ text_getchar(PyObject* string, int index, unsigned long* char_out)
 /* This template class is used to automagically instantiate drawing
    code for all pixel formats used by the library. */
 
-class draw_adaptor_base 
+class draw_adaptor_base
 {
 public:
     const char* mode;
@@ -375,7 +375,7 @@ template<class PixFmt> class draw_adaptor : public draw_adaptor_base {
     agg::scanline_p8 scanline;
 
 public:
-    draw_adaptor(DrawObject* self_, const char* mode_) 
+    draw_adaptor(DrawObject* self_, const char* mode_)
     {
         self = self_;
         mode = mode_;
@@ -814,7 +814,7 @@ getpoints(PyObject* xyIn, int* count)
 }
 
 static agg::rgba8
-getcolor(PyObject* color, int opacity) 
+getcolor(PyObject* color, int opacity)
 {
 #ifdef IS_PY3K
     if (PyLong_Check(color)) {
@@ -1271,7 +1271,7 @@ const char *draw_path_doc = "Draw the given path.\n"
                             "brush : Brush\n"
                             "    Optional brush object created by the `Brush` factory.\n";
 
-static PyObject* 
+static PyObject*
 draw_path(DrawObject* self, PyObject* args){
     PathObject* path;
     PyObject*   brush = NULL;
@@ -1287,7 +1287,7 @@ draw_path(DrawObject* self, PyObject* args){
     //agg::path_storage p;
     //p.add_path(tp, 0, false);
     self->draw->draw(*path->path, pen, brush);
-  
+
     Py_INCREF(Py_None);
     return Py_None;
 };
@@ -1426,7 +1426,7 @@ draw_setantialias(DrawObject* self, PyObject* args)
         return NULL;
 
     self->draw->setantialias(i != 0);
-        
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -1464,7 +1464,7 @@ draw_settransform(DrawObject* self, PyObject* args)
 
     delete self->transform;
     self->transform = transform;
-        
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -1612,7 +1612,7 @@ static PyMethodDef draw_methods[] = {
 
 #ifdef IS_PY3K
 
-static PyObject*  
+static PyObject*
 draw_getattro(DrawObject* self, PyObject* nameobj)
 {
     if (!PyUnicode_Check(nameobj))
@@ -1630,7 +1630,7 @@ draw_getattro(DrawObject* self, PyObject* nameobj)
 
 #else
 
-static PyObject*  
+static PyObject*
 draw_getattr(DrawObject* self, char* name)
 {
     if (!strcmp(name, "mode"))
@@ -1804,7 +1804,7 @@ font_load(FontObject* font, bool outline)
 #endif
 
 #ifdef IS_PY3K
-static PyObject*  
+static PyObject*
 font_getattro(FontObject* self, PyObject* nameobj)
 {
     if (!PyUnicode_Check(nameobj))
@@ -1812,7 +1812,7 @@ font_getattro(FontObject* self, PyObject* nameobj)
 
 #if defined(HAVE_FREETYPE2)
     FT_Face face;
-    if (PyUnicode_CompareWithASCIIString(nameobj, "family") == 0) 
+    if (PyUnicode_CompareWithASCIIString(nameobj, "family") == 0)
     {
         face = font_load(self);
         if (!face) {
@@ -1821,7 +1821,7 @@ font_getattro(FontObject* self, PyObject* nameobj)
         }
         return PyBytes_FromString(face->family_name);
     }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "style") == 0) 
+    if (PyUnicode_CompareWithASCIIString(nameobj, "style") == 0)
     {
         face = font_load(self);
         if (!face) {
@@ -1830,7 +1830,7 @@ font_getattro(FontObject* self, PyObject* nameobj)
         }
         return PyBytes_FromString(face->style_name);
     }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "ascent") == 0) 
+    if (PyUnicode_CompareWithASCIIString(nameobj, "ascent") == 0)
     {
         face = font_load(self);
         if (!face) {
@@ -1839,7 +1839,7 @@ font_getattro(FontObject* self, PyObject* nameobj)
         }
         return PyFloat_FromDouble(face->size->metrics.ascender/64.0);
     }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "descent") == 0) 
+    if (PyUnicode_CompareWithASCIIString(nameobj, "descent") == 0)
     {
         face = font_load(self);
         if (!face) {
@@ -1853,8 +1853,8 @@ font_getattro(FontObject* self, PyObject* nameobj)
     return PyObject_GenericGetAttr((PyObject*)self, nameobj);
 }
 
-#else        
-static PyObject*  
+#else
+static PyObject*
 font_getattr(FontObject* self, char* name)
 {
 #if defined(HAVE_FREETYPE2)
@@ -1895,7 +1895,7 @@ font_getattr(FontObject* self, char* name)
     return Py_FindMethod(font_methods, (PyObject*) self, name);
 }
 #endif
-    
+
 static void
 font_dealloc(FontObject* self)
 {
@@ -1989,7 +1989,7 @@ symbol_new(PyObject* self_, PyObject* args)
                     );
                 return NULL;
             }
-            COMMA_WSP;            
+            COMMA_WSP;
         }
         q = p; /* start of arguments */
         switch (op) {
@@ -2389,7 +2389,7 @@ static PyMethodDef path_methods[] = {
 };
 
 #ifdef IS_PY3K
-static PyObject*  
+static PyObject*
 path_getattro(PathObject* self, PyObject* nameobj)
 {
     return PyObject_GenericGetAttr((PyObject*)self, nameobj);
@@ -2455,7 +2455,7 @@ static struct PyModuleDef moduledef = {
 
 
 static PyObject *
-aggdraw_init(void)    
+aggdraw_init(void)
 {
 #ifdef IS_PY3K
     // PyType_Ready(&DrawType);
@@ -2467,7 +2467,7 @@ aggdraw_init(void)
     DrawType.tp_methods = draw_methods;
     FontType.tp_methods = font_methods;
     PathType.tp_methods = path_methods;
-    
+
     PyObject *module = PyModule_Create(&moduledef);
     PyObject *version = PyUnicode_FromString(QUOTE(VERSION));
     PyObject_SetAttrString(module, "VERSION", version);
@@ -2524,4 +2524,3 @@ initaggdraw(void)
     aggdraw_init();
 }
 #endif
-

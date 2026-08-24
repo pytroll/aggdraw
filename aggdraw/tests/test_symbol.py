@@ -3,6 +3,7 @@
 
 def test_symbol():
     from aggdraw import Symbol
+
     Symbol("M0,0L0,0L0,0L0,0Z")
     Symbol("M0,0L0,0,0,0,0,0Z", 10)
     Symbol("M0,0C0,0,0,0,0,0Z")
@@ -19,6 +20,7 @@ def test_graphics2():
     from aggdraw import Draw, Symbol, Pen
     from PIL import Image
     import numpy as np
+
     symbol = Symbol("M400 200 L400 400")
     pen = Pen("red")
     image = Image.fromarray(np.zeros((800, 600, 3), dtype=np.uint8), mode="RGB")

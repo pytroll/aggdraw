@@ -5,13 +5,14 @@ from aggdraw.tests._helpers import to_image
 
 def test_pen():
     from aggdraw import Pen, Draw
+
     Pen("black")
     Pen("black", 1)
     Pen("black", width=1.5)
     Pen("black", 1, opacity=128)
 
     Pen(0)
-    Pen((0,0,0))
+    Pen((0, 0, 0))
     Pen("rgb(0,0,0)")
     Pen("gold")
 
@@ -20,7 +21,7 @@ def test_pen():
         "black": Pen("black", 1),
         "red": Pen((255, 0, 0), 5),
         "black_50": Pen((0, 0, 0), 3, opacity=128),
-        "crimson": Pen("#DC143C", 3)
+        "crimson": Pen("#DC143C", 3),
     }
     surf = Draw("RGB", (50, 50), "white")
     surf.line((1, 1.5, 50, 1.5), pen=pens["black"])
@@ -46,6 +47,7 @@ def test_graphics3():
     """See issue #22."""
     from aggdraw import Draw, Pen
     from PIL import Image
-    main = Image.new('RGB', (480, 1024), 'white')
+
+    main = Image.new("RGB", (480, 1024), "white")
     d = Draw(main)
     p = Pen((90,) * 3, 0.5)

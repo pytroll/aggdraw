@@ -23,13 +23,14 @@ class Brush:
 
     Note that an unrecognized color does not raise an error; it is silently
     treated as black.
-    
+
     Args:
         color: The brush color.
         opacity (int, optional): The opacity of the brush (from 0 to 255). Defaults to
             a solid brush.
 
     """
+
     def __init__(self, color, opacity=255):
         self._brush = _aggdraw.Brush(color, opacity)
 
@@ -67,7 +68,7 @@ class Pen:
        surface.rectangle((2, 2, 10, 10), pen=outline)
        # Results in a 1-pixel-wide black outline
        surface.rectangle((2.5, 2.5, 10.5, 10.5), pen=outline)
-    
+
     Args:
         color: The pen color.
         width (float, optional): The width of the pen.
@@ -75,6 +76,7 @@ class Pen:
             a solid pen.
 
     """
+
     def __init__(self, color, width=1, opacity=255):
         self._pen = _aggdraw.Pen(color, width, opacity)
 
@@ -101,7 +103,7 @@ class Font:
 
     Note that an unrecognized color does not raise an error; it is silently
     treated as black.
-    
+
     Args:
         color: The font color.
         file: Path to a valid TrueType font file.
@@ -110,6 +112,7 @@ class Font:
             to solid.
 
     """
+
     def __init__(self, color, file, size=12, opacity=255):
         # NOTE: Only available if compiled with FreeType support
         self._font = _aggdraw.Font(color, file, size, opacity)
@@ -134,11 +137,12 @@ class Symbol:
 
     Use lower-case operators for relative coordinates, upper-case for absolute
     coordinates.
-    
+
     Args:
-        path (str): An SVG-style path descriptor. 
+        path (str): An SVG-style path descriptor.
 
     """
+
     def __init__(self, path, scale=1.0):
         # NOTE: 'scale' param is undocumented
         self._path = _aggdraw.Symbol(path, scale)
@@ -159,6 +163,7 @@ class Path:
             initial set of connected line segments with which to initialize the path.
 
     """
+
     def __init__(self, path=None):
         if path:
             self._path = _aggdraw.Path(path)
@@ -245,19 +250,19 @@ class Path:
 
     def rcurveto(self, x1, y1, x2, y2, x, y):
         """Adds a cubic bezier curve segment to the path using relative coordinates.
-        
+
         Same as :meth:`~curveto`, but the coordinates are relative to the current
         position.
-        
+
         """
         self._path.rcurveto(x1, y1, x2, y2, x, y)
 
     def rlineto(self, x, y):
         """Adds a line segment to the path using relative coordinates.
-        
+
         Same as :meth:`~lineto`, but the coordinates are relative to the current
         position.
-        
+
         """
         self._path.rlineto(x, y)
 
@@ -277,7 +282,7 @@ class Path:
 
 class Draw:
     """Creates a drawing interface object.
-    
+
     The constructor can either take a PIL Image object, or mode and size specifiers.
 
     Examples::
@@ -293,6 +298,7 @@ class Draw:
             to white with full alpha.
 
     """
+
     def __init__(self, image_or_mode, size=None, color="white"):
         if size:
             self._draw = _aggdraw.Draw(image_or_mode, size, color)
@@ -337,7 +343,7 @@ class Draw:
 
     def chord(self, xy, start, end, pen=None, brush=None):
         """Draws a chord.
-        
+
         If a brush is given, it is used to fill the chord. If a pen is given,
         it is used to draw an outline around the chord. Either one (or both)
         can be left out.
@@ -351,14 +357,14 @@ class Draw:
                 around the chord.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the chord.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.chord(xy, start, end, pen, brush)
 
     def ellipse(self, xy, pen=None, brush=None):
         """Draws an ellipse.
-        
+
         If a brush is given, it is used to fill the ellipse. If a pen is given,
         it is used to draw an outline around the ellipse. Either one (or both)
         can be left out.
@@ -372,14 +378,14 @@ class Draw:
                 around the ellipse.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the ellipse.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.ellipse(xy, brush, pen)
 
     def flush(self):
         """Updates the associated image.
-        
+
         If the drawing area is attached to a PIL Image object, this method must
         be called to make sure that the image updated.
 
@@ -391,7 +397,7 @@ class Draw:
 
         Args:
             data (bytes): Packed image data compatible with PIL's tobytes method.
-        
+
         """
         self._draw.frombytes(data)
 
@@ -415,7 +421,7 @@ class Draw:
 
     def path(self, path, pen=None, brush=None):
         """Draws a path to the surface.
-        
+
         If a brush is given, it is used to fill the path. If a pen is given,
         it is used to draw an outline around the path. Either one (or both)
         can be left out.
@@ -430,14 +436,14 @@ class Draw:
                 around the path.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the path.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.path(path._path, brush, pen)
 
     def pieslice(self, xy, start, end, pen=None, brush=None):
         """Draws a pie slice.
-        
+
         If a brush is given, it is used to fill the pie slice. If a pen is given,
         it is used to draw an outline around the pie slice. Either one (or both)
         can be left out.
@@ -451,14 +457,14 @@ class Draw:
                 around the pie slice.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the pie slice.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.pieslice(xy, start, end, pen, brush)
 
     def polygon(self, xy, pen=None, brush=None):
         """Draws a polygon.
-        
+
         If a brush is given, it is used to fill the polygon. If a pen is given,
         it is used to draw an outline around the polygon. Either one (or both)
         can be left out.
@@ -486,7 +492,7 @@ class Draw:
 
     def rectangle(self, xy, pen=None, brush=None):
         """Draws a rectangle.
-        
+
         If a brush is given, it is used to fill the rectangle. If a pen is given,
         it is used to draw an outline around the rectangle. Either one (or both)
         can be left out.
@@ -498,14 +504,14 @@ class Draw:
                 around the rectangle.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the rectangle.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.rectangle(xy, brush, pen)
 
     def rounded_rectangle(self, xy, radius, pen=None, brush=None):
         """Draws a rounded rectangle.
-        
+
         If a brush is given, it is used to fill the rectangle. If a pen is given,
         it is used to draw an outline around the rectangle. Either one (or both)
         can be left out.
@@ -518,14 +524,14 @@ class Draw:
                 around the rectangle.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the rectangle.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.rounded_rectangle(xy, radius, brush, pen)
 
     def setantialias(self, flag):
         """Controls anti-aliasing.
-        
+
         Args:
             flag (bool): True to enable anti-aliasing, False to disable it.
 
@@ -542,7 +548,7 @@ class Draw:
         Example::
 
            draw.settransform((dx, dy))
-        
+
         Args:
             transform (tuple, optional): The new transform, or None to reset.
 
@@ -554,7 +560,7 @@ class Draw:
 
     def symbol(self, xy, symbol, pen=None, brush=None):
         """Draws a symbol at the given positions.
-        
+
         If a brush is given, it is used to fill the symbol. If a pen is given,
         it is used to draw an outline around the symbol. Either one (or both)
         can be left out.
@@ -570,7 +576,7 @@ class Draw:
                 around the symbol.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
                 the symbol.
-        
+
         """
         brush, pen = self._parse_args(brush, pen)
         self._draw.symbol(xy, symbol._path, brush, pen)
@@ -590,7 +596,7 @@ class Draw:
 
         Returns:
             tuple: A (width, height) tuple.
-        
+
         """
         self._draw.text(xy, text, font._font)
 
@@ -603,7 +609,7 @@ class Draw:
 
         Returns:
             tuple: A (width, height) tuple.
-        
+
         """
         return self._draw.textsize(text, font._font)
 
@@ -612,6 +618,6 @@ class Draw:
 
         Returns:
             bytes: Packed image data compatible with PIL's frombytes method.
-        
+
         """
         return self._draw.tobytes()

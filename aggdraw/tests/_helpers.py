@@ -24,7 +24,5 @@ def ink_count(im):
     WHITE says nothing about.
     """
     if im.mode != "RGB":
-        raise NotImplementedError(
-            f"ink_count only supports RGB images, got {im.mode!r}"
-        )
+        raise NotImplementedError(f"ink_count only supports RGB images, got {im.mode!r}")
     return int(np.any(np.asarray(im) != WHITE, axis=-1).sum())

@@ -1,4 +1,4 @@
-exclude: '^agg2/'
+exclude: '^(agg2/|patches/)'
 fail_fast: false
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit

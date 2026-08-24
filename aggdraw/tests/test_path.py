@@ -45,6 +45,7 @@ def test_path_close_connects_to_subpath_start():
     Rendered by :func:`_render`, so the background is white and the path is
     drawn in black: a pixel equal to WHITE is blank and anything else is ink.
     """
+
     def build(close):
         p = aggdraw.Path()
         p.moveto(10, 10)
