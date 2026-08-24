@@ -16,6 +16,9 @@ The necessary AGG sources are included in the aggdraw source kit.
 
 For posterity, reference
 `the old documentation <https://web.archive.org/web/20190308154642/http://effbot.org/zone/aggdraw-index.htm>`_.
+Note that this archived page is out of date with the current version of the
+library and describes behaviour that has since changed. Prefer the current
+documentation at https://aggdraw.readthedocs.io/en/stable/.
 
 Build instructions (all platforms)
 ----------------------------------
@@ -33,17 +36,42 @@ Build instructions (all platforms)
 
 2. Configure.
 
-   To enable freetype, you need to build the library somewhere and
-   make sure the `freetype-config` command is available on your PATH. The
-   setup.py file will call `freetype-config --prefix` to locate
-   all of the necessary libraries and headers as part of installation.
+   FreeType is optional. Without it aggdraw builds and draws normally, but
+   ``Font`` cannot be created and the ``Draw.text`` and ``Draw.textsize``
+   methods are not compiled into the extension at all.
+
+   To enable freetype, install it (including its development headers) and
+   let ``setup.py`` locate it. It looks in the following places, in order,
+   and uses the first that succeeds:
+
+   1. The ``AGGDRAW_FREETYPE_ROOT`` environment variable, if set.
+   2. The ``freetype-config --prefix`` command, if ``freetype-config`` is on
+      your PATH. Note this command is deprecated upstream and is absent from
+      most modern freetype installations.
+   3. ``ctypes.util.find_library('freetype')``.
+   4. ``pkgconfig.variables('freetype2')``.
+
+   If autodetection picks the wrong installation, or finds one you do not
+   want used, set the environment variable explicitly::
+
+        $ AGGDRAW_FREETYPE_ROOT=/usr python -m pip install .
+
+   Setting it to an empty string is the supported way to deliberately build
+   *without* freetype; autodetection is skipped entirely. This is how the
+   Windows wheels are built.
+
+   The build reports which of the three outcomes applied::
+
+        === freetype found: '/usr'
+        === freetype disabled by AGGDRAW_FREETYPE_ROOT
+        === freetype not available
 
 3. Build and Install
 
    The library uses a standard setup.py file. Install the library
    using ``pip`` from the root of the aggdraw repository::
 
-        $ python -m pip3 install .
+        $ python -m pip install .
 
    Alternatively, it is possible to install the library in an "editable"
    manner where the python environment will point to the local development
@@ -51,14 +79,19 @@ Build instructions (all platforms)
 
    ::
 
-        $ python -m pip3 install -e .
+        $ python -m pip install -e .
 
    However, since aggdraw depends on compiling extension code, it must be
    re-installed to re-build the extension.
 
 4. Once aggdraw is installed run the tests::
 
-        $ pytest -v
+        $ pytest -v aggdraw/tests
+
+   To test an installed copy of aggdraw from outside a source checkout, run
+   the tests that ship inside the package instead::
+
+        $ pytest -v --pyargs aggdraw.tests
 
 5. Enjoy!
 

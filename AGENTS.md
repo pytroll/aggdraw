@@ -62,9 +62,14 @@ python setup.py build_ext -i
 # Force a specific freetype prefix if autodetection picks the wrong one
 AGGDRAW_FREETYPE_ROOT=/usr python -m pip install -e .
 
-# Run the tests. Use --pyargs: there is no `testpaths` config, so a bare `pytest`
-# from the repo root will also collect stray test_*.py files left in the working tree.
-pytest --pyargs aggdraw.tests
+# Run the tests. In a source checkout, pass the path. `[tool.pytest.ini_options]`
+# in pyproject.toml sets `testpaths = ["aggdraw"]`, so a bare `pytest` from the repo
+# root is scoped to the package too and will not collect stray test_*.py files.
+pytest -v aggdraw/tests
+
+# Use --pyargs only to test an INSTALLED aggdraw with no source tree present -- it
+# resolves the tests that ship inside the package. This is what cibuildwheel runs.
+pytest -v --pyargs aggdraw.tests
 
 # Docs
 python -m pip install -e ".[docs]"

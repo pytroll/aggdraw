@@ -28,3 +28,6 @@ ignore = ["E203"]
 
 [tool.ruff.lint.per-file-ignores]
 "aggdraw/tests/*.py" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["aggdraw"]

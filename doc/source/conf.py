@@ -19,6 +19,13 @@ import sys
 
 sys.path.append(os.path.abspath("../../"))
 
+# Imported after the sys.path tweak above, hence the noqa. Reading the version
+# from the package keeps it from going stale; ``aggdraw/__init__.py`` is the
+# single source of truth and setup.py reads the same file. The import works
+# because the docs build installs the package (and ``automodule:: aggdraw`` in
+# index.rst already requires it to succeed).
+from aggdraw import __version__ as release  # noqa: E402
+
 
 # -- Project information -----------------------------------------------------
 
@@ -27,9 +34,7 @@ copyright = "2018, aggdraw Developers"
 author = "aggdraw Developers"
 
 # The short X.Y version
-version = "1.3.8"
-# The full version, including alpha/beta/rc tags
-release = "1.3.8"
+version = release
 
 
 # -- General configuration ---------------------------------------------------
@@ -51,9 +56,6 @@ extensions = [
 ]
 
 autodoc_member_order = "bysource"
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

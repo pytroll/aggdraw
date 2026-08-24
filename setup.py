@@ -94,14 +94,25 @@ def _get_freetype_with_pkgconfig():
 
 
 FREETYPE_ROOT = os.getenv("AGGDRAW_FREETYPE_ROOT")
-for func in (_get_freetype_config, _get_freetype_with_ctypes, _get_freetype_with_pkgconfig):
-    if FREETYPE_ROOT is None:
-        FREETYPE_ROOT = func()
+# Setting AGGDRAW_FREETYPE_ROOT to an empty string is the supported way to force
+# a build *without* freetype, skipping autodetection entirely. The Windows wheels
+# rely on this to avoid picking up unintended installations (see pyproject.toml).
+FREETYPE_DISABLED = FREETYPE_ROOT == ""
 
-if FREETYPE_ROOT is None:
-    print("=== freetype not available")
-else:
+if not FREETYPE_DISABLED:
+    for func in (_get_freetype_config, _get_freetype_with_ctypes, _get_freetype_with_pkgconfig):
+        # Not `is None`: a detector can also return an empty string (a
+        # freetype-config that exits 0 but prints nothing), which must not be
+        # mistaken for a usable prefix or stop the remaining detectors.
+        if not FREETYPE_ROOT:
+            FREETYPE_ROOT = func()
+
+if FREETYPE_DISABLED:
+    print("=== freetype disabled by AGGDRAW_FREETYPE_ROOT")
+elif FREETYPE_ROOT:
     print(f"=== freetype found: '{FREETYPE_ROOT}'")
+else:
+    print("=== freetype not available")
 
 sources = [
     # source code currently used by aggdraw
