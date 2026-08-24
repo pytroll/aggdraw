@@ -162,8 +162,11 @@ decision, and do not document them wrongly.
 
 ## Releases
 
-1. Bump `VERSION` in `aggdraw/__init__.py`. That is the single source of truth — `setup.py`
-   regex-reads it and passes it into C as a `-DVERSION` macro.
+1. Bump `VERSION` in `aggdraw/__init__.py`. That is the single source of truth, read two ways:
+   `pyproject.toml` declares `version` as dynamic and picks it up via
+   `[tool.setuptools.dynamic] version = {attr = "aggdraw.VERSION"}` (a static AST parse, so the
+   extension need not be built), and `setup.py` regex-reads it to pass into C as a `-DVERSION`
+   macro.
 2. Add a `## Version X.Y.Z` section at the top of `CHANGELOG.md`.
 3. Tag `vX.Y.Z` and push; the `publish` CI job uploads to PyPI.
 

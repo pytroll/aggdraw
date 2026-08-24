@@ -1,11 +1,49 @@
 [build-system]
-requires = ["packaging", "setuptools"]
+requires = ["packaging", "setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "aggdraw"
+dynamic = ["version"]
+description = "High quality drawing interface for PIL."
+readme = "README.rst"
+license = "MIT-CMU"
+license-files = ["LICENSE.txt"]
+requires-python = ">=3.11"
+authors = [{name = "Fredrik Lundh", email = "fredrik@pythonware.com"}]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Free Threading :: 1 - Unstable",
+]
+dependencies = ["pillow"]
+
+[project.optional-dependencies]
+tests = ["pytest", "numpy", "pillow"]
+docs = ["sphinx", "sphinx_rtd_theme"]
+
+[project.urls]
+Homepage = "https://github.com/pytroll/aggdraw"
+Documentation = "https://aggdraw.readthedocs.io/en/stable/"
+
+# VERSION in aggdraw/__init__.py is the single source of truth. setuptools reads
+# it with a static AST parse, so the C extension does not need to be built first.
+[tool.setuptools.dynamic]
+version = {attr = "aggdraw.VERSION"}
+
+[tool.setuptools.packages.find]
+include = ["aggdraw*"]
 
 [tool.cibuildwheel]
 test-command = "pytest --pyargs aggdraw.tests"
 skip = "cp39-* cp310-* *-win32 *i686 *-musllinux*"
-test-requires = ["numpy", "pillow", "pytest"]
+test-extras = ["tests"]
 test-skip = "*-win_arm64"
 
 [tool.cibuildwheel.linux]

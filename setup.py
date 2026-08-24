@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 #
-# Setup script for aggdraw
+# Build script for the aggdraw C extension.
+#
+# Package metadata lives in pyproject.toml; this file only handles locating
+# FreeType and describing the `aggdraw._aggdraw` extension module.
 #
 # Usage:
 #
@@ -19,10 +22,7 @@ from pathlib import Path
 from sysconfig import get_config_var
 
 from packaging.version import Version
-from setuptools import setup, Extension, find_packages
-
-SUMMARY = "High quality drawing interface for PIL."
-README = Path("README.rst").read_text(encoding="utf-8")
+from setuptools import setup, Extension
 
 
 def get_version(path):
@@ -152,27 +152,6 @@ if FREETYPE_ROOT:
     libraries.append("freetype")
 
 setup(
-    name="aggdraw",
-    version=VERSION,
-    author="Fredrik Lundh",
-    author_email="fredrik@pythonware.com",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Topic :: Multimedia :: Graphics",
-        "Topic :: Software Development :: Libraries",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13",
-        "Programming Language :: Python :: 3.14",
-        "Programming Language :: Python :: Free Threading :: 1 - Unstable",
-    ],
-    description=SUMMARY,
-    long_description=README,
-    long_description_content_type="text/x-rst",
-    license="Python (MIT style)",
-    url="https://github.com/pytroll/aggdraw",
-    packages=find_packages(),
     ext_modules=[
         Extension(
             "aggdraw._aggdraw",
@@ -183,13 +162,4 @@ setup(
             libraries=libraries,
         )
     ],
-    extras_require={
-        "tests": ["pytest", "numpy", "pillow"],
-        "docs": [
-            "sphinx",
-            "sphinx_rtd_theme",
-        ],
-    },
-    install_requires=["pillow"],
-    python_requires=">=3.11",
 )
