@@ -4,30 +4,30 @@
 #
 # Usage:
 #
-#   To build in current directory:
-#   $ python setup.py build_ext -i
+#   To build in place (editable install):
+#   $ python -m pip install -e .
 #
 #   To build and install:
-#   $ python setup.py install
+#   $ python -m pip install .
 #
 import os
 import re
 import sys
 import subprocess
 import platform
+from pathlib import Path
 from sysconfig import get_config_var
 
 from packaging.version import Version
 from setuptools import setup, Extension, find_packages
 
 SUMMARY = "High quality drawing interface for PIL."
-README = open("README.rst").read()
+README = Path("README.rst").read_text(encoding="utf-8")
 
 
 def get_version(path):
     version_regex = re.compile(r'\nVERSION = "([\w\.]+)"')
-    with open(path) as f:
-        return version_regex.findall(f.read())[0]
+    return version_regex.findall(Path(path).read_text(encoding="utf-8"))[0]
 
 
 VERSION = get_version(os.path.join("aggdraw", "__init__.py"))
@@ -157,9 +157,14 @@ setup(
     author="Fredrik Lundh",
     author_email="fredrik@pythonware.com",
     classifiers=[
-        "Development Status :: 4 - Beta",
-        # "Development Status :: 5 - Production/Stable",
+        "Development Status :: 5 - Production/Stable",
         "Topic :: Multimedia :: Graphics",
+        "Topic :: Software Development :: Libraries",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Programming Language :: Python :: Free Threading :: 1 - Unstable",
     ],
     description=SUMMARY,
@@ -185,5 +190,6 @@ setup(
             "sphinx_rtd_theme",
         ],
     },
+    install_requires=["pillow"],
     python_requires=">=3.11",
 )

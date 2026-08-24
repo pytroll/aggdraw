@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix incorrect and missing docstrings in the C extension (`help()` output)
+- Declare Pillow as a runtime dependency (`install_requires`)
 
 ## Version 1.4.1
 

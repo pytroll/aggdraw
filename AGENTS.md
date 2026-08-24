@@ -56,8 +56,6 @@ Editing `core.py` alone needs no rebuild.
 ```bash
 # Build in place / editable install
 python -m pip install -e .
-# or, equivalently, the old path documented at the top of setup.py:
-python setup.py build_ext -i
 
 # Force a specific freetype prefix if autodetection picks the wrong one
 AGGDRAW_FREETYPE_ROOT=/usr python -m pip install -e .
