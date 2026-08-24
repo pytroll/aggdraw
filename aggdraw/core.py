@@ -140,11 +140,12 @@ class Symbol:
 
     Args:
         path (str): An SVG-style path descriptor.
+        scale (float, optional): A multiplier applied to every coordinate in the
+            path descriptor as it is parsed. Defaults to 1.0.
 
     """
 
     def __init__(self, path, scale=1.0):
-        # NOTE: 'scale' param is undocumented
         self._path = _aggdraw.Symbol(path, scale)
 
 
@@ -593,9 +594,6 @@ class Draw:
             xy: A 2-element Python sequence (x, y).
             text (str): A string of text to render.
             font (:class:`aggdraw.Font`): The font object to render with.
-
-        Returns:
-            tuple: A (width, height) tuple.
 
         """
         self._draw.text(xy, text, font._font)

@@ -1,5 +1,9 @@
 # The aggdraw Library
 
+## Unreleased
+
+- Fix incorrect and missing docstrings in the C extension (`help()` output)
+
 ## Version 1.4.1
 
 - Fix point arrays not being deleted as arrays

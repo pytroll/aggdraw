@@ -911,6 +911,11 @@ getcolor(PyObject* color, int opacity)
 
 const char *draw_arc_doc = "Draw a arc.\n"
                            "\n"
+                           "A single optional pen or brush may be given; it is selected by\n"
+                           "type, not by position. With a pen the arc is stroked as a curved\n"
+                           "line. With a brush the arc is filled instead, giving the same\n"
+                           "result as a chord with that brush.\n"
+                           "\n"
                            "Parameters\n"
                            "----------\n"
                            "xy : iterable\n"
@@ -920,8 +925,9 @@ const char *draw_arc_doc = "Draw a arc.\n"
                            "    Start angle in degrees.\n"
                            "end : float\n"
                            "    End angle in degrees.\n"
-                           "pen : Pen, optional\n"
-                           "    Optional pen object created by the `Pen` factory.\n";
+                           "pen : Pen or Brush, optional\n"
+                           "    An optional pen object created by the `Pen` factory, or a\n"
+                           "    brush object created by the `Brush` factory.\n";
 
 static PyObject*
 draw_arc(DrawObject* self, PyObject* args)
@@ -953,6 +959,8 @@ const char *draw_chord_doc = "Draw a chord.\n"
                              "If a brush is given, it is used to fill the chord.\n"
                              "If a pen is given, it is used to draw an outline around the chord.\n"
                              "Either one (or both) can be left out.\n"
+                             "The pen and brush arguments are selected by type, so the order in\n"
+                             "which they are given does not matter.\n"
                              "\n"
                              "Parameters\n"
                              "----------\n"
@@ -1000,6 +1008,8 @@ const char *draw_ellipse_doc = "Draw a ellipse.\n"
                                "If a brush is given, it is used to fill the ellipse.\n"
                                "If a pen is given, it is used to draw an outline around the ellipse.\n"
                                "Either one (or both) can be left out.\n"
+                               "The pen and brush arguments are selected by type, so the order in\n"
+                               "which they are given does not matter.\n"
                                "\n"
                                "Parameters\n"
                                "----------\n"
@@ -1007,10 +1017,10 @@ const char *draw_ellipse_doc = "Draw a ellipse.\n"
                                "    A 4-element Python sequence (x, y, x, y), with the\n"
                                "    upper left corner given first. To draw a circle, make sure the\n"
                                "    coordinates form a square.\n"
-                               "pen : Pen, optional\n"
-                               "    Optional pen object created by the `Pen` factory.\n"
                                "brush : Brush, optional\n"
-                               "    Optional brush object created by the `Brush` factory.\n";
+                               "    Optional brush object created by the `Brush` factory.\n"
+                               "pen : Pen, optional\n"
+                               "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_ellipse(DrawObject* self, PyObject* args)
@@ -1088,6 +1098,8 @@ const char *draw_pieslice_doc = "Draw a pieslice.\n"
                              "If a brush is given, it is used to fill the pieslice.\n"
                              "If a pen is given, it is used to draw an outline around the pieslice.\n"
                              "Either one (or both) can be left out.\n"
+                             "The pen and brush arguments are selected by type, so the order in\n"
+                             "which they are given does not matter.\n"
                              "\n"
                              "Parameters\n"
                              "----------\n"
@@ -1139,15 +1151,17 @@ const char *draw_polygon_doc = "Draw a polygon.\n"
                                "If a brush is given, it is used to fill the polygon.\n"
                                "If a pen is given, it is used to draw an outline around the polygon.\n"
                                "Either one (or both) can be left out.\n"
+                               "The pen and brush arguments are selected by type, so the order in\n"
+                               "which they are given does not matter.\n"
                                "\n"
                                "Parameters\n"
                                "----------\n"
                                "xy : iterable\n"
                                "    A Python sequence (x, y, x, y, …).\n"
-                               "pen : Pen\n"
-                               "    Optional pen object created by the `Pen` factory.\n"
-                               "brush : Brush\n"
-                               "    Optional brush object created by the `Brush` factory.\n";
+                               "brush : Brush, optional\n"
+                               "    Optional brush object created by the `Brush` factory.\n"
+                               "pen : Pen, optional\n"
+                               "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_polygon(DrawObject* self, PyObject* args)
@@ -1183,16 +1197,18 @@ const char *draw_rectangle_doc = "Draw a rectangle.\n"
                                  "If a brush is given, it is used to fill the rectangle.\n"
                                  "If a pen is given, it is used to draw an outline around the rectangle.\n"
                                  "Either one (or both) can be left out.\n"
+                                 "The pen and brush arguments are selected by type, so the order in\n"
+                                 "which they are given does not matter.\n"
                                  "\n"
                                  "Parameters\n"
                                  "----------\n"
                                  "xy : iterable\n"
                                  "    A 4-element Python sequence (x, y, x, y), with the\n"
                                  "    upper left corner given first.\n"
-                                 "pen : Pen\n"
-                                 "    Optional pen object created by the `Pen` factory.\n"
-                                 "brush : Brush\n"
-                                 "    Optional brush object created by the `Brush` factory.\n";
+                                 "brush : Brush, optional\n"
+                                 "    Optional brush object created by the `Brush` factory.\n"
+                                 "pen : Pen, optional\n"
+                                 "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_rectangle(DrawObject* self, PyObject* args)
@@ -1222,6 +1238,8 @@ const char *draw_rounded_rectangle_doc = "Draw a rounded rectangle.\n"
                                "If a brush is given, it is used to fill the rounded rectangle.\n"
                                "If a pen is given, it is used to draw an outline around the rounded rectangle.\n"
                                "Either one (or both) can be left out.\n"
+                               "The pen and brush arguments are selected by type, so the order in\n"
+                               "which they are given does not matter.\n"
                                "\n"
                                "Parameters\n"
                                "----------\n"
@@ -1230,10 +1248,10 @@ const char *draw_rounded_rectangle_doc = "Draw a rounded rectangle.\n"
                                "    upper left corner given first.\n"
                                "radius : float\n"
                                "    The corner radius\n"
-                               "pen : Pen\n"
-                               "    Optional pen object created by the `Pen` factory.\n"
-                               "brush : Brush\n"
-                               "    Optional brush object created by the `Brush` factory.\n";
+                               "brush : Brush, optional\n"
+                               "    Optional brush object created by the `Brush` factory.\n"
+                               "pen : Pen, optional\n"
+                               "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_rounded_rectangle(DrawObject* self, PyObject* args)
@@ -1261,15 +1279,17 @@ const char *draw_path_doc = "Draw the given path.\n"
                             "If a brush is given, it is used to fill the path.\n"
                             "If a pen is given, it is used to draw an outline around the path.\n"
                             "Either one (or both) can be left out.\n"
+                            "The pen and brush arguments are selected by type, so the order in\n"
+                            "which they are given does not matter.\n"
                             "\n"
                             "Parameters\n"
                             "----------\n"
                             "path : Path\n"
                             "    Path object created by the `Path` factory.\n"
-                            "pen : Pen\n"
-                            "    Optional pen object created by the `Pen` factory.\n"
-                            "brush : Brush\n"
-                            "    Optional brush object created by the `Brush` factory.\n";
+                            "brush : Brush, optional\n"
+                            "    Optional brush object created by the `Brush` factory.\n"
+                            "pen : Pen, optional\n"
+                            "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_path(DrawObject* self, PyObject* args){
@@ -1297,6 +1317,8 @@ const char *draw_symbol_doc = "Draw a symbol at the given positions (experimenta
                               "If a brush is given, it is used to fill the symbol.\n"
                               "If a pen is given, it is used to draw an outline around the symbol.\n"
                               "Either one (or both) can be left out.\n"
+                              "The pen and brush arguments are selected by type, so the order in\n"
+                              "which they are given does not matter.\n"
                               "\n"
                               "Parameters\n"
                               "----------\n"
@@ -1304,10 +1326,10 @@ const char *draw_symbol_doc = "Draw a symbol at the given positions (experimenta
                               "    A Python sequence (x, y, x, y, …).\n"
                               "symbol : Symbol\n"
                               "    Symbol object created by the `Symbol` factory.\n"
-                              "pen : Pen\n"
-                              "    Optional pen object created by the `Pen` factory.\n"
-                              "brush : Brush\n"
-                              "    Optional brush object created by the `Brush` factory.\n";
+                              "brush : Brush, optional\n"
+                              "    Optional brush object created by the `Brush` factory.\n"
+                              "pen : Pen, optional\n"
+                              "    Optional pen object created by the `Pen` factory.\n";
 
 static PyObject*
 draw_symbol(DrawObject* self, PyObject* args)
@@ -1372,21 +1394,27 @@ draw_text(DrawObject* self, PyObject* args)
 
 #if defined(HAVE_FREETYPE2)
 
-const char *draw_textsize_doc = "Draws a text string at the given position, using the given font.\n"
+const char *draw_textsize_doc = "Measure a text string as it would be drawn with the given font.\n"
                                 "\n"
                                 "Parameters\n"
                                 "----------\n"
                                 "text : str\n"
                                 "    String to get the drawn size of.\n"
                                 "font : Font\n"
-                                "    A font object created by the Font factory.\n";
+                                "    A font object created by the Font factory.\n"
+                                "\n"
+                                "Returns\n"
+                                "-------\n"
+                                "tuple\n"
+                                "    A (width, height) tuple, in pixels. The height is the\n"
+                                "    font's line height, not the ink height of this string.\n";
 
 static PyObject*
 draw_textsize(DrawObject* self, PyObject* args)
 {
     PyObject* text;
     FontObject* font;
-    if (!PyArg_ParseTuple(args, "OO!:text", &text, &FontType, &font))
+    if (!PyArg_ParseTuple(args, "OO!:textsize", &text, &FontType, &font))
         return NULL;
 
     FT_Face face = font_load(font);
@@ -1517,8 +1545,13 @@ const char *draw_clear_doc = "Clear the image.\n"
                              "Parameters\n"
                              "----------\n"
                              "color : tuple or str or int\n"
-                             "    Background color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
-                             "    a CSS-style color name, or a color integer (0xaarrggbb).\n";
+                             "    Background color. An (R, G, B) tuple takes its alpha from `opacity`; an\n"
+                             "    (R, G, B, A) tuple sets alpha directly and overrides `opacity`.\n"
+                             "    Strings are resolved by PIL.ImageColor.getrgb, so CSS color names,\n"
+                             "    '#rgb', '#rrggbb' and 'rgb(...)' all work; forms resolving to four\n"
+                             "    components such as 'rgba(...)' do not. An integer from 0 to 255 is a\n"
+                             "    shade of gray, and out-of-range values wrap (300 gives the same gray\n"
+                             "    as 44). An unrecognized color is silently treated as black.\n";
 
 static PyObject*
 draw_clear(DrawObject* self, PyObject* args)
@@ -1651,9 +1684,14 @@ const char *pen_doc = "Creates a Pen object.\n"
                       "Parameters\n"
                       "----------\n"
                       "color : tuple or str or int\n"
-                      "    Pen color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
-                      "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
-                      "width : int, optional\n"
+                      "    Pen color. An (R, G, B) tuple takes its alpha from `opacity`; an\n"
+                      "    (R, G, B, A) tuple sets alpha directly and overrides `opacity`.\n"
+                      "    Strings are resolved by PIL.ImageColor.getrgb, so CSS color names,\n"
+                      "    '#rgb', '#rrggbb' and 'rgb(...)' all work; forms resolving to four\n"
+                      "    components such as 'rgba(...)' do not. An integer from 0 to 255 is a\n"
+                      "    shade of gray, and out-of-range values wrap (300 gives the same gray\n"
+                      "    as 44). An unrecognized color is silently treated as black.\n"
+                      "width : float, optional\n"
                       "    Pen width. Default 1.\n"
                       "opacity : int, optional\n"
                       "    Pen opacity. Default 255.\n";
@@ -1695,8 +1733,13 @@ const char *brush_doc = "Creates a brush object.\n"
                         "Parameters\n"
                         "----------\n"
                         "color : tuple or str or int\n"
-                        "    Brush color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
-                        "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
+                        "    Brush color. An (R, G, B) tuple takes its alpha from `opacity`; an\n"
+                        "    (R, G, B, A) tuple sets alpha directly and overrides `opacity`.\n"
+                        "    Strings are resolved by PIL.ImageColor.getrgb, so CSS color names,\n"
+                        "    '#rgb', '#rrggbb' and 'rgb(...)' all work; forms resolving to four\n"
+                        "    components such as 'rgba(...)' do not. An integer from 0 to 255 is a\n"
+                        "    shade of gray, and out-of-range values wrap (300 gives the same gray\n"
+                        "    as 44). An unrecognized color is silently treated as black.\n"
                         "opacity : int, optional\n"
                         "    Brush opacity. Default 255.\n";
 
@@ -1736,11 +1779,16 @@ const char *font_doc = "Create a font object from a truetype font file for use w
                        "Parameters\n"
                        "----------\n"
                        "color : tuple or str or int\n"
-                       "    Font color. This can be a color tuple (R, G, B) or (R, G, B, A), \n"
-                       "    a CSS-style color name, or a color integer (0xaarrggbb).\n"
+                       "    Font color. An (R, G, B) tuple takes its alpha from `opacity`; an\n"
+                       "    (R, G, B, A) tuple sets alpha directly and overrides `opacity`.\n"
+                       "    Strings are resolved by PIL.ImageColor.getrgb, so CSS color names,\n"
+                       "    '#rgb', '#rrggbb' and 'rgb(...)' all work; forms resolving to four\n"
+                       "    components such as 'rgba(...)' do not. An integer from 0 to 255 is a\n"
+                       "    shade of gray, and out-of-range values wrap (300 gives the same gray\n"
+                       "    as 44). An unrecognized color is silently treated as black.\n"
                        "file : str\n"
                        "    Font source file.\n"
-                       "size : int, optional\n"
+                       "size : float, optional\n"
                        "    Font size in pixels. Default 12.\n"
                        "opacity : int, optional\n"
                        "    Font opacity. Default 255.\n";
@@ -1905,7 +1953,14 @@ font_dealloc(FontObject* self)
 
 /* -------------------------------------------------------------------- */
 
-const char *path_doc = "Path factory (experimental).\n";
+const char *path_doc = "Path factory (experimental).\n"
+                       "\n"
+                       "Parameters\n"
+                       "----------\n"
+                       "xy : iterable, optional\n"
+                       "    A Python sequence (x, y, x, y, ...) used to initialize the\n"
+                       "    path. The path moves to the first coordinate pair and adds a\n"
+                       "    line segment to each remaining pair.\n";
 
 static PyObject*
 path_new(PyObject* self_, PyObject* args)
@@ -1946,7 +2001,10 @@ const char *symbol_doc = "Create a Symbol object for use with :meth:`Draw.symbol
                          "    are supported: M (move), L (line), H (horizontal line), V (vertical line),\n"
                          "    C (cubic bezier), S (smooth cubic bezier), Q (quadratic bezier),\n"
                          "    T (smooth quadratic bezier), and Z (close path). Use lower-case\n"
-                         "    operators for relative coordinates, upper-case for absolute coordinates.\n";
+                         "    operators for relative coordinates, upper-case for absolute coordinates.\n"
+                         "scale : float, optional\n"
+                         "    A multiplier applied to every coordinate in the path descriptor\n"
+                         "    as it is parsed. Default 1.0.\n";
 
 static PyObject*
 symbol_new(PyObject* self_, PyObject* args)
@@ -2226,7 +2284,9 @@ path_rlineto(PathObject* self, PyObject* args)
     return Py_None;
 }
 
-const char *path_curveto_doc = "Adds a line segment to the path.\n"
+const char *path_curveto_doc = "Adds a cubic bezier curve segment to the path.\n"
+                               "\n"
+                               "(x1, y1) and (x2, y2) are the control points, (x, y) is the end point.\n"
                                "\n"
                                "Parameters\n"
                                "----------\n"
@@ -2301,6 +2361,16 @@ path_close(PathObject* self, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+const char *path_polygon_doc = "Adds a closed polygon subpath to the path.\n"
+                               "\n"
+                               "Moves to the first coordinate pair, adds a line segment to each\n"
+                               "remaining pair, then closes the subpath.\n"
+                               "\n"
+                               "Parameters\n"
+                               "----------\n"
+                               "xy : iterable\n"
+                               "    A Python sequence (x, y, x, y, ...).\n";
 
 static PyObject*
 path_polygon(PathObject* self, PyObject* args)
@@ -2381,7 +2451,7 @@ static PyMethodDef path_methods[] = {
 
     {"close", (PyCFunction) path_close, METH_VARARGS, path_close_doc},
 
-    {"polygon", (PyCFunction) path_polygon, METH_VARARGS},
+    {"polygon", (PyCFunction) path_polygon, METH_VARARGS, path_polygon_doc},
 
     {"coords", (PyCFunction) path_coords, METH_VARARGS, path_coords_doc},
 
