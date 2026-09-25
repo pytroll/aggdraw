@@ -106,3 +106,52 @@ def test_polygon_closes_coords_but_not_path():
     filled_coords = polygon(corner, brush=brush)
     filled_path = polygon(open_path, brush=brush)
     assert filled_coords.tobytes() == filled_path.tobytes()
+
+
+def test_symbol_stamps_a_path_at_every_position():
+    """Draw.symbol translates a copy of the path to each point in xy.
+
+    This is the only thing that distinguishes it from Draw.path, which draws
+    the path once at the coordinates it was defined with.
+    """
+    path = aggdraw.Path.from_svg("M0,0 L20,0 L20,20 Z")
+    draw = aggdraw.Draw("RGB", (100, 100), "white")
+    draw.symbol((10, 10, 60, 60), path, aggdraw.Pen("black", 1))
+    im = to_image(draw)
+
+    # A copy lands at each position...
+    assert im.getpixel((20, 10)) != WHITE
+    assert im.getpixel((70, 60)) != WHITE
+    # ...and the gap between them is left alone
+    assert im.getpixel((45, 40)) == WHITE
+
+
+def test_draw_type_is_readable():
+    """type() on the underlying C Draw object must not crash.
+
+    The C type objects are only given an ob_type by PyType_Ready, which the
+    module init used to skip entirely.
+    """
+    from aggdraw import Draw
+
+    assert type(Draw("RGB", (10, 10), "white")._draw).__name__ == "Draw"
+
+
+def test_draw_rejects_keyword_arguments():
+    """Draw() and Path() take no keyword arguments.
+
+    They are tp_new slots now, and tp_new is handed keywords whether or not it
+    wants them; without an explicit check they would be silently ignored.
+    """
+    import pytest
+
+    from aggdraw import _aggdraw
+
+    with pytest.raises(TypeError, match="no keyword arguments"):
+        _aggdraw.Draw("RGB", (4, 4), color="red")
+    with pytest.raises(TypeError, match="no keyword arguments"):
+        _aggdraw.Path([0, 0, 1, 1], bogus=1)
+
+    # the keyword-accepting constructors are unaffected
+    assert _aggdraw.Pen(color="red", width=2).width == 2.0
+    assert _aggdraw.Brush(color="red", opacity=128).color == (255, 0, 0, 128)

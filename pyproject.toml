@@ -59,6 +59,7 @@ environment = "MACOSX_DEPLOYMENT_TARGET=14"
 
 [tool.ruff]
 line-length = 120
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "W", "B", "UP", "S"]

@@ -68,3 +68,12 @@ def test_brush_rgba_tuple_overrides_opacity():
     # ...while a 4-tuple sets it directly, ignoring opacity entirely
     assert _fill((255, 0, 0, 128)) == half_red
     assert _fill((255, 0, 0, 255), opacity=128) == (255, 0, 0)
+
+
+def test_brush_exposes_color():
+    """Brush.color reports the resolved color, including opacity."""
+    from aggdraw import Brush
+
+    assert Brush("blue").color == (0, 0, 255, 255)
+    assert Brush("blue", 128).color == (0, 0, 255, 128)
+    assert Brush("not a color").color == (0, 0, 0, 255)

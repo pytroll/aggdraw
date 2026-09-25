@@ -1,3 +1,5 @@
+import warnings
+
 import aggdraw._aggdraw as _aggdraw
 
 
@@ -33,6 +35,16 @@ class Brush:
 
     def __init__(self, color, opacity=255):
         self._brush = _aggdraw.Brush(color, opacity)
+
+    @property
+    def color(self):
+        """tuple: The resolved brush color as ``(R, G, B, A)``.
+
+        This is the color after parsing, so a color that could not be
+        recognized reads back as black.
+
+        """
+        return self._brush.color
 
 
 class Pen:
@@ -80,6 +92,21 @@ class Pen:
     def __init__(self, color, width=1, opacity=255):
         self._pen = _aggdraw.Pen(color, width, opacity)
 
+    @property
+    def color(self):
+        """tuple: The resolved pen color as ``(R, G, B, A)``.
+
+        This is the color after parsing, so a color that could not be
+        recognized reads back as black.
+
+        """
+        return self._pen.color
+
+    @property
+    def width(self):
+        """float: The width of the pen."""
+        return self._pen.width
+
 
 class Font:
     """Creates a font object.
@@ -117,36 +144,25 @@ class Font:
         # NOTE: Only available if compiled with FreeType support
         self._font = _aggdraw.Font(color, file, size, opacity)
 
+    @property
+    def family(self):
+        """str: The font family name reported by FreeType."""
+        return self._font.family
 
-class Symbol:
-    """Symbol factory.
+    @property
+    def style(self):
+        """str: The font style name reported by FreeType."""
+        return self._font.style
 
-    This creates a symbol object from an SVG-style path descriptor for use with
-    :meth:`~aggdraw.Draw.symbol`.
+    @property
+    def ascent(self):
+        """float: The font ascent, in pixels."""
+        return self._font.ascent
 
-    The following operators are supported:
-     * M (move)
-     * L (line)
-     * H (horizontal line)
-     * V (vertical line)
-     * C (cubic bezier)
-     * S (smooth cubic bezier)
-     * Q (quadratic bezier)
-     * T (smooth quadratic bezier)
-     * Z (close path)
-
-    Use lower-case operators for relative coordinates, upper-case for absolute
-    coordinates.
-
-    Args:
-        path (str): An SVG-style path descriptor.
-        scale (float, optional): A multiplier applied to every coordinate in the
-            path descriptor as it is parsed. Defaults to 1.0.
-
-    """
-
-    def __init__(self, path, scale=1.0):
-        self._path = _aggdraw.Symbol(path, scale)
+    @property
+    def descent(self):
+        """float: The font descent, in pixels, as a positive number."""
+        return self._font.descent
 
 
 class Path:
@@ -170,6 +186,58 @@ class Path:
             self._path = _aggdraw.Path(path)
         else:
             self._path = _aggdraw.Path()
+
+    # Deliberately out of the otherwise-alphabetical method order: an alternate
+    # constructor belongs at the top, and autodoc_member_order is "bysource".
+    @classmethod
+    def from_svg(cls, path, scale=1.0):
+        """Creates a path from an SVG-style path descriptor.
+
+        The following operators are supported:
+         * M (move)
+         * L (line)
+         * H (horizontal line)
+         * V (vertical line)
+         * C (cubic bezier)
+         * S (smooth cubic bezier)
+         * Q (quadratic bezier)
+         * T (smooth quadratic bezier)
+         * Z (close path)
+
+        Use lower-case operators for relative coordinates, upper-case for
+        absolute coordinates. Curves are flattened to line segments as the
+        descriptor is parsed, so :meth:`~aggdraw.Path.coords` on the result
+        returns the flattened geometry.
+
+        The returned path is an ordinary path: it can be extended with
+        :meth:`~aggdraw.Path.lineto` and the other segment methods, and drawn
+        with either :meth:`~aggdraw.Draw.path` or :meth:`~aggdraw.Draw.symbol`.
+
+        Example::
+
+           path = aggdraw.Path.from_svg("M400,200 L400,400")
+
+        This is a classmethod, so calling it on a subclass returns an instance
+        of that subclass. It builds the object directly and does not call
+        ``__init__``.
+
+        .. versionadded:: 2.0.0
+
+        Args:
+            path (str): An SVG-style path descriptor.
+            scale (float, optional): A multiplier applied to every coordinate in
+                the path descriptor as it is parsed. Defaults to 1.0.
+
+        Returns:
+            :class:`aggdraw.Path`: A new path, of the class this was called on.
+
+        Raises:
+            ValueError: If the descriptor cannot be parsed.
+
+        """
+        new_path = cls.__new__(cls)
+        new_path._path = _aggdraw.Path.from_svg(path, scale)
+        return new_path
 
     def close(self):
         """Closes the current path.
@@ -281,6 +349,43 @@ class Path:
         self._path.rmoveto(x, y)
 
 
+class Symbol(Path):
+    """A path created from an SVG-style path descriptor.
+
+    .. deprecated:: 2.0.0
+       Use :meth:`aggdraw.Path.from_svg` instead. Constructing a ``Symbol``
+       emits a :exc:`UserWarning`. A ``Symbol`` is now a subclass of
+       :class:`aggdraw.Path` that adds no state and no methods of its own, so
+       existing symbols keep working everywhere a path does. See
+       `issue #145 <https://github.com/pytroll/aggdraw/issues/145>`_.
+
+    Args:
+        path (str): An SVG-style path descriptor. See
+            :meth:`~aggdraw.Path.from_svg` for the supported operators.
+        scale (float, optional): A multiplier applied to every coordinate in the
+            path descriptor as it is parsed. Defaults to 1.0.
+
+    """
+
+    # The warning lives in __new__ rather than __init__ so that the inherited
+    # Path.from_svg -- which calls cls.__new__ and skips __init__ -- warns too.
+    def __new__(cls, *args, **kwargs):
+        warnings.warn(
+            "aggdraw.Symbol is deprecated and will be removed in a future "
+            "release; use aggdraw.Path.from_svg(path, scale) instead. "
+            "See https://github.com/pytroll/aggdraw/issues/145",
+            UserWarning,
+            stacklevel=2,
+        )
+        return super().__new__(cls)
+
+    def __init__(self, path, scale=1.0):
+        # Deliberately does not call Path.__init__: the C constructor parses the
+        # descriptor and builds the path itself, so super() would only allocate
+        # an empty _aggdraw.Path and throw it away.
+        self._path = _aggdraw.Symbol(path, scale)
+
+
 class Draw:
     """Creates a drawing interface object.
 
@@ -317,9 +422,9 @@ class Draw:
         return self._draw.mode
 
     def _parse_args(self, brush=None, pen=None):
-        # Allow order of brush and pen to be reversed, matching C++ API
-        # NOTE: This segfaults for some reason if pen and brush are swapped here
-        # instead of leaving it to the C++ extension to handle
+        # Allow order of brush and pen to be reversed, matching C++ API.
+        # The C dispatcher picks pen and brush by type, not by position, so
+        # this only has to unwrap whichever object it was actually handed.
         if brush:
             brush = brush._pen if isinstance(brush, Pen) else brush._brush
         if pen:
@@ -432,7 +537,7 @@ class Draw:
         specific location on the surface, see :meth:`~aggdraw.Draw.symbol`.
 
         Args:
-            path (:class:`aggdraw.Path`): The Path object to draw.
+            path (:class:`aggdraw.Path`): The path to draw.
             pen (:class:`aggdraw.Pen`, optional): A pen to use for drawing an outline
                 around the path.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
@@ -566,13 +671,13 @@ class Draw:
         it is used to draw an outline around the symbol. Either one (or both)
         can be left out.
 
-        This method can be used to draw both :class:`aggdraw.Symbol` or
-        :class:`aggdraw.Path` objects.
+        This stamps a copy of the path at every position in ``xy``, whereas
+        :meth:`~aggdraw.Draw.path` draws it once at the coordinates it was
+        defined with. Any :class:`aggdraw.Path` can be drawn this way.
 
         Args:
             xy: A Python sequence in the format (x, y, x, y, ...)
-            symbol (:class:`aggdraw.Symbol`, :class:`aggdraw.Path`): The Symbol (or
-                Path) object to draw.
+            symbol (:class:`aggdraw.Path`): The path to stamp at each position.
             pen (:class:`aggdraw.Pen`, optional): A pen to use for drawing an outline
                 around the symbol.
             brush (:class:`aggdraw.Brush`, optional): A brush to use for filling
