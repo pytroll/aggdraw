@@ -41,6 +41,7 @@
  * 2017-08-18 dh   fixed mode to be python str instead of bytes
  * 2017-08-18 dh   fixed a couple compiler warnings (specifically clang)
  * 2018-04-21 dh   fixed python 2 compatibility in getcolor
+ * 2026-08-24 dh   dropped Python 2 support code; ready types at import
  *
  * Copyright (c) 2011-2017 by AggDraw Developers
  *
@@ -61,18 +62,6 @@
 #define PY_SSIZE_T_CLEAN 1
 
 #include "Python.h"
-#if PY_MAJOR_VERSION >= 3
-#define IS_PY3K
-#define HAVE_UNICODE
-#endif
-#include "bytesobject.h"
-
-#if defined(PY_VERSION_HEX) && PY_VERSION_HEX >= 0x01060000
-#if PY_VERSION_HEX  < 0x02020000 || defined(Py_USING_UNICODE)
-/* defining this enables unicode support (default under 1.6a1 and later) */
-#define HAVE_UNICODE
-#endif
-#endif
 
 /* agg2 components */
 #include "agg_arc.h"
@@ -125,47 +114,23 @@ typedef struct {
     PyObject* background;
 } DrawObject;
 
-#ifndef Py_TYPE
-    #define Py_TYPE(ob) (((PyObject*)(ob))->ob_type)
-#endif
-
 /* glue functions (see the init function for details) */
 static PyObject* aggdraw_getcolor_obj;
 
-static void draw_dealloc(DrawObject* self);
-#ifdef IS_PY3K
-static PyObject* draw_getattro(DrawObject* self, PyObject* nameobj);
-static PyTypeObject DrawType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Draw", sizeof(DrawObject), 0,
-    /* methods */
-    (destructor) draw_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-    0, /* tp_reserved */
-    0, /* tp_repr */
-    0, /* tp_as_number */
-    0, /* tp_as_sequence */
-    0, /* tp_as_mapping */
-    0, /* tp_hash*/
-    0, /* tp_call*/
-    0, /* tp_str*/
-    (getattrofunc)draw_getattro, /* tp_getattro */
-};
-#else
+/* All six types are heap types, created with PyType_FromSpec in aggdraw_init
+   and exposed on the module as real classes. Each PyType_Spec is defined next
+   to that type's own methods, further down the file. Symbol is a subclass of
+   Path, so it is built with PyType_FromSpecWithBases instead. */
+static PyTypeObject* DrawType;
+static PyTypeObject* PenType;
+static PyTypeObject* BrushType;
+static PyTypeObject* FontType;
+static PyTypeObject* PathType;
+static PyTypeObject* SymbolType;
 
-static PyObject* draw_getattr(DrawObject* self, char* name);
-static PyTypeObject DrawType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Draw", sizeof(DrawObject), 0,
-    /* methods */
-    (destructor) draw_dealloc, /* tp_dealloc */
-    (printfunc)0, /* tp_print */
-    (getattrfunc)draw_getattr, /* tp_getattr */
-    0, /* tp_setattr */
-};
-#endif
+/* The _Check macros use PyObject_TypeCheck rather than an identity test: the
+   types set Py_TPFLAGS_BASETYPE, and an identity test would make
+   draw_adaptor::draw silently ignore a subclass of Pen or Brush. */
 
 typedef struct {
     PyObject_HEAD
@@ -173,64 +138,14 @@ typedef struct {
     float width;
 } PenObject;
 
-static void pen_dealloc(PenObject* self);
-
-#ifdef IS_PY3K
-static PyTypeObject PenType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Pen", sizeof(PenObject), 0,
-    /* methods */
-    (destructor) pen_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-};
-
-#else
-static PyTypeObject PenType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Pen", sizeof(PenObject), 0,
-    /* methods */
-    (destructor) pen_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-};
-#endif
-
-#define Pen_Check(op) ((op) != NULL && Py_TYPE(op) == &PenType)
+#define Pen_Check(op) ((op) != NULL && PyObject_TypeCheck(op, PenType))
 
 typedef struct {
     PyObject_HEAD
     agg::rgba8 color;
 } BrushObject;
 
-static void brush_dealloc(BrushObject* self);
-
-#ifdef IS_PY3K
-static PyTypeObject BrushType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Brush", sizeof(BrushObject), 0,
-    /* methods */
-    (destructor) brush_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-};
-
-#else
-static PyTypeObject BrushType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Brush", sizeof(BrushObject), 0,
-    /* methods */
-    (destructor) brush_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-};
-
-#endif
-#define Brush_Check(op) ((op) != NULL && Py_TYPE(op) == &BrushType)
+#define Brush_Check(op) ((op) != NULL && PyObject_TypeCheck(op, BrushType))
 
 typedef struct {
     PyObject_HEAD
@@ -243,82 +158,17 @@ typedef struct {
 static FT_Face font_load(FontObject* font, bool outline=false);
 #endif
 
+/* Defined below the getset block, which the Font spec needs to name first. */
 static void font_dealloc(FontObject* self);
-#ifdef IS_PY3K
-static PyObject* font_getattro(FontObject* self, PyObject* nameobj);
-static PyTypeObject FontType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Font", sizeof(FontObject), 0,
-    /* methods */
-    (destructor) font_dealloc, /* tp_dealloc */
-    (printfunc)0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-    0, /* tp_reserved */
-    (reprfunc)0, /* tp_repr */
-    0, /* tp_as_number */
-    0, /* tp_as_sequence */
-    0, /* tp_as_mapping */
-    (hashfunc)0,  /*tp_hash*/
-    (ternaryfunc)0,  /*tp_call*/
-    (reprfunc)0,  /*tp_str*/
-    (getattrofunc)font_getattro, /* tp_getattro */
-};
-#else
-static PyObject* font_getattr(FontObject* self, char* name);
-static PyTypeObject FontType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Font", sizeof(FontObject), 0,
-    /* methods */
-    (destructor) font_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    (getattrfunc) font_getattr, /* tp_getattr */
-    0, /* tp_setattr */
-};
-#endif
 
-#define Font_Check(op) ((op) != NULL && Py_TYPE(op) == &FontType)
+#define Font_Check(op) ((op) != NULL && PyObject_TypeCheck(op, FontType))
 
 typedef struct {
     PyObject_HEAD
     agg::path_storage* path;
 } PathObject;
 
-static void path_dealloc(PathObject* self);
-#ifdef IS_PY3K
-static PyObject* path_getattro(PathObject* self, PyObject* nameobj);
-static PyTypeObject PathType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "Path", sizeof(PathObject), 0,
-    /* methods */
-    (destructor) path_dealloc, /* tp_dealloc */
-    (printfunc)0, /* tp_print */
-    0, /* tp_getattr */
-    0, /* tp_setattr */
-    0, /* tp_reserved */
-    (reprfunc)0, /* tp_repr */
-    0, /* tp_as_number */
-    0, /* tp_as_sequence */
-    0, /* tp_as_mapping */
-    (hashfunc)0,  /*tp_hash*/
-    (ternaryfunc)0,  /*tp_call*/
-    (reprfunc)0,  /*tp_str*/
-    (getattrofunc)path_getattro, /* tp_getattro */
-};
-#else
-static PyObject* path_getattr(PathObject* self, char* name);
-static PyTypeObject PathType = {
-    PyObject_HEAD_INIT(NULL)
-    0, "Path", sizeof(PathObject), 0,
-    /* methods */
-    (destructor) path_dealloc, /* tp_dealloc */
-    0, /* tp_print */
-    (getattrfunc) path_getattr, /* tp_getattr */
-    0, /* tp_setattr */
-};
-#endif
-
-#define Path_Check(op) ((op) != NULL && Py_TYPE(op) == &PathType)
+#define Path_Check(op) ((op) != NULL && PyObject_TypeCheck(op, PathType))
 
 static agg::rgba8 getcolor(PyObject* color, int opacity=255);
 
@@ -328,22 +178,12 @@ static agg::rgba8 getcolor(PyObject* color, int opacity=255);
 static int
 text_getchar(PyObject* string, int index, unsigned long* char_out)
 {
-#if defined(HAVE_UNICODE)
     if (PyUnicode_Check(string)) {
         Py_ssize_t str_len = PyUnicode_GetLength(string);
         if (index >= str_len)
             return 0;
         Py_UCS4 this_char = PyUnicode_READ_CHAR(string, index);
         *char_out = this_char;
-        return 1;
-    }
-#endif
-    if (PyBytes_Check(string)) {
-        unsigned char* p = (unsigned char*) PyBytes_AS_STRING(string);
-        int size = PyBytes_GET_SIZE(string);
-        if (index >= size)
-            return 0;
-        *char_out = (unsigned char) p[index];
         return 1;
     }
     return 0;
@@ -479,6 +319,7 @@ public:
         int index = 0;
 
         while (text_getchar(text, index, &ch)) {
+            index++;
             const agg::glyph_cache* glyph;
             glyph = font_manager.glyph(ch);
             if (!glyph)
@@ -502,7 +343,6 @@ public:
             }
             x += glyph->advance_x;
             y += glyph->advance_y;
-            index++;
         }
     }
 #endif
@@ -596,8 +436,16 @@ const char *draw_doc = "Creates a drawing interface object.\n"
                        "    >>> d = aggdraw.Draw(\"RGB\", (800, 600), \"white\")\n";
 
 static PyObject*
-draw_new(PyObject* self_, PyObject* args)
+draw_new(PyTypeObject* type, PyObject* args, PyObject* kw)
 {
+    /* tp_new is handed keywords whether or not it wants them; the old
+       METH_VARARGS entry point rejected them, so keep doing that rather than
+       accepting and ignoring them. */
+    if (kw != NULL && PyDict_GET_SIZE(kw) != 0) {
+        PyErr_SetString(PyExc_TypeError, "Draw() takes no keyword arguments");
+        return NULL;
+    }
+
     char buffer[10];
     int ok;
 
@@ -612,11 +460,7 @@ draw_new(PyObject* self_, PyObject* args)
         PyObject* mode_obj = PyObject_GetAttrString(image, "mode");
         if (!mode_obj)
             return NULL;
-        if (PyBytes_Check(mode_obj)) {
-            strncpy(buffer, PyBytes_AS_STRING(mode_obj), sizeof buffer);
-            buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
-            mode = buffer;
-        } else if (PyUnicode_Check(mode_obj)) {
+        if (PyUnicode_Check(mode_obj)) {
             PyObject* ascii_mode = PyUnicode_AsASCIIString(mode_obj);
             if (ascii_mode == NULL) {
                 mode = NULL;
@@ -661,9 +505,19 @@ draw_new(PyObject* self_, PyObject* args)
         image = NULL;
     }
 
-    DrawObject* self = PyObject_NEW(DrawObject, &DrawType);
+    DrawObject* self = (DrawObject*) type->tp_alloc(type, 0);
     if (self == NULL)
         return NULL;
+
+    /* PyObject_NEW does not zero the allocation and draw_dealloc deletes every
+       pointer field, so they must all be valid before any error path below can
+       Py_DECREF(self). */
+    self->draw = NULL;
+    self->buffer = NULL;
+    self->transform = NULL;
+    self->buffer_data = NULL;
+    self->image = NULL;
+    self->background = NULL;
 
     int stride;
     if (!strcmp(mode, "L")) {
@@ -683,7 +537,7 @@ draw_new(PyObject* self_, PyObject* args)
         stride = xsize * 4;
     } else {
         PyErr_SetString(PyExc_ValueError, "bad mode");
-        PyObject_DEL(self);
+        Py_DECREF(self);
         return NULL;
     }
 
@@ -702,19 +556,23 @@ draw_new(PyObject* self_, PyObject* args)
     self->xsize = xsize;
     self->ysize = ysize;
 
-    self->transform = NULL;
-
+    /* Take the reference at the point of assignment, not after the round-trip
+       below: until this incref runs the struct holds a borrowed pointer. */
+    Py_XINCREF(image);
     self->image = image;
     if (image) {
         PyObject* buffer = PyObject_CallMethod(image, "tobytes", NULL);
-        if (!buffer)
-            return NULL; /* FIXME: release resources */
+        if (!buffer) {
+            Py_DECREF(self);
+            return NULL;
+        }
         if (!PyBytes_Check(buffer)) {
             PyErr_SetString(
                 PyExc_TypeError,
                 "bad 'tobytes' return value (expected string)"
                 );
             Py_DECREF(buffer);
+            Py_DECREF(self);
             return NULL;
         }
         char* data = PyBytes_AS_STRING(buffer);
@@ -724,9 +582,9 @@ draw_new(PyObject* self_, PyObject* args)
         else {
             PyErr_SetString(PyExc_ValueError, "not enough data");
             Py_DECREF(buffer);
-            return NULL; /* FIXME: release resources */
+            Py_DECREF(self);
+            return NULL;
         }
-        Py_INCREF(image); /* hang on to this image */
         Py_DECREF(buffer);
     }
 
@@ -740,17 +598,10 @@ struct PointF {
     float Y;
 };
 
-#ifdef IS_PY3K
 #define GETFLOAT(op)                                    \
     (PyLong_Check(op) ? (float) PyLong_AS_LONG((op)) :\
      PyFloat_Check(op) ? (float) PyFloat_AS_DOUBLE((op)) :\
      (float) PyFloat_AsDouble(op))
-#else
-#define GETFLOAT(op)                                    \
-    (PyInt_Check(op) ? (float) PyInt_AS_LONG((op)) :\
-     PyFloat_Check(op) ? (float) PyFloat_AS_DOUBLE((op)) :\
-     (float) PyFloat_AsDouble(op))
-#endif
 
 static PointF*
 getpoints(PyObject* xyIn, int* count)
@@ -816,31 +667,26 @@ getpoints(PyObject* xyIn, int* count)
 static agg::rgba8
 getcolor(PyObject* color, int opacity)
 {
-#ifdef IS_PY3K
     if (PyLong_Check(color)) {
         int ink = PyLong_AsLong(color);
         return agg::rgba8(ink, ink, ink, opacity);
     }
-#else
-    if (PyInt_Check(color)) {
-        int ink = PyInt_AsLong(color);
-        return agg::rgba8(ink, ink, ink, opacity);
-    }
-#endif
+
     char buffer[10];
     char* ink = NULL;
     if (PyUnicode_Check(color)) {
         PyObject* ascii_color = PyUnicode_AsASCIIString(color);
         if (ascii_color == NULL) {
-            ink = NULL;
+            /* not ASCII: leave ink NULL and let the lookups below fall
+               through to black. Clear the error so that the calls that
+               follow do not run with a live exception set. */
+            PyErr_Clear();
         } else {
             strncpy(buffer, PyBytes_AsString(ascii_color), sizeof buffer);
             buffer[sizeof(buffer)-1] = '\0'; /* to be on the safe side */
             ink = buffer;
             Py_XDECREF(ascii_color);
         }
-    } else if (PyBytes_Check(color)) {
-        ink = PyBytes_AsString(color);
     }
     /* hex colors */
     if (ink && ink[0] == '#' && strlen(ink) == 7) {
@@ -865,7 +711,7 @@ getcolor(PyObject* color, int opacity)
         PyErr_Clear();
     }
     /* check for well-known color names (HTML) */
-    if (PyUnicode_Check(color) || PyBytes_Check(color)) {
+    if (ink) {
         if (!strcmp(ink, "aqua"))
             return agg::rgba8(0x00,0xFF,0xFF,opacity);
         if (!strcmp(ink, "black"))
@@ -1285,7 +1131,8 @@ const char *draw_path_doc = "Draw the given path.\n"
                             "Parameters\n"
                             "----------\n"
                             "path : Path\n"
-                            "    Path object created by the `Path` factory.\n"
+                            "    The path to draw. A `Symbol` is a `Path`, so either is\n"
+                            "    accepted.\n"
                             "brush : Brush, optional\n"
                             "    Optional brush object created by the `Brush` factory.\n"
                             "pen : Pen, optional\n"
@@ -1297,7 +1144,7 @@ draw_path(DrawObject* self, PyObject* args){
     PyObject*   brush = NULL;
     PyObject*   pen   = NULL;
 
-    if (!PyArg_ParseTuple(args, "O!|OO:path", &PathType, &path, &brush, &pen)){
+    if (!PyArg_ParseTuple(args, "O!|OO:path", PathType, &path, &brush, &pen)){
         return NULL;
     }
 
@@ -1324,8 +1171,9 @@ const char *draw_symbol_doc = "Draw a symbol at the given positions (experimenta
                               "----------\n"
                               "xy : iterable\n"
                               "    A Python sequence (x, y, x, y, …).\n"
-                              "symbol : Symbol\n"
-                              "    Symbol object created by the `Symbol` factory.\n"
+                              "symbol : Path\n"
+                              "    The path to stamp at each position. Any `Path` works; a\n"
+                              "    `Symbol` is a `Path`, so either is accepted.\n"
                               "brush : Brush, optional\n"
                               "    Optional brush object created by the `Brush` factory.\n"
                               "pen : Pen, optional\n"
@@ -1339,7 +1187,7 @@ draw_symbol(DrawObject* self, PyObject* args)
     PyObject* brush = NULL;
     PyObject* pen = NULL;
     if (!PyArg_ParseTuple(args, "OO!|OO:symbol",
-                          &xyIn, &PathType, &symbol, &brush, &pen))
+                          &xyIn, PathType, &symbol, &brush, &pen))
         return NULL;
 
     int count;
@@ -1382,7 +1230,7 @@ draw_text(DrawObject* self, PyObject* args)
     PyObject* text;
     FontObject* font;
     if (!PyArg_ParseTuple(args, "(ff)OO!:text", xy+0, xy+1, &text,
-                          &FontType, &font))
+                          FontType, &font))
         return NULL;
 
     self->draw->drawtext(xy, text, font);
@@ -1414,7 +1262,7 @@ draw_textsize(DrawObject* self, PyObject* args)
 {
     PyObject* text;
     FontObject* font;
-    if (!PyArg_ParseTuple(args, "OO!:textsize", &text, &FontType, &font))
+    if (!PyArg_ParseTuple(args, "OO!:textsize", &text, FontType, &font))
         return NULL;
 
     FT_Face face = font_load(font);
@@ -1602,12 +1450,15 @@ draw_dealloc(DrawObject* self)
 {
     delete self->draw;
     delete self->buffer;
+    delete self->transform;
     delete [] self->buffer_data;
 
     Py_XDECREF(self->background);
     Py_XDECREF(self->image);
 
-    PyObject_DEL(self);
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
 
 static PyMethodDef draw_methods[] = {
@@ -1643,39 +1494,49 @@ static PyMethodDef draw_methods[] = {
     {NULL, NULL}
 };
 
-#ifdef IS_PY3K
-
 static PyObject*
-draw_getattro(DrawObject* self, PyObject* nameobj)
+draw_get_mode(DrawObject* self, void* closure)
 {
-    if (!PyUnicode_Check(nameobj))
-        goto generic;
-
-    if (PyUnicode_CompareWithASCIIString(nameobj, "mode") == 0)
-        return PyUnicode_FromString(self->draw->mode);
-    if (PyUnicode_CompareWithASCIIString(nameobj, "size") == 0)
-        return Py_BuildValue(
-            "(ii)", self->buffer->width(), self->buffer->height()
-            );
-  generic:
-    return PyObject_GenericGetAttr((PyObject*)self, nameobj);
+    /* This is the adaptor's label, not the mode the surface was created with.
+       A BGRA surface is rendered by the RGBA adaptor and so reports "RGBA". */
+    return PyUnicode_FromString(self->draw->mode);
 }
 
-#else
-
 static PyObject*
-draw_getattr(DrawObject* self, char* name)
+draw_get_size(DrawObject* self, void* closure)
 {
-    if (!strcmp(name, "mode"))
-        return PyBytes_FromString(self->draw->mode);
-    if (!strcmp(name, "size"))
-        return Py_BuildValue(
-            "(ii)", self->buffer->width(), self->buffer->height()
-            );
-    return Py_FindMethod(draw_methods, (PyObject*) self, name);
+    return Py_BuildValue(
+        "(ii)", self->buffer->width(), self->buffer->height()
+        );
 }
 
-#endif
+static PyGetSetDef draw_getset[] = {
+    {"mode", (getter) draw_get_mode, NULL,
+     (char*) "str: The mode of the drawing surface, e.g. \"RGB\".", NULL},
+    {"size", (getter) draw_get_size, NULL,
+     (char*) "tuple: The size of the drawing surface as (width, height).", NULL},
+    {NULL}
+};
+
+/* PyType_Slot stores a void*, but the *_doc constants are const char*. */
+#define DOC_SLOT(d) ((void*) const_cast<char*>(d))
+
+static PyType_Slot draw_slots[] = {
+    {Py_tp_new, (void*) draw_new},
+    {Py_tp_dealloc, (void*) draw_dealloc},
+    {Py_tp_methods, (void*) draw_methods},
+    {Py_tp_getset, (void*) draw_getset},
+    {Py_tp_doc, DOC_SLOT(draw_doc)},
+    {0, NULL}
+};
+
+static PyType_Spec draw_spec = {
+    "aggdraw._aggdraw.Draw",
+    sizeof(DrawObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    draw_slots
+};
 
 /* -------------------------------------------------------------------- */
 
@@ -1697,7 +1558,7 @@ const char *pen_doc = "Creates a Pen object.\n"
                       "    Pen opacity. Default 255.\n";
 
 static PyObject*
-pen_new(PyObject* self_, PyObject* args, PyObject* kw)
+pen_new(PyTypeObject* type, PyObject* args, PyObject* kw)
 {
     PenObject* self;
 
@@ -1709,7 +1570,7 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
                                      &color, &width, &opacity))
         return NULL;
 
-    self = PyObject_NEW(PenObject, &PenType);
+    self = (PenObject*) type->tp_alloc(type, 0);
 
     if (self == NULL)
         return NULL;
@@ -1723,8 +1584,48 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
 static void
 pen_dealloc(PenObject* self)
 {
-    PyObject_DEL(self);
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
+
+static PyObject*
+pen_get_color(PenObject* self, void* closure)
+{
+    return Py_BuildValue(
+        "(BBBB)", self->color.r, self->color.g, self->color.b, self->color.a
+        );
+}
+
+static PyObject*
+pen_get_width(PenObject* self, void* closure)
+{
+    return PyFloat_FromDouble(self->width);
+}
+
+static PyGetSetDef pen_getset[] = {
+    {"color", (getter) pen_get_color, NULL,
+     (char*) "tuple: The pen color, as resolved, in (R, G, B, A) form.", NULL},
+    {"width", (getter) pen_get_width, NULL,
+     (char*) "float: The width of the pen.", NULL},
+    {NULL}
+};
+
+static PyType_Slot pen_slots[] = {
+    {Py_tp_new, (void*) pen_new},
+    {Py_tp_dealloc, (void*) pen_dealloc},
+    {Py_tp_getset, (void*) pen_getset},
+    {Py_tp_doc, DOC_SLOT(pen_doc)},
+    {0, NULL}
+};
+
+static PyType_Spec pen_spec = {
+    "aggdraw._aggdraw.Pen",
+    sizeof(PenObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    pen_slots
+};
 
 /* -------------------------------------------------------------------- */
 
@@ -1744,7 +1645,7 @@ const char *brush_doc = "Creates a brush object.\n"
                         "    Brush opacity. Default 255.\n";
 
 static PyObject*
-brush_new(PyObject* self_, PyObject* args, PyObject* kw)
+brush_new(PyTypeObject* type, PyObject* args, PyObject* kw)
 {
     BrushObject* self;
 
@@ -1755,7 +1656,7 @@ brush_new(PyObject* self_, PyObject* args, PyObject* kw)
                                      &color, &opacity))
         return NULL;
 
-    self = PyObject_NEW(BrushObject, &BrushType);
+    self = (BrushObject*) type->tp_alloc(type, 0);
 
     if (self == NULL)
         return NULL;
@@ -1768,8 +1669,40 @@ brush_new(PyObject* self_, PyObject* args, PyObject* kw)
 static void
 brush_dealloc(BrushObject* self)
 {
-    PyObject_DEL(self);
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
+
+static PyObject*
+brush_get_color(BrushObject* self, void* closure)
+{
+    return Py_BuildValue(
+        "(BBBB)", self->color.r, self->color.g, self->color.b, self->color.a
+        );
+}
+
+static PyGetSetDef brush_getset[] = {
+    {"color", (getter) brush_get_color, NULL,
+     (char*) "tuple: The brush color, as resolved, in (R, G, B, A) form.", NULL},
+    {NULL}
+};
+
+static PyType_Slot brush_slots[] = {
+    {Py_tp_new, (void*) brush_new},
+    {Py_tp_dealloc, (void*) brush_dealloc},
+    {Py_tp_getset, (void*) brush_getset},
+    {Py_tp_doc, DOC_SLOT(brush_doc)},
+    {0, NULL}
+};
+
+static PyType_Spec brush_spec = {
+    "aggdraw._aggdraw.Brush",
+    sizeof(BrushObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    brush_slots
+};
 
 
 /* -------------------------------------------------------------------- */
@@ -1794,7 +1727,7 @@ const char *font_doc = "Create a font object from a truetype font file for use w
                        "    Font opacity. Default 255.\n";
 
 static PyObject*
-font_new(PyObject* self_, PyObject* args, PyObject* kw)
+font_new(PyTypeObject* type, PyObject* args, PyObject* kw)
 {
     PyObject* color;
     char* filename;
@@ -1806,7 +1739,7 @@ font_new(PyObject* self_, PyObject* args, PyObject* kw)
         return NULL;
 
 #if defined(HAVE_FREETYPE2)
-    FontObject* self = PyObject_NEW(FontObject, &FontType);
+    FontObject* self = (FontObject*) type->tp_alloc(type, 0);
 
     if (self == NULL)
         return NULL;
@@ -1819,6 +1752,7 @@ font_new(PyObject* self_, PyObject* args, PyObject* kw)
 
     if (!font_load(self)) {
         PyErr_SetString(PyExc_IOError, "cannot load font");
+        Py_DECREF(self);
         return NULL;
     }
 
@@ -1828,10 +1762,6 @@ font_new(PyObject* self_, PyObject* args, PyObject* kw)
     return NULL;
 #endif
 }
-
-static PyMethodDef font_methods[] = {
-    {NULL, NULL}
-};
 
 #if defined(HAVE_FREETYPE2)
 static FT_Face
@@ -1851,109 +1781,98 @@ font_load(FontObject* font, bool outline)
 }
 #endif
 
-#ifdef IS_PY3K
-static PyObject*
-font_getattro(FontObject* self, PyObject* nameobj)
-{
-    if (!PyUnicode_Check(nameobj))
-        goto generic;
-
 #if defined(HAVE_FREETYPE2)
-    FT_Face face;
-    if (PyUnicode_CompareWithASCIIString(nameobj, "family") == 0)
-    {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyBytes_FromString(face->family_name);
+/* Each of these reloads the face: FontObject stores only the filename, and the
+   shared font_engine may have been pointed at a different font since. A face
+   that will not load yields None rather than an exception, as it always has. */
+static PyObject*
+font_get_family(FontObject* self, void* closure)
+{
+    FT_Face face = font_load(self);
+    if (!face) {
+        Py_INCREF(Py_None);
+        return Py_None;
     }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "style") == 0)
-    {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyBytes_FromString(face->style_name);
-    }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "ascent") == 0)
-    {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyFloat_FromDouble(face->size->metrics.ascender/64.0);
-    }
-    if (PyUnicode_CompareWithASCIIString(nameobj, "descent") == 0)
-    {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyFloat_FromDouble(-face->size->metrics.descender/64.0);
-    }
-#endif
-  generic:
-    return PyObject_GenericGetAttr((PyObject*)self, nameobj);
+    return PyUnicode_FromString(face->family_name);
 }
 
-#else
 static PyObject*
-font_getattr(FontObject* self, char* name)
+font_get_style(FontObject* self, void* closure)
 {
-#if defined(HAVE_FREETYPE2)
-    FT_Face face;
-    if (!strcmp(name, "family")) {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyBytes_FromString(face->family_name);
+    FT_Face face = font_load(self);
+    if (!face) {
+        Py_INCREF(Py_None);
+        return Py_None;
     }
-    if (!strcmp(name, "style")) {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyBytes_FromString(face->style_name);
+    return PyUnicode_FromString(face->style_name);
+}
+
+static PyObject*
+font_get_ascent(FontObject* self, void* closure)
+{
+    FT_Face face = font_load(self);
+    if (!face) {
+        Py_INCREF(Py_None);
+        return Py_None;
     }
-    if (!strcmp(name, "ascent")) {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyFloat_FromDouble(face->size->metrics.ascender/64.0);
+    return PyFloat_FromDouble(face->size->metrics.ascender/64.0);
+}
+
+static PyObject*
+font_get_descent(FontObject* self, void* closure)
+{
+    FT_Face face = font_load(self);
+    if (!face) {
+        Py_INCREF(Py_None);
+        return Py_None;
     }
-    if (!strcmp(name, "descent")) {
-        face = font_load(self);
-        if (!face) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-        return PyFloat_FromDouble(-face->size->metrics.descender/64.0);
-    }
-#endif
-    return Py_FindMethod(font_methods, (PyObject*) self, name);
+    return PyFloat_FromDouble(-face->size->metrics.descender/64.0);
 }
 #endif
+
+static PyGetSetDef font_getset[] = {
+#if defined(HAVE_FREETYPE2)
+    {"family", (getter) font_get_family, NULL,
+     (char*) "str: The font family name reported by FreeType.", NULL},
+    {"style", (getter) font_get_style, NULL,
+     (char*) "str: The font style name reported by FreeType.", NULL},
+    {"ascent", (getter) font_get_ascent, NULL,
+     (char*) "float: The font ascent, in pixels.", NULL},
+    {"descent", (getter) font_get_descent, NULL,
+     (char*) "float: The font descent, in pixels, as a positive number.", NULL},
+#endif
+    {NULL}
+};
+
+static PyType_Slot font_slots[] = {
+    {Py_tp_new, (void*) font_new},
+    {Py_tp_dealloc, (void*) font_dealloc},
+    {Py_tp_getset, (void*) font_getset},
+    {Py_tp_doc, DOC_SLOT(font_doc)},
+    {0, NULL}
+};
+
+static PyType_Spec font_spec = {
+    "aggdraw._aggdraw.Font",
+    sizeof(FontObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    font_slots
+};
 
 static void
 font_dealloc(FontObject* self)
 {
     delete [] self->filename;
-    PyObject_DEL(self);
+
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
 
 /* -------------------------------------------------------------------- */
 
-const char *path_doc = "Path factory (experimental).\n"
+const char *path_doc = "Create a Path object (experimental).\n"
                        "\n"
                        "Parameters\n"
                        "----------\n"
@@ -1963,13 +1882,18 @@ const char *path_doc = "Path factory (experimental).\n"
                        "    line segment to each remaining pair.\n";
 
 static PyObject*
-path_new(PyObject* self_, PyObject* args)
+path_new(PyTypeObject* type, PyObject* args, PyObject* kw)
 {
+    if (kw != NULL && PyDict_GET_SIZE(kw) != 0) {
+        PyErr_SetString(PyExc_TypeError, "Path() takes no keyword arguments");
+        return NULL;
+    }
+
     PyObject* xyIn = NULL;
     if (!PyArg_ParseTuple(args, "|O:Path", &xyIn))
         return NULL;
 
-    PathObject* self = PyObject_NEW(PathObject, &PathType);
+    PathObject* self = (PathObject*) type->tp_alloc(type, 0);
 
     if (self == NULL)
         return NULL;
@@ -1980,7 +1904,7 @@ path_new(PyObject* self_, PyObject* args)
         int count;
         PointF *xy = getpoints(xyIn, &count);
         if (!xy) {
-            path_dealloc(self);
+            Py_DECREF(self);
             return NULL;
         }
         self->path->move_to(xy[0].X, xy[0].Y);
@@ -1992,29 +1916,16 @@ path_new(PyObject* self_, PyObject* args)
     return (PyObject*) self;
 }
 
-const char *symbol_doc = "Create a Symbol object for use with :meth:`Draw.symbol`.\n"
-                         "\n"
-                         "Parameters\n"
-                         "----------\n"
-                         "path : str\n"
-                         "    An SVG-style path descriptor. The following operators\n"
-                         "    are supported: M (move), L (line), H (horizontal line), V (vertical line),\n"
-                         "    C (cubic bezier), S (smooth cubic bezier), Q (quadratic bezier),\n"
-                         "    T (smooth quadratic bezier), and Z (close path). Use lower-case\n"
-                         "    operators for relative coordinates, upper-case for absolute coordinates.\n"
-                         "scale : float, optional\n"
-                         "    A multiplier applied to every coordinate in the path descriptor\n"
-                         "    as it is parsed. Default 1.0.\n";
+/* Defined below, with the rest of the Path helpers. */
+void expandPaths(PathObject* self);
 
+/* The SVG-descriptor parser shared by Path.from_svg() and Symbol(). `type` is
+   PathType, SymbolType, or a Python subclass of either; allocating through
+   type->tp_alloc gives the caller an instance of the class it asked for. */
 static PyObject*
-symbol_new(PyObject* self_, PyObject* args)
+path_from_svg_impl(PyTypeObject* type, char* path, float scale)
 {
-    char* path;
-    float scale = 1.0;
-    if (!PyArg_ParseTuple(args, "s|f:Symbol", &path, &scale))
-        return NULL;
-
-    PathObject* self = PyObject_NEW(PathObject, &PathType);
+    PathObject* self = (PathObject*) type->tp_alloc(type, 0);
 
     if (self == NULL)
         return NULL;
@@ -2045,6 +1956,7 @@ symbol_new(PyObject* self_, PyObject* args)
                 PyErr_Format(
                     PyExc_ValueError, "no command at start of path"
                     );
+                Py_DECREF(self);
                 return NULL;
             }
             COMMA_WSP;
@@ -2166,7 +2078,7 @@ symbol_new(PyObject* self_, PyObject* args)
                 PyExc_ValueError,
                 "unknown path command '%c'", op
                 );
-            /* FIXME: cleanup */
+            Py_DECREF(self);
             return NULL;
         }
         if (p == q) {
@@ -2174,21 +2086,51 @@ symbol_new(PyObject* self_, PyObject* args)
                 PyExc_ValueError,
                 "invalid arguments for command '%c'", op
                 );
-            /* FIXME: cleanup */
+            Py_DECREF(self);
             return NULL;
         }
     }
 
-    if (curve) {
-        /* expand curves */
-        agg::path_storage* path = self->path;
-        agg::conv_curve<agg::path_storage> curve(*path);
-        self->path = new agg::path_storage();
-        self->path->add_path(curve, 0, false);
-        delete path;
-    }
+    if (curve)
+        expandPaths(self);
 
     return (PyObject*) self;
+}
+
+const char *path_from_svg_doc = "Create a path from an SVG-style path descriptor.\n"
+                                "\n"
+                                "This is a classmethod, so calling it on a subclass returns an\n"
+                                "instance of that subclass. It builds the object directly and does\n"
+                                "not go through the class's own constructor.\n"
+                                "\n"
+                                "Parameters\n"
+                                "----------\n"
+                                "path : str\n"
+                                "    An SVG-style path descriptor. The following operators\n"
+                                "    are supported: M (move), L (line), H (horizontal line), V (vertical line),\n"
+                                "    C (cubic bezier), S (smooth cubic bezier), Q (quadratic bezier),\n"
+                                "    T (smooth quadratic bezier), and Z (close path). Use lower-case\n"
+                                "    operators for relative coordinates, upper-case for absolute coordinates.\n"
+                                "scale : float, optional\n"
+                                "    A multiplier applied to every coordinate in the path descriptor\n"
+                                "    as it is parsed. Default 1.0.\n"
+                                "\n"
+                                "Returns\n"
+                                "-------\n"
+                                "Path\n"
+                                "    A new instance of the class this was called on.\n";
+
+static PyObject*
+path_from_svg(PyObject* cls, PyObject* args)
+{
+    char* path;
+    float scale = 1.0;
+    if (!PyArg_ParseTuple(args, "s|f:from_svg", &path, &scale))
+        return NULL;
+
+    /* The classmethod descriptor has already checked that cls is a subtype of
+       Path, so path_from_svg_impl can allocate from it unconditionally. */
+    return path_from_svg_impl((PyTypeObject*) cls, path, scale);
 }
 
 void expandPaths(PathObject *self)
@@ -2402,6 +2344,20 @@ const char *path_coords_doc = "Returns the coordinates for this path.\n"
                               "\n"
                               "Curves are flattened before being returned.\n";
 
+/* Append a float to a list, releasing the temporary. PyList_Append takes its
+   own reference, so the one returned by PyFloat_FromDouble must be dropped or
+   every coordinate leaks an object. */
+static int
+append_float(PyObject* list, double value)
+{
+    PyObject* item = PyFloat_FromDouble(value);
+    if (!item)
+        return -1;
+    int status = PyList_Append(list, item);
+    Py_DECREF(item);
+    return status;
+}
+
 static PyObject*
 path_coords(PathObject* self, PyObject* args)
 {
@@ -2423,10 +2379,10 @@ path_coords(PathObject* self, PyObject* args)
     unsigned cmd;
     while (!agg::is_stop(cmd = curve.vertex(&x, &y))) {
         if (agg::is_vertex(cmd)) {
-            if (PyList_Append(list, PyFloat_FromDouble(x)) < 0)
+            if (append_float(list, x) < 0 || append_float(list, y) < 0) {
+                Py_DECREF(list);
                 return NULL;
-            if (PyList_Append(list, PyFloat_FromDouble(y)) < 0)
-                return NULL;
+            }
         }
     }
 
@@ -2437,10 +2393,16 @@ static void
 path_dealloc(PathObject* self)
 {
     delete self->path;
-    PyObject_DEL(self);
+
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
 
 static PyMethodDef path_methods[] = {
+
+    {"from_svg", (PyCFunction) path_from_svg,
+     METH_VARARGS | METH_CLASS, path_from_svg_doc},
 
     {"lineto", (PyCFunction) path_lineto, METH_VARARGS, path_lineto_doc},
     {"rlineto", (PyCFunction) path_rlineto, METH_VARARGS, path_rlineto_doc},
@@ -2458,32 +2420,80 @@ static PyMethodDef path_methods[] = {
     {NULL, NULL}
 };
 
-#ifdef IS_PY3K
-static PyObject*
-path_getattro(PathObject* self, PyObject* nameobj)
-{
-    return PyObject_GenericGetAttr((PyObject*)self, nameobj);
-}
+static PyType_Slot path_slots[] = {
+    {Py_tp_new, (void*) path_new},
+    {Py_tp_dealloc, (void*) path_dealloc},
+    {Py_tp_methods, (void*) path_methods},
+    {Py_tp_doc, DOC_SLOT(path_doc)},
+    {0, NULL}
+};
 
-#else
-static PyObject*
-path_getattr(PathObject* self, char* name)
-{
-    return Py_FindMethod(path_methods, (PyObject*) self, name);
-}
-#endif
+static PyType_Spec path_spec = {
+    "aggdraw._aggdraw.Path",
+    sizeof(PathObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    path_slots
+};
 
 /* -------------------------------------------------------------------- */
 
-static PyMethodDef aggdraw_functions[] = {
-    {"Pen", (PyCFunction) pen_new, METH_VARARGS|METH_KEYWORDS, pen_doc},
-    {"Brush", (PyCFunction) brush_new, METH_VARARGS|METH_KEYWORDS, brush_doc},
-    {"Font", (PyCFunction) font_new, METH_VARARGS|METH_KEYWORDS, font_doc},
-    {"Symbol", (PyCFunction) symbol_new, METH_VARARGS, symbol_doc},
-    {"Path", (PyCFunction) path_new, METH_VARARGS, path_doc},
-    {"Draw", (PyCFunction) draw_new, METH_VARARGS, draw_doc},
-    {NULL, NULL}
+const char *symbol_doc = "Deprecated alias for :meth:`Path.from_svg`.\n"
+                         "\n"
+                         "A Symbol is a Path built from an SVG-style path descriptor rather\n"
+                         "than from a coordinate sequence. It adds no state and no methods of\n"
+                         "its own; use Path.from_svg(path, scale) instead. The documented\n"
+                         "aggdraw.Symbol wrapper warns when one is constructed.\n"
+                         "\n"
+                         "Parameters\n"
+                         "----------\n"
+                         "path : str\n"
+                         "    An SVG-style path descriptor; see Path.from_svg for the\n"
+                         "    supported operators.\n"
+                         "scale : float, optional\n"
+                         "    A multiplier applied to every coordinate in the path descriptor\n"
+                         "    as it is parsed. Default 1.0.\n";
+
+static PyObject*
+symbol_new(PyTypeObject* type, PyObject* args, PyObject* kw)
+{
+    /* tp_new is handed keywords whether or not it wants them. The old
+       METH_VARARGS entry point rejected them for free; keep doing so rather
+       than silently ignoring Symbol("M0,0", scale=2). */
+    if (kw != NULL && PyDict_GET_SIZE(kw) != 0) {
+        PyErr_SetString(PyExc_TypeError, "Symbol() takes no keyword arguments");
+        return NULL;
+    }
+
+    char* path;
+    float scale = 1.0;
+    if (!PyArg_ParseTuple(args, "s|f:Symbol", &path, &scale))
+        return NULL;
+
+    return path_from_svg_impl(type, path, scale);
+}
+
+/* tp_dealloc, tp_methods, tp_alloc and tp_free are all inherited from Path.
+   path_dealloc reads Py_TYPE(self) rather than a hardcoded type, so it is
+   already correct for a subtype, and Symbol adds no fields to PathObject --
+   hence the basicsize below. Do not add tp_methods here: that would build a
+   second set of descriptors bound to SymbolType, and Symbol.lineto() would
+   then reject a plain Path. tp_doc is not inherited, so it must be given. */
+static PyType_Slot symbol_slots[] = {
+    {Py_tp_new, (void*) symbol_new},
+    {Py_tp_doc, DOC_SLOT(symbol_doc)},
+    {0, NULL}
 };
+
+static PyType_Spec symbol_spec = {
+    "aggdraw._aggdraw.Symbol",
+    sizeof(PathObject),
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    symbol_slots
+};
+
+/* -------------------------------------------------------------------- */
 
 const char *mod_doc = "Python interface to the Anti-Grain Graphics Drawing library\n"
                       "\n"
@@ -2509,56 +2519,103 @@ const char *mod_doc = "Python interface to the Anti-Grain Graphics Drawing libra
                       "    >>> d.line((0, 500, 500, 0), p)\n"
                       "    >>> s = d.tobytes()\n";
 
-#ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "_aggdraw",
         mod_doc,
         -1,
-        aggdraw_functions,
+        NULL,       /* m_methods: every name in this module is a type */
         NULL,
         NULL,
         NULL,
         NULL,
 };
-#endif
 
 
 static PyObject *
 aggdraw_init(void)
 {
-#ifdef IS_PY3K
-    // PyType_Ready(&DrawType);
-    // PyType_Ready(&PathType);
-    // PyType_Ready(&PenType);
-    // PyType_Ready(&BrushType);
-    // PyType_Ready(&FontType);
-
-    DrawType.tp_methods = draw_methods;
-    FontType.tp_methods = font_methods;
-    PathType.tp_methods = path_methods;
-
     PyObject *module = PyModule_Create(&moduledef);
-    PyObject *version = PyUnicode_FromString(QUOTE(VERSION));
-    PyObject_SetAttrString(module, "VERSION", version);
-    PyObject_SetAttrString(module, "__version__", version);
-    Py_DECREF(version);
-#else
-    DrawType.ob_type = PathType.ob_type = &PyType_Type;
-    PenType.ob_type = BrushType.ob_type = FontType.ob_type = &PyType_Type;
-
-    PyObject *module = Py_InitModule3("aggdraw", aggdraw_functions, mod_doc);
-    PyObject *version = PyBytes_FromString(QUOTE(VERSION));
-    PyObject_SetAttrString(module, "VERSION", version);
-    PyObject_SetAttrString(module, "__version__", version);
-    Py_DECREF(version);
-#endif
     if (module == NULL)
         return NULL;
 
+    /* Build the six types from their specs and expose them as real classes.
+       PyType_FromSpec fills in ob_type, so type() and help() work; each spec
+       names its own tp_new, so the types are directly constructible and
+       Py_TPFLAGS_BASETYPE lets them be subclassed. The deallocators go through
+       tp_free and drop a reference on the type, as heap types require.
+
+       A row naming a base gets it through PyType_FromSpecWithBases rather than
+       a Py_tp_base slot, because the base is itself a heap type that does not
+       exist until this loop creates it -- a static slot array cannot name it.
+       PyType_FromSpecWithBases(spec, NULL) is exactly PyType_FromSpec(spec),
+       so the rows without a base are unaffected. */
+    static const struct {
+        PyType_Spec* spec;
+        PyTypeObject** slot;
+        const char* name;
+        PyTypeObject** base;    /* NULL for a direct subclass of object */
+    } types[] = {
+        {&draw_spec, &DrawType, "Draw", NULL},
+        {&pen_spec, &PenType, "Pen", NULL},
+        {&brush_spec, &BrushType, "Brush", NULL},
+        {&font_spec, &FontType, "Font", NULL},
+        {&path_spec, &PathType, "Path", NULL},
+        /* Ordering matters: a row naming a base must come after the row that
+           creates it, since the base is read from *types[i].base right here. */
+        {&symbol_spec, &SymbolType, "Symbol", &PathType},
+    };
+
+    for (size_t i = 0; i < sizeof(types)/sizeof(types[0]); i++) {
+        PyObject* bases = NULL;
+        if (types[i].base != NULL) {
+            bases = Py_BuildValue("(O)", (PyObject*) *types[i].base);
+            if (bases == NULL) {
+                Py_DECREF(module);
+                return NULL;
+            }
+        }
+        PyObject* type = PyType_FromSpecWithBases(types[i].spec, bases);
+        Py_XDECREF(bases);  /* the new type holds its own reference */
+        if (type == NULL) {
+            Py_DECREF(module);
+            return NULL;
+        }
+        *types[i].slot = (PyTypeObject*) type;
+        if (PyModule_AddObjectRef(module, types[i].name, type) < 0) {
+            Py_DECREF(type);
+            Py_DECREF(module);
+            return NULL;
+        }
+        /* The module holds its own reference; the file-scope pointer above
+           keeps one for the C code's own type checks. */
+    }
+
+    PyObject *version = PyUnicode_FromString(QUOTE(VERSION));
+    if (version == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    int rc = PyObject_SetAttrString(module, "VERSION", version);
+    if (rc == 0)
+        rc = PyObject_SetAttrString(module, "__version__", version);
+    Py_DECREF(version);
+    if (rc < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
     PyObject* g = PyDict_New();
-    PyDict_SetItemString(g, "__builtins__", PyEval_GetBuiltins());
-    PyRun_String(
+    if (g == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    if (PyDict_SetItemString(g, "__builtins__", PyEval_GetBuiltins()) < 0) {
+        Py_DECREF(g);
+        Py_DECREF(module);
+        return NULL;
+    }
+    PyObject* result = PyRun_String(
         "try:\n"
         "    from PIL import ImageColor\n"
         "except ImportError:\n"
@@ -2570,8 +2627,18 @@ aggdraw_init(void)
         "", Py_file_input, g, NULL
 
         );
+    if (result == NULL) {
+        Py_DECREF(g);
+        Py_DECREF(module);
+        return NULL;
+    }
+    Py_DECREF(result);
 
+    /* PyDict_GetItemString returns a borrowed reference, so take a strong one
+       of our own before releasing the dict that owns it. */
     aggdraw_getcolor_obj = PyDict_GetItemString(g, "getcolor");
+    Py_XINCREF(aggdraw_getcolor_obj);
+    Py_DECREF(g);
 
 #ifdef Py_GIL_DISABLED
     PyUnstable_Module_SetGIL(module, Py_MOD_GIL_NOT_USED);
@@ -2580,17 +2647,8 @@ aggdraw_init(void)
     return module;
 }
 
-#ifdef IS_PY3K
 PyMODINIT_FUNC
 PyInit__aggdraw(void)
 {
     return aggdraw_init();
 }
-
-#else
-PyMODINIT_FUNC
-initaggdraw(void)
-{
-    aggdraw_init();
-}
-#endif

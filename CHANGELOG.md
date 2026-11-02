@@ -4,6 +4,62 @@
 
 - Fix incorrect and missing docstrings in the C extension (`help()` output)
 - Declare Pillow as a runtime dependency (`install_requires`)
+- Remove all Python 2 support code from the C extension. The minimum supported
+  Python has been 3.11 since 1.4.0, so every `#ifdef IS_PY3K` fallback was dead
+  code.
+- Fix a segfault in `type()` on any `aggdraw._aggdraw` object. The type objects
+  were never passed to `PyType_Ready`, so they kept a NULL `ob_type`.
+- Fix a segfault when a color is a non-ASCII string, e.g. `Pen("café")`. Such a
+  color is now treated as unrecognized (black), like any other one aggdraw and
+  Pillow cannot resolve.
+- **Breaking:** `Font.family` and `Font.style` now return `str` instead of
+  `bytes`. These are only reachable on the underlying `aggdraw._aggdraw.Font`
+  object, not through the documented `aggdraw.Font` wrapper.
+- **Breaking:** `bytes` are no longer accepted where a `str` is expected -- as a
+  color, as text to draw, or as a PIL image's `mode`. `Pen(b"#ff0000")` used to
+  render red and now renders black, since an unrecognized color silently becomes
+  black; `Pen(b"black")` is unchanged only by coincidence.
+- Setting an attribute on a `Pen` or `Brush` now raises `AttributeError` rather
+  than `TypeError`, a side effect of the types being readied properly.
+- Fix a memory leak in `Path.coords()`, which leaked one float object per
+  coordinate on every call. `PyList_Append` takes its own reference, so the one
+  returned by `PyFloat_FromDouble` was never released.
+- Fix a memory leak of the `agg::trans_affine` set by `Draw.settransform()`.
+  The transform was freed when replaced but never when the `Draw` itself was
+  deallocated.
+- Fix memory leaks on several constructor error paths, previously marked
+  `FIXME`. A rejected `Symbol()` path descriptor, a `Font()` whose file cannot
+  be loaded, and a `Draw()` whose image data is the wrong size all leaked the
+  half-built object.
+- Fix a window in `Draw(image)` where the object held a borrowed reference to
+  the PIL image; the reference is now taken at the point of assignment.
+- The dictionary backing the internal color-resolution helper is no longer
+  leaked at import.
+- `Pen`, `Brush`, `Font`, `Path`, `Symbol` and `Draw` in the C extension are now
+  real classes rather than factory functions returning opaque objects. They are
+  heap types built with `PyType_FromSpec`, exposed on `aggdraw._aggdraw` as
+  types, and can be subclassed. `aggdraw._aggdraw` no longer exposes any
+  module-level functions.
+- New: `Path.from_svg(path, scale=1.0)` builds a path from an SVG-style path
+  descriptor. This is the canonical replacement for `Symbol`. It is a
+  classmethod, so calling it on a subclass returns an instance of that subclass.
+- **Deprecated:** `aggdraw.Symbol`. Constructing one now emits a `UserWarning`;
+  use `aggdraw.Path.from_svg()` instead. `UserWarning` rather than
+  `DeprecationWarning` so that it is visible by default. See
+  [#145](https://github.com/pytroll/aggdraw/issues/145).
+- **Breaking:** `Symbol` is now a subclass of `Path` in both the Python wrapper
+  and the C extension, rather than a factory function that returned a `Path`.
+  `isinstance(Symbol(...), Path)` is now `True`; a `Symbol` has all the `Path`
+  methods (`lineto`, `coords`, ...), where previously it had none; `Draw.line`
+  and `Draw.polygon` now accept a `Symbol`, having rejected it with a
+  `TypeError` from their `isinstance` guard; and `type()` of the underlying
+  `aggdraw._aggdraw.Symbol` object is now `Symbol` rather than `Path`.
+- New: `Pen.color`, `Pen.width` and `Brush.color` report the resolved color and
+  width. The color is given as `(R, G, B, A)` after parsing, so an unrecognized
+  color reads back as black.
+- New: `Font.family`, `Font.style`, `Font.ascent` and `Font.descent` are now
+  available on the documented `aggdraw.Font` wrapper, not only on the
+  underlying C object.
 
 ## Version 1.4.1
 

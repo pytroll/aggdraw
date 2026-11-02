@@ -20,8 +20,27 @@ aggdraw/__init__.py       re-exports Draw, Pen, Brush, Path, Symbol, Font + VERS
 ```
 
 - `aggdraw/_aggdraw.cxx` (~2500 lines) uses the low-level Python C API. `Pen`, `Brush`, `Font`,
-  `Symbol`, `Path`, and `Draw` are exposed as module-level **factory functions**, not heap
-  types — there is no `tp_new` and no subclassing.
+  `Path`, and `Draw` are **heap types**, built with `PyType_FromSpec` in `aggdraw_init` and
+  exposed on the module as real, subclassable classes. Each type's `PyType_Spec` sits next to
+  that type's own methods. Two consequences to respect:
+  - The deallocators must go through `tp_free` and then `Py_DECREF(Py_TYPE(self))`. Never call
+    `PyObject_DEL` on one of these objects, and never call a `*_dealloc` directly — use
+    `Py_DECREF`.
+  - The `Pen_Check` / `Brush_Check` / `Font_Check` / `Path_Check` macros use `PyObject_TypeCheck`,
+    not an identity test, because `Py_TPFLAGS_BASETYPE` is set. An identity test would make
+    `draw_adaptor::draw` silently ignore a subclass.
+- **`Symbol` is a subclass of `Path`**, at both layers. The C module exposes no functions at
+  all now — `moduledef.m_methods` is `NULL`. Because a spec's `Py_tp_base` slot cannot name a
+  type that does not exist until `aggdraw_init` runs, `Symbol` is built with
+  `PyType_FromSpecWithBases`, so the `types[]` registration table carries a `base` column and
+  **the `Symbol` row must come after the `Path` row**. `symbol_spec` defines only `tp_new` and
+  `tp_doc` — `tp_doc` is not inherited, and giving it `tp_methods` would build a second
+  descriptor set bound to `SymbolType`, making `Symbol.lineto()` reject a plain `Path`.
+  `Path.from_svg()` (`METH_VARARGS | METH_CLASS`) and `Symbol.__new__` both call one shared
+  parser, `path_from_svg_impl`, which allocates from the type it is handed.
+- **`Draw.symbol()` and `Draw.path()` both type-check against `PathType`**, so each accepts a
+  `Path` or a `Symbol`. Do not narrow `Draw.symbol()` to `SymbolType` — passing a plain `Path`
+  to it is documented, tested behaviour.
 - `aggdraw/core.py` is a recent addition. Each wrapper class holds a handle to the C object
   (`self._pen`, `self._brush`, `self._font`, `self._path`, `self._draw`) and forwards calls.
   Its purpose is documentation, IDE discoverability, and a place to put Python-side niceties.
@@ -131,6 +150,13 @@ decision, and do not document them wrongly.
   three distinct points deletes it** — it encloses no area, and AGG strokes closed paths as
   polygon outlines, so nothing is drawn. `Path([100,100, 400,100]).close()` renders nothing.
   `coords()` is identical before and after `close()`, so this is only observable in pixels.
+- **`Symbol` is deprecated** in favour of `Path.from_svg()`, and constructing one emits a
+  **`UserWarning`** — deliberately not a `DeprecationWarning`, which is ignored by default
+  outside `__main__`. The warning lives in `core.Symbol.__new__`, not `__init__`, so that the
+  inherited `Path.from_svg` (which calls `cls.__new__` and skips `__init__`) warns too. The C
+  layer never warns: `_aggdraw` is not public API, and `PyErr_WarnEx` has no `stack_level` that
+  is correct for both entry points. See
+  [pytroll/aggdraw#145](https://github.com/pytroll/aggdraw/issues/145).
 - **`Draw('BGRA', ...)` reports `.mode == 'RGBA'`.** Anything that round-trips through
   `Image.frombytes(draw.mode, draw.size, draw.tobytes())` will get the channel order wrong for
   BGRA surfaces.
@@ -157,6 +183,10 @@ decision, and do not document them wrongly.
 - Assert `!= WHITE` rather than an exact ink color when a shape is drawn with a `Pen` on integer
   coordinates — the pen straddles the path, so edges come out antialiased gray. Exact-color
   assertions are for half-pixel coordinates (`x.5`) or brush fills.
+- A deprecation warning inside a tight `sys.getallocatedblocks()` loop inflates the
+  measurement (~8000 blocks per 2200 warns) whenever the active filter is `always` — which
+  `-W always` sets, and which pytest 8 and older set for every test. Allocation-measuring tests
+  must call non-deprecated APIs; see `test_from_svg_error_paths_do_not_leak`.
 - Prefer asserting pixels over merely calling the API. Several existing tests are pure smoke
   tests with no assertions; don't add more.
 
@@ -170,7 +200,6 @@ decision, and do not document them wrongly.
 2. Add a `## Version X.Y.Z` section at the top of `CHANGELOG.md`.
 3. Tag `vX.Y.Z` and push; the `publish` CI job uploads to PyPI.
 
-Note that `doc/source/conf.py` hardcodes `version`/`release` separately and is currently stale.
 
 ## House rules
 
